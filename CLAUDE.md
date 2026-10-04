@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.14.8.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.14.9.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -136,8 +136,8 @@ There are two independent sticky rows stacked at the top of the page:
 1. **`.made-by-credit`** — outermost sticky bar (`position: sticky; top: 0`),
    split into two rows:
    - `.credit-top-row`: `#header-title-slot` (left, flexible) + `.lax-brand`
-     "Made by L\<sup\>A\</sup\>X" (right, styled to mimic the \LaTeX logo's
-     kerned raised-A, but spelling "LaX").
+     "Made by " + the LAX logo image `.lax-img` (right; since v1.3.14.9 it is the
+     base64 PNG logo, not CSS-styled text).
    - `#header-filter-slot`: **full width**, its own row below the top row.
 2. **`.quiz-topbar`** (back/pause/timer/retake) — sticky at
    `top: var(--credit-h)`, where `--credit-h` is **computed dynamically in
