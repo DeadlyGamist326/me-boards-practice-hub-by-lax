@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.11.1.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.11.2.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -514,6 +514,7 @@ needed no change.
 
 ## 5c. `.formula-grid-2/3/4` and `.hint-given` (boxed formulas, unboxed Given:)
 
+- **Long-box rule (user ruling, 2026-10-04):** if a box's content is too long for a half-width column, that box takes one full row (single-column one-liner), never a `.formula-grid-2/3/4` cell. Grids are for short formulas only.
 - **Every multi-statement formula line must be boxed**, not comma-joined in
   prose. `.formula-grid-2` / `.formula-grid-3` / `.formula-grid-4` are CSS
   Grid wrappers (mobile fallback to fewer columns at ≤480px) holding 2/3/4

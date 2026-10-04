@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ME Boards Practice Hub</title>
-<!-- VERSION: 1.3.11.1 — 2026-10-04 (see in-app Changelog on the home page for details) -->
+<!-- VERSION: 1.3.11.2 — 2026-10-04 (see in-app Changelog on the home page for details) -->
 <!--
 ================================================================================
   RULINGS / STYLE GUIDE FOR CLAUDE — READ THIS BEFORE EDITING THIS FILE
@@ -302,6 +302,12 @@
       "Given: P=5500, i=0.11" with no boxes. If there are 2-4 short given
       equations, use a `.formula-grid-2/3/4` of `.formula-block`s (per §5c)
       instead of stacking single-column boxes. Given data with no "="
+      LONG-BOX RULE (user ruling, 2026-10-04): when the content of a
+      `.formula-block` is too long to fit comfortably in a half-width
+      column, that box takes ONE FULL ROW — render those boxes stacked as
+      one-liners in a single column, never inside a 2/3/4-column
+      `.formula-grid-*`. Use the grids only for short formulas. If a
+      group mixes short and long, keep the long ones as full-row boxes.
       (e.g. plain descriptive conditions like "exact interest, leap year")
       stays as part of the plain-text given line, since it isn't an
       equation to box. After the given box(es), the solution proceeds with
