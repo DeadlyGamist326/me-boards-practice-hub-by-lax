@@ -712,7 +712,7 @@ const entries = {
     ]
   },
   "2026-10-04": {
-    stamp: "v1.3.10.0 – v1.3.14.0",
+    stamp: "v1.3.10.0 – v1.3.14.1",
     title: "First Claude Code web session, GitHub Pages deploy set up, Math Handout Day 1 built",
     body: [
       "Moved work to a Claude Code cloud session on the GitHub repo; had Claude read the project (CLAUDE.md, diary, the in-file RULINGS block, and the file's structure) and confirm the rulings, naming convention, and changelog/diary workflow",
@@ -747,7 +747,8 @@ const entries = {
       "Verified: node --check, CSS brace balance, question count 967 to 998 (+31), zero mojibake, CRLF preserved, key diff 31/31, the 1a grep audit (no single-backslash commands, no plain sqrt/pi/integral/partial symbols, no bare carets, no unwrapped fractional exponents, frac padding fine), and a real Chromium render with local MathJax (31 questions, 124 hint panels, 512 rendered expressions, 0 math errors, no raw delimiters, filter selects Determinant and shows 3). v1.3.13.0 (minor, since a Problem Set went from not existing to fully built), file renamed, changelog entry added",
       "Math Trivia Day 1 built (v1.3.14.0): 15 questions from MJ's pasted LaTeX plus answer key, each with the 4-tier hint system, wired to the shared math1FormulaOutline (added topics Simultaneous Equations (Nonlinear), Percent and Discount, Prime Numbers, Complex Number Equality). Trivia placeholder loop now starts at Day 2",
       "Source cleanup: Q9 (x+1)2 read as (x+1) squared; Q6 choices C/D printed as 10.00^n, read as 1000^n (the only reading consistent with key C); Q8 duplicate $44.20 choice replaced with $43.20 (guess) and the printed total $168.70 does not give $46.20 (key D fits $161.70), disclosed in the hint; Q14 duplicate choice C replaced with a distractor minor matrix. All 15 keys match the supplied key; own solving agreed except Q8",
-      "Verified: node --check, CSS brace balance, jsdom render (15 questions, filter present), zero mojibake, CRLF preserved"
+      "Verified: node --check, CSS brace balance, jsdom render (15 questions, filter present), zero mojibake, CRLF preserved",
+      "v1.3.14.1: MJ reported Trivia Day 1 still looked blurred after v1.3.14.0. Cause: the old placeholder loop for Trivia Days 1-4 still ran markPendingEmpty on quiz-1, the same bug as the Problem Set loop earlier. Loop now covers Days 2-4 only; verified in jsdom that quiz-1 has no pending-empty class"
     ]
   },
 };

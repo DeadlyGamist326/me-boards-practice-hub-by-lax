@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ME Boards Practice Hub</title>
-<!-- VERSION: 1.3.14.0 — 2026-10-04 (see in-app Changelog on the home page for details) -->
+<!-- VERSION: 1.3.14.1 — 2026-10-04 (see in-app Changelog on the home page for details) -->
 <!--
 ================================================================================
   RULINGS / STYLE GUIDE FOR CLAUDE — READ THIS BEFORE EDITING THIS FILE
@@ -4413,6 +4413,9 @@ function onSubjectToggleClick(subjectKey) {
 // in the diary's own entries only, and skip (don't renumber around) any
 // version whose only changes are diary-only.
 const CHANGELOG = [
+  { version: "1.3.14.1", date: "2026-10-04", changes: [
+    "Math Trivia Day 1 no longer shows blurred with a \"pending upload\" label; the questions are now visible"
+  ] },
   { version: "1.3.14.0", date: "2026-10-04", changes: [
     "Math Trivia Day 1 added (15 questions: factoring, powers of i, quadratics, simultaneous equations, matrices, primes, and average), each with the full hint system and \"Practice by formula\" filtering"
   ] },
@@ -6233,7 +6236,7 @@ const trivia12Data = [
 renderQuiz("quiz-12", trivia12Data, "Trivia Day 12", "timer-quiz-12", math12FormulaOutline);
 
 // ---- Math Trivia Days 1-4 (pending upload; Days 9-12 have real content) ----
-[1, 2, 3, 4].forEach((i) => {
+[2, 3, 4].forEach((i) => {
   const data = [];
   document.getElementById(`quiz-${i}-subtitle`).textContent =
     `${data.length} questions · click a choice to check your answer`;
