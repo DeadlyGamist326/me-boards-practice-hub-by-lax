@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ME Boards Practice Hub</title>
-<!-- VERSION: 1.3.11.0 — 2026-10-04 (see in-app Changelog on the home page for details) -->
+<!-- VERSION: 1.3.11.1 — 2026-10-04 (see in-app Changelog on the home page for details) -->
 <!--
 ================================================================================
   RULINGS / STYLE GUIDE FOR CLAUDE — READ THIS BEFORE EDITING THIS FILE
@@ -4395,6 +4395,9 @@ function onSubjectToggleClick(subjectKey) {
 // in the diary's own entries only, and skip (don't renumber around) any
 // version whose only changes are diary-only.
 const CHANGELOG = [
+  { version: "1.3.11.1", date: "2026-10-04", changes: [
+    "Math Handout Day 1: the Common Factoring Identities are now one-line boxes in a single column instead of two columns, since the equations are long"
+  ] },
   { version: "1.3.11.0", date: "2026-10-04", changes: [
     "Math Handout Day 1 added (Algebra: Significant Figures, Factoring, Laws of Exponents, Equations, Matrices), with reference formulas and 14 worked sample problems, each with the full hint system",
   ] },
@@ -23385,7 +23388,7 @@ document.getElementById("handout-math-1").innerHTML = `
   <div class="concept-card">
     <div class="cc-title">Common Factoring Identities</div>
     <div class="cc-desc">Factoring is the process of reducing a mathematical expression into a product of simpler elements.</div>
-    <div class="formula-grid-2">
+    
           <div class="formula-block">\\( a(x+y)=ax+ay \\)</div>
           <div class="formula-block">\\( (x+a)(x+b)=x^2+(a+b)x+ab \\)</div>
           <div class="formula-block">\\( x^2-y^2=(x+y)(x-y)\\ \\text{(difference of squares)} \\)</div>
@@ -23396,7 +23399,7 @@ document.getElementById("handout-math-1").innerHTML = `
           <div class="formula-block">\\( x^3-y^3=(x-y)(x^2+xy+y^2)\\ \\text{(difference of cubes)} \\)</div>
           <div class="formula-block">\\( x^3+y^3=(x+y)(x^2-xy+y^2)\\ \\text{(sum of cubes)} \\)</div>
           <div class="formula-block">\\( (x+y+z)^2=x^2+y^2+z^2+2xy+2yz+2xz \\)</div>
-        </div>
+
   </div>
 
   <h3>Sample Problems: Factoring</h3>
