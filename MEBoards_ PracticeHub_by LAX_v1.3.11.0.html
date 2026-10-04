@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ME Boards Practice Hub</title>
-<!-- VERSION: 1.3.10.0 — 2026-10-03 (see in-app Changelog on the home page for details) -->
+<!-- VERSION: 1.3.11.0 — 2026-10-04 (see in-app Changelog on the home page for details) -->
 <!--
 ================================================================================
   RULINGS / STYLE GUIDE FOR CLAUDE — READ THIS BEFORE EDITING THIS FILE
@@ -4286,7 +4286,7 @@ const pendingContentTriviaDays = [1, 2, 3, 4];
 const pendingContentProblemSets = [1, 2, 3, 4];
 const pendingContentPpeTriviaDays = [9, 10, 11, 12];
 const pendingContentPpeProblemSets = [9, 10, 11, 12];
-const pendingContentMathHandouts = [1, 2, 3, 4, 5, 6, 7, 8];
+const pendingContentMathHandouts = [2, 3, 4, 5, 6, 7, 8];
 const pendingContentPpeHandouts = [9, 10, 11, 12];
 const pendingContentMdTriviaDays = [1, 2, 3, 4, 5, 6];
 const pendingContentMdProblemSets = [1, 2, 3, 4, 5, 6];
@@ -4395,6 +4395,9 @@ function onSubjectToggleClick(subjectKey) {
 // in the diary's own entries only, and skip (don't renumber around) any
 // version whose only changes are diary-only.
 const CHANGELOG = [
+  { version: "1.3.11.0", date: "2026-10-04", changes: [
+    "Math Handout Day 1 added (Algebra: Significant Figures, Factoring, Laws of Exponents, Equations, Matrices), with reference formulas and 14 worked sample problems, each with the full hint system",
+  ] },
   { version: "1.3.10.0", date: "2026-10-03", changes: [
     "\"Practice by formula\" added to Math Day 11 and 12 — Trivia, Problem Set, and Sample Problems can now be filtered by section, subsection, or a single formula/technique, so all of Math Day 9–12 now has it",
   ] },
@@ -23318,12 +23321,732 @@ renderQuiz("quiz-ps-12", ps12Data, "Problem Set Day 12", "timer-ps-12", math12Fo
   markPendingEmpty(`quiz-ps-${i}`);
 });
 
-// ---- Math Handouts Days 1-12 (pending upload) ----
-for (let i = 1; i <= 12; i++) {
+// ---- Math Handouts Days 1-12 (pending upload; Day 1 has real content below) ----
+for (let i = 2; i <= 12; i++) {
   document.getElementById(`handout-math-${i}`).innerHTML =
     `<p class="var-def">Content pending upload.</p>`;
   if (i <= 8) markPendingEmpty(`handout-math-${i}`);
 }
+
+document.getElementById("handout-math-1").innerHTML = `
+<h2>I. Significant Figures</h2>
+  <div class="concept-card">
+    <div class="cc-title">Significant Figures</div>
+    <div class="cc-desc">Significant figures are the digits in a number that represent the accuracy of the value.</div>
+    <div class="cc-desc">Examples:</div>
+    <div class="formula-grid-2">
+          <div class="formula-block">\\( 46\\quad\\to\\quad 2\\ \\text{significant figures} \\)</div>
+          <div class="formula-block">\\( 14000\\quad\\to\\quad 2\\ \\text{significant figures} \\)</div>
+          <div class="formula-block">\\( 3.4\\times10^{4}\\quad\\to\\quad 2\\ \\text{significant figures} \\)</div>
+          <div class="formula-block">\\( 45.60\\quad\\to\\quad 4\\ \\text{significant figures} \\)</div>
+          <div class="formula-block">\\( 68.00\\quad\\to\\quad 4\\ \\text{significant figures} \\)</div>
+          <div class="formula-block">\\( 1.0230\\quad\\to\\quad 5\\ \\text{significant figures} \\)</div>
+          <div class="formula-block">\\( 0.0010300\\quad\\to\\quad 5\\ \\text{significant figures} \\)</div>
+        </div>
+  </div>
+
+  <h3>Sample Problems: Significant Figures</h3>
+
+  <div class="sample-problem">
+    <div class="sp-title">1. Which number has four significant figures?</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="B">
+      <span class="sp-choice">A.&nbsp;0.0014</span>
+      <span class="sp-choice">B.&nbsp;0.01414</span>
+      <span class="sp-choice">C.&nbsp;0.141</span>
+      <span class="sp-choice">D.&nbsp;1.4140</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"which number has four significant figures"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{count the significant digits of each choice} \\)</span></div></div>
+        <span class="problem-type-tag">Significant Figures</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><p class="hint-note">Count every digit from the first nonzero digit onward; leading zeros are not significant, while zeros after a nonzero digit (including trailing zeros after a decimal point) are.</p></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( \\text{leading zeros: not counted} \\)</div><div class="hint-formula">\\( \\text{trailing zeros after the decimal point: counted} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given: choices A to D, count the significant figures of each.</p>
+        <div class="formula-grid-2">
+          <div class="formula-block">\\( 0.0014\\ \\to\\ 1,4\\ \\to\\ 2\\ \\text{s.f.} \\)</div>
+          <div class="formula-block">\\( 0.01414\\ \\to\\ 1,4,1,4\\ \\to\\ 4\\ \\text{s.f.} \\)</div>
+          <div class="formula-block">\\( 0.141\\ \\to\\ 1,4,1\\ \\to\\ 3\\ \\text{s.f.} \\)</div>
+          <div class="formula-block">\\( 1.4140\\ \\to\\ 1,4,1,4,0\\ \\to\\ 5\\ \\text{s.f.} \\)</div>
+        </div>
+        <p class="hint-note">Only choice B has exactly four significant figures:</p>
+        <div class="formula-block">\\( 4\\ \\text{s.f.}\\ \\Rightarrow\\ 0.01414 \\)</div>
+        <div class="hint-answer">Answer: B. \\( 0.01414 \\)</div>
+      </div>
+    </div>
+  </div>
+
+<h2>II. Factoring</h2>
+  <div class="concept-card">
+    <div class="cc-title">Common Factoring Identities</div>
+    <div class="cc-desc">Factoring is the process of reducing a mathematical expression into a product of simpler elements.</div>
+    <div class="formula-grid-2">
+          <div class="formula-block">\\( a(x+y)=ax+ay \\)</div>
+          <div class="formula-block">\\( (x+a)(x+b)=x^2+(a+b)x+ab \\)</div>
+          <div class="formula-block">\\( x^2-y^2=(x+y)(x-y)\\ \\text{(difference of squares)} \\)</div>
+          <div class="formula-block">\\( (x+y)^2=x^2+2xy+y^2 \\)</div>
+          <div class="formula-block">\\( (x-y)^2=x^2-2xy+y^2 \\)</div>
+          <div class="formula-block">\\( (x+y)^3=x^3+3x^2y+3xy^2+y^3 \\)</div>
+          <div class="formula-block">\\( (x-y)^3=x^3-3x^2y+3xy^2-y^3 \\)</div>
+          <div class="formula-block">\\( x^3-y^3=(x-y)(x^2+xy+y^2)\\ \\text{(difference of cubes)} \\)</div>
+          <div class="formula-block">\\( x^3+y^3=(x+y)(x^2-xy+y^2)\\ \\text{(sum of cubes)} \\)</div>
+          <div class="formula-block">\\( (x+y+z)^2=x^2+y^2+z^2+2xy+2yz+2xz \\)</div>
+        </div>
+  </div>
+
+  <h3>Sample Problems: Factoring</h3>
+
+  <div class="sample-problem">
+    <div class="sp-title">1. Expand \\( (x-2)^3-8y^3 \\).</div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"expand a cubed binomial"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( (x-y)^3=x^3-3x^2y+3xy^2-y^3 \\)</span></div></div>
+        <span class="problem-type-tag">Factoring (Binomial Cube)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( (x-y)^3=x^3-3x^2y+3xy^2-y^3 \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( (x-y)^3\\ \\text{with}\\ y=2 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given: expand \\( (x-2)^3-8y^3 \\).</p>
+        <div class="formula-block">\\( (x-y)^3=x^3-3x^2y+3xy^2-y^3 \\)</div>
+        <p class="hint-note">Apply the identity to \\( (x-2)^3 \\) (replace \\( y \\) with 2):</p>
+        <div class="formula-block">\\( (x-2)^3=x^3-3x^2(2)+3x(2)^2-(2)^3 \\)</div>
+        <p class="hint-note">Simplify each term:</p>
+        <div class="formula-block">\\( (x-2)^3=x^3-6x^2+12x-8 \\)</div>
+        <p class="hint-note">Bring back the \\( -8y^3 \\) term:</p>
+        <div class="formula-block">\\( (x-2)^3-8y^3=x^3-6x^2+12x-8-8y^3 \\)</div>
+        <div class="hint-answer">Answer: \\( x^3-6x^2+12x-8-8y^3 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem">
+    <div class="sp-title">2. Find the value of \\( k \\) that will make the statement an identity: \\( (x-k)(x+2k)=x^2-3x-18 \\).</div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"make the statement an identity"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( (x+a)(x+b)=x^2+(a+b)x+ab \\)</span></div></div>
+        <span class="problem-type-tag">Factoring (Product of Binomials)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( (x+a)(x+b)=x^2+(a+b)x+ab \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( a=-k,\\ b=2k \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( (x-k)(x+2k)=x^2-3x-18 \\)</div>
+        <div class="formula-block">\\( (x+a)(x+b)=x^2+(a+b)x+ab \\)</div>
+        <p class="hint-note">Match the left side to the identity with \\( a=-k \\) and \\( b=2k \\):</p>
+        <div class="formula-block">\\( (x-k)(x+2k)=x^2+(-k+2k)x+(-k)(2k) \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( (x-k)(x+2k)=x^2+kx-2k^2 \\)</div>
+        <p class="hint-note">Equate the coefficients of \\( x \\) on both sides:</p>
+        <div class="formula-block">\\( k=-3 \\)</div>
+        <p class="hint-note">Check the constant term with \\( k=-3 \\):</p>
+        <div class="formula-block">\\( -2(-3)^2=-18 \\)</div>
+        <div class="hint-answer">Answer: \\( k=-3 \\)</div>
+      </div>
+    </div>
+  </div>
+
+<h2>III. Laws of Exponents</h2>
+  <div class="concept-card">
+    <div class="cc-title">Laws of Exponents</div>
+    <div class="cc-desc">Laws of exponents are a set of rules in algebra that define how exponents of numbers can be algebraically operationalized.</div>
+    <div class="formula-grid-2">
+          <div class="formula-block">\\( x^0=1 \\)</div>
+          <div class="formula-block">\\( x^{\\frac{a}{b}}=\\sqrt[b]{x^a} \\)</div>
+          <div class="formula-block">\\( (x^a)^b=x^{ab} \\)</div>
+          <div class="formula-block">\\( x^a\\cdot x^b=x^{a+b} \\)</div>
+          <div class="formula-block">\\( \\dfrac{x^a}{x^b}=x^{a-b} \\)</div>
+          <div class="formula-block">\\( (x\\cdot y)^a=x^a\\cdot y^a \\)</div>
+          <div class="formula-block">\\( \\left(\\dfrac{x}{y}\\right)^a=\\dfrac{x^a}{y^a}=x^a\\cdot y^{-a} \\)</div>
+          <div class="formula-block">\\( \\dfrac{1}{x^{-a}}=x^a \\)</div>
+          <div class="formula-block">\\( x^a=x^b\\ \\Rightarrow\\ a=b \\)</div>
+          <div class="formula-block">\\( \\dfrac{1}{1}=1 \\)</div>
+          <div class="formula-block">\\( \\dfrac{0}{1}=0 \\)</div>
+          <div class="formula-block">\\( \\dfrac{1}{0}=\\infty \\)</div>
+          <div class="formula-block">\\( \\dfrac{1}{\\infty}=0 \\)</div>
+          <div class="formula-block">\\( \\dfrac{0}{0}=\\text{Indeterminate} \\)</div>
+          <div class="formula-block">\\( \\dfrac{\\infty}{\\infty}=\\text{Indeterminate} \\)</div>
+        </div>
+  </div>
+
+  <h3>Sample Problems: Laws of Exponents</h3>
+
+  <div class="sample-problem">
+    <div class="sp-title">1. Solve \\( 3\\cdot(9)^{2k}=(3^5)^k \\) for \\( k \\).</div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"same base on both sides, solve for the exponent"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( x^a=x^b\\ \\Rightarrow\\ a=b \\)</span></div></div>
+        <span class="problem-type-tag">Laws of Exponents (Equal Bases)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="formula-grid-3"><div class="formula-block">\\( (x^a)^b=x^{ab} \\)</div><div class="formula-block">\\( x^a\\cdot x^b=x^{a+b} \\)</div><div class="formula-block">\\( x^a=x^b\\ \\Rightarrow\\ a=b \\)</div></div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( 9=3^2 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( 3\\cdot(9)^{2k}=(3^5)^k \\)</div>
+        <div class="formula-block">\\( x^a=x^b\\ \\Rightarrow\\ a=b \\)</div>
+        <p class="hint-note">Write 9 as a power of 3:</p>
+        <div class="formula-block">\\( 3\\cdot(3^2)^{2k}=(3^5)^k \\)</div>
+        <p class="hint-note">Apply \\( (x^a)^b=x^{ab} \\) on both sides:</p>
+        <div class="formula-block">\\( 3\\cdot3^{4k}=3^{5k} \\)</div>
+        <p class="hint-note">Apply \\( x^a\\cdot x^b=x^{a+b} \\) on the left side:</p>
+        <div class="formula-block">\\( 3^{1+4k}=3^{5k} \\)</div>
+        <p class="hint-note">The bases are equal, so equate the exponents:</p>
+        <div class="formula-block">\\( 1+4k=5k \\)</div>
+        <p class="hint-note">Solve for \\( k \\):</p>
+        <div class="formula-block">\\( k=1 \\)</div>
+        <div class="hint-answer">Answer: \\( k=1 \\)</div>
+      </div>
+    </div>
+  </div>
+
+<h2>IV. Equations</h2>
+  <div class="concept-card">
+    <div class="cc-title">1. Linear Equation (First Degree Equation)</div>
+    <div class="cc-desc">A. Linear equations with one unknown. Solution: simple transposition.</div>
+    <div class="cc-desc">B. Linear equations with two or more unknowns. Solution: 1. Substitution method, 2. Elimination method, 3. Determinants.</div>
+  </div>
+
+  <h3>Sample Problems: Linear Equations</h3>
+
+  <div class="sample-problem">
+    <div class="sp-title">1. What is the solution to the following system of simultaneous linear equations?<br>\\( 10x+3y+10z=5 \\)<br>\\( 8x-2y+9z=3 \\)<br>\\( 8x+y-10z=7 \\)</div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"system of simultaneous linear equations, three unknowns"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{Determinants (Cramer's rule)} \\)</span></div></div>
+        <span class="problem-type-tag">Linear Equations (Three Unknowns)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="formula-grid-3"><div class="formula-block">\\( x=\\dfrac{D_x}{D} \\)</div><div class="formula-block">\\( y=\\dfrac{D_y}{D} \\)</div><div class="formula-block">\\( z=\\dfrac{D_z}{D} \\)</div></div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( D=\\begin{vmatrix}10&3&10\\\\8&-2&9\\\\8&1&-10\\end{vmatrix} \\)</div><div class="hint-formula">\\( D_x,\\ D_y,\\ D_z:\\ \\text{replace the x, y, z column with the constants} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-3">
+          <div class="formula-block">\\( 10x+3y+10z=5 \\)</div>
+          <div class="formula-block">\\( 8x-2y+9z=3 \\)</div>
+          <div class="formula-block">\\( 8x+y-10z=7 \\)</div>
+        </div>
+        <div class="formula-grid-3">
+          <div class="formula-block">\\( x=\\dfrac{D_x}{D} \\)</div>
+          <div class="formula-block">\\( y=\\dfrac{D_y}{D} \\)</div>
+          <div class="formula-block">\\( z=\\dfrac{D_z}{D} \\)</div>
+        </div>
+        <p class="hint-note">Determinant of the coefficients (use the calculator):</p>
+        <div class="formula-block">\\( D=\\begin{vmatrix}10&3&10\\\\8&-2&9\\\\8&1&-10\\end{vmatrix}=806 \\)</div>
+        <p class="hint-note">Replace the x-column with the constants:</p>
+        <div class="formula-block">\\( D_x=\\begin{vmatrix}5&3&10\\\\3&-2&9\\\\7&1&-10\\end{vmatrix}=504 \\)</div>
+        <p class="hint-note">Replace the y-column with the constants:</p>
+        <div class="formula-block">\\( D_y=\\begin{vmatrix}10&5&10\\\\8&3&9\\\\8&7&-10\\end{vmatrix}=150 \\)</div>
+        <p class="hint-note">Replace the z-column with the constants:</p>
+        <div class="formula-block">\\( D_z=\\begin{vmatrix}10&3&5\\\\8&-2&3\\\\8&1&7\\end{vmatrix}=-146 \\)</div>
+        <p class="hint-note">Substitute the determinants:</p>
+        <div class="formula-grid-3">
+          <div class="formula-block">\\( x=\\dfrac{504}{806} \\)</div>
+          <div class="formula-block">\\( y=\\dfrac{150}{806} \\)</div>
+          <div class="formula-block">\\( z=\\dfrac{-146}{806} \\)</div>
+        </div>
+        <p class="hint-note">Reduce to lowest terms:</p>
+        <div class="formula-grid-3">
+          <div class="formula-block">\\( x=\\dfrac{252}{403} \\)</div>
+          <div class="formula-block">\\( y=\\dfrac{75}{403} \\)</div>
+          <div class="formula-block">\\( z=-\\dfrac{73}{403} \\)</div>
+        </div>
+        <div class="hint-answer">Answer: \\( x=\\dfrac{252}{403},\\ y=\\dfrac{75}{403},\\ z=-\\dfrac{73}{403} \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem">
+    <div class="sp-title">2. Solve for \\( z \\) in the equation<br>\\( x+3y-z=4 \\)<br>\\( 3x-2y+4z=11 \\)<br>\\( 2x+y+3z=13 \\)</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="C">
+      <span class="sp-choice">A.&nbsp;1</span>
+      <span class="sp-choice">B.&nbsp;2</span>
+      <span class="sp-choice">C.&nbsp;3</span>
+      <span class="sp-choice">D.&nbsp;4</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"solve for one unknown in a 3-by-3 system"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( z=\\dfrac{D_z}{D} \\)</span></div></div>
+        <span class="problem-type-tag">Linear Equations (Three Unknowns)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( z=\\dfrac{D_z}{D} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( D=\\begin{vmatrix}1&3&-1\\\\3&-2&4\\\\2&1&3\\end{vmatrix} \\)</div><div class="hint-formula">\\( D_z:\\ \\text{replace the z column with the constants} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-3">
+          <div class="formula-block">\\( x+3y-z=4 \\)</div>
+          <div class="formula-block">\\( 3x-2y+4z=11 \\)</div>
+          <div class="formula-block">\\( 2x+y+3z=13 \\)</div>
+        </div>
+        <div class="formula-block">\\( z=\\dfrac{D_z}{D} \\)</div>
+        <p class="hint-note">Determinant of the coefficients (use the calculator):</p>
+        <div class="formula-block">\\( D=\\begin{vmatrix}1&3&-1\\\\3&-2&4\\\\2&1&3\\end{vmatrix}=-20 \\)</div>
+        <p class="hint-note">Replace the z-column with the constants:</p>
+        <div class="formula-block">\\( D_z=\\begin{vmatrix}1&3&4\\\\3&-2&11\\\\2&1&13\\end{vmatrix}=-60 \\)</div>
+        <p class="hint-note">Substitute the determinants:</p>
+        <div class="formula-block">\\( z=\\dfrac{-60}{-20} \\)</div>
+        <p class="hint-note">Evaluate:</p>
+        <div class="formula-block">\\( z=3 \\)</div>
+        <div class="hint-answer">Answer: C. \\( z=3 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card">
+    <div class="cc-title">2. Quadratic Equation (Second Degree Equation)</div>
+    <div class="cc-desc">A. Quadratic equations with only one unknown. General equation:</div>
+    <div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( ax^2+bx+c=0 \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>
+    <div class="cc-desc">Quadratic formula, for any quadratic equation like \\( ax^2+bx+c=0 \\):</div>
+    <div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( x=\\dfrac{-b\\pm\\sqrt{b^2-4ac}}{2a} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>
+    <div class="var-def-grid">
+      <div class="var-chip">\\( a \\) = coefficient of \\( x^2 \\)</div>
+      <div class="var-chip">\\( b \\) = coefficient of \\( x \\)</div>
+      <div class="var-chip">\\( c \\) = constant term</div>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-title">Discriminant</div>
+    <div class="cc-desc">The discriminant of a quadratic equation is \\( b^2-4ac \\).</div>
+    <div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{Discriminant}=b^2-4ac \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>
+    <div class="cc-desc">A positive discriminant indicates that the quadratic has two distinct real number solutions. A discriminant of zero indicates that the quadratic has a repeated real number solution. A negative discriminant indicates that neither of the solutions are real numbers.</div>
+    <div class="cc-desc">Note:</div>
+    <div class="formula-grid-3">
+          <div class="formula-block">\\( b^2=4ac\\ \\to\\ \\text{the roots are equal (only one real solution)} \\)</div>
+          <div class="formula-block">\\( b^2>4ac\\ \\to\\ \\text{the roots are real and unequal} \\)</div>
+          <div class="formula-block">\\( b^2<4ac\\ \\to\\ \\text{the roots are imaginary} \\)</div>
+        </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-title">Properties of Roots</div>
+    <div class="formula-grid-2">
+          <div class="formula-block">\\( \\text{Sum of roots:}\\ x_1+x_2=\\dfrac{-b}{a} \\)</div>
+          <div class="formula-block">\\( \\text{Product of roots:}\\ x_1x_2=\\dfrac{c}{a} \\)</div>
+        </div>
+    <div class="var-def-grid">
+      <div class="var-chip">\\( x_1,\\ x_2 \\) = the two roots of the equation</div>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-title">Other Methods and Two Unknowns</div>
+    <div class="cc-desc">Other methods for one unknown: completing the square, or factoring if factorable.</div>
+    <div class="cc-desc">B. Quadratic equations with two unknowns. Solution: 1. Elimination method, 2. Substitution method, 3. Determinants.</div>
+    <div class="cc-desc">Example: solve for \\( x \\) and \\( y \\) in \\( x^2-y^2=8 \\) and \\( x^2+y^2=10 \\).</div>
+  </div>
+
+  <h3>Sample Problems: Quadratic Equations</h3>
+
+  <div class="sample-problem">
+    <div class="sp-title">1. Solve for \\( x \\): \\( x^2-x+6=0 \\).</div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"second degree equation, one unknown"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{Quadratic formula} \\)</span></div></div>
+        <span class="problem-type-tag">Quadratic Equations (One Unknown)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( x=\\dfrac{-b\\pm\\sqrt{b^2-4ac}}{2a} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( a=1,\\ b=-1,\\ c=6 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( x^2-x+6=0 \\)</div>
+        <div class="formula-block">\\( x=\\dfrac{-b\\pm\\sqrt{b^2-4ac}}{2a} \\)</div>
+        <p class="hint-note">Identify the coefficients of \\( ax^2+bx+c=0 \\):</p>
+        <div class="formula-grid-3">
+          <div class="formula-block">\\( a=1 \\)</div>
+          <div class="formula-block">\\( b=-1 \\)</div>
+          <div class="formula-block">\\( c=6 \\)</div>
+        </div>
+        <p class="hint-note">Substitute into the quadratic formula:</p>
+        <div class="formula-block">\\( x=\\dfrac{-(-1)\\pm\\sqrt{(-1)^2-4(1)(6)}}{2(1)} \\)</div>
+        <p class="hint-note">Evaluate (the discriminant is \\( 1-24=-23 \\), which is negative, so the roots are complex):</p>
+        <div class="formula-block">\\( x=\\dfrac{1\\pm i\\sqrt{23}}{2} \\)</div>
+        <div class="hint-answer">Answer: \\( x=\\dfrac{1\\pm i\\sqrt{23}}{2} \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem">
+    <div class="sp-title">2. Solve for \\( x \\) and \\( y \\): \\( x^2-y^2=8 \\) and \\( x^2+y^2=10 \\).</div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"two unknowns, both squared"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{Elimination method} \\)</span></div></div>
+        <span class="problem-type-tag">Quadratic Equations (Two Unknowns)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="hint-formula">\\( \\text{add the two equations to eliminate}\\ y^2 \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( x^2-y^2=8,\\ \\ x^2+y^2=10 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+          <div class="formula-block">\\( x^2-y^2=8 \\)</div>
+          <div class="formula-block">\\( x^2+y^2=10 \\)</div>
+        </div>
+        <div class="formula-block">\\( (x^2-\\cancel{y^2})+(x^2+\\cancel{y^2})=8+10 \\)</div>
+        <p class="hint-note">Combine like terms (the \\( y^2 \\) terms cancel):</p>
+        <div class="formula-block">\\( 2x^2=18 \\)</div>
+        <p class="hint-note">Divide both sides by 2:</p>
+        <div class="formula-block">\\( x^2=9 \\)</div>
+        <p class="hint-note">Take the square root of both sides:</p>
+        <div class="formula-block">\\( x=\\pm3 \\)</div>
+        <p class="hint-note">Substitute \\( x^2=9 \\) into \\( x^2+y^2=10 \\):</p>
+        <div class="formula-block">\\( 9+y^2=10 \\)</div>
+        <p class="hint-note">Solve for \\( y^2 \\):</p>
+        <div class="formula-block">\\( y^2=1 \\)</div>
+        <p class="hint-note">Take the square root of both sides:</p>
+        <div class="formula-block">\\( y=\\pm1 \\)</div>
+        <div class="hint-answer">Answer: \\( x=\\pm3,\\ y=\\pm1 \\) (four solutions: \\( (3,1),\\ (3,-1),\\ (-3,1),\\ (-3,-1) \\))</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem">
+    <div class="sp-title">3. If \\( z=\\sqrt{1-\\sqrt{1-\\sqrt{1-\\cdots}}} \\), what is the value of \\( z \\)?</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="B">
+      <span class="sp-choice">A.&nbsp;0.453</span>
+      <span class="sp-choice">B.&nbsp;0.618</span>
+      <span class="sp-choice">C.&nbsp;0.816</span>
+      <span class="sp-choice">D.&nbsp;0.681</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"infinite repeating radical"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( z=\\sqrt{1-z} \\)</span></div></div>
+        <span class="problem-type-tag">Quadratic Equations (Repeating Radical)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( x=\\dfrac{-b\\pm\\sqrt{b^2-4ac}}{2a} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( z=\\sqrt{1-\\sqrt{1-\\sqrt{1-\\cdots}}} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( z=\\sqrt{1-\\sqrt{1-\\sqrt{1-\\cdots}}} \\)</div>
+        <div class="formula-block">\\( \\sqrt{1-\\sqrt{1-\\cdots}}=z \\)</div>
+        <p class="hint-note">The part under the first radical repeats the whole expression, so replace it with \\( z \\):</p>
+        <div class="formula-block">\\( z=\\sqrt{1-z} \\)</div>
+        <p class="hint-note">Square both sides:</p>
+        <div class="formula-block">\\( z^2=1-z \\)</div>
+        <p class="hint-note">Move all terms to the left side:</p>
+        <div class="formula-block">\\( z^2+z-1=0 \\)</div>
+        <p class="hint-note">Apply the quadratic formula with \\( a=1,\\ b=1,\\ c=-1 \\):</p>
+        <div class="formula-block">\\( z=\\dfrac{-1\\pm\\sqrt{1^2-4(1)(-1)}}{2(1)} \\)</div>
+        <p class="hint-note">Evaluate:</p>
+        <div class="formula-block">\\( z=\\dfrac{-1\\pm\\sqrt{5}}{2} \\)</div>
+        <p class="hint-note">Since \\( z \\) is a square root it cannot be negative, so take the plus sign:</p>
+        <div class="formula-block">\\( z=\\dfrac{-1+\\sqrt{5}}{2} \\)</div>
+        <p class="hint-note">Evaluate:</p>
+        <div class="formula-block">\\( z=0.618 \\)</div>
+        <div class="hint-answer">Answer: B. \\( z=0.618 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem">
+    <div class="sp-title">4. Find the value of \\( x \\) if \\( \\sqrt{2x+\\sqrt{2x+4}}=4 \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="D">
+      <span class="sp-choice">A.&nbsp;3</span>
+      <span class="sp-choice">B.&nbsp;4</span>
+      <span class="sp-choice">C.&nbsp;5</span>
+      <span class="sp-choice">D.&nbsp;6</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"radical inside a radical"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( u=\\sqrt{2x+4} \\)</span></div></div>
+        <span class="problem-type-tag">Quadratic Equations (Nested Radicals)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="hint-formula">\\( u=\\sqrt{2x+4} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( u\\ge0 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( \\sqrt{2x+\\sqrt{2x+4}}=4 \\)</div>
+        <div class="formula-block">\\( u=\\sqrt{2x+4} \\)</div>
+        <p class="hint-note">Square both sides of the substitution:</p>
+        <div class="formula-block">\\( u^2=2x+4 \\)</div>
+        <p class="hint-note">Solve for \\( 2x \\):</p>
+        <div class="formula-block">\\( 2x=u^2-4 \\)</div>
+        <p class="hint-note">Rewrite the original equation using \\( u \\):</p>
+        <div class="formula-block">\\( \\sqrt{2x+u}=4 \\)</div>
+        <p class="hint-note">Square both sides:</p>
+        <div class="formula-block">\\( 2x+u=16 \\)</div>
+        <p class="hint-note">Substitute \\( 2x=u^2-4 \\):</p>
+        <div class="formula-block">\\( (u^2-4)+u=16 \\)</div>
+        <p class="hint-note">Move all terms to the left side:</p>
+        <div class="formula-block">\\( u^2+u-20=0 \\)</div>
+        <p class="hint-note">Factor:</p>
+        <div class="formula-block">\\( (u+5)(u-4)=0 \\)</div>
+        <p class="hint-note">\\( u \\) is a square root, so it cannot be negative:</p>
+        <div class="formula-block">\\( u=4 \\)</div>
+        <p class="hint-note">Back-substitute \\( u \\):</p>
+        <div class="formula-block">\\( \\sqrt{2x+4}=4 \\)</div>
+        <p class="hint-note">Square both sides:</p>
+        <div class="formula-block">\\( 2x+4=16 \\)</div>
+        <p class="hint-note">Solve for \\( x \\):</p>
+        <div class="formula-block">\\( x=6 \\)</div>
+        <div class="hint-answer">Answer: D. \\( x=6 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="concept-card">
+    <div class="cc-title">3. Cubic Equation (Third Degree Equation)</div>
+    <div class="cc-desc">Best solution: using the calculator.</div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-title">4. Quartic Equation (Fourth Degree Equation)</div>
+    <div class="cc-desc">Best solution: trial and error.</div>
+  </div>
+
+  <h3>Sample Problems: Cubic Equations</h3>
+
+  <div class="sample-problem">
+    <div class="sp-title">1. What are the roots of the cubic equation \\( x^3-8x-3=0 \\)?</div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"roots of a cubic equation"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{Calculator, or factor theorem + quadratic formula} \\)</span></div></div>
+        <span class="problem-type-tag">Cubic Equations</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="formula-grid-2"><div class="formula-block">\\( f(r)=0\\ \\Rightarrow\\ (x-r)\\ \\text{is a factor of}\\ f(x) \\)</div><div class="formula-block">\\( x=\\dfrac{-b\\pm\\sqrt{b^2-4ac}}{2a} \\)</div></div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( f(x)=x^3-8x-3 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( x^3-8x-3=0 \\)</div>
+        <div class="formula-block">\\( f(r)=0\\ \\Rightarrow\\ (x-r)\\ \\text{is a factor of}\\ f(x) \\)</div>
+        <p class="hint-note">Let \\( f(x)=x^3-8x-3 \\) and test \\( x=3 \\) (by trial, or with the calculator):</p>
+        <div class="formula-block">\\( f(3)=3^3-8(3)-3 \\)</div>
+        <p class="hint-note">Evaluate:</p>
+        <div class="formula-block">\\( f(3)=0 \\)</div>
+        <p class="hint-note">Since \\( f(3)=0 \\), \\( (x-3) \\) is a factor. Divide it out (synthetic division):</p>
+        <div class="formula-block">\\( x^3-8x-3=(x-3)(x^2+3x+1) \\)</div>
+        <p class="hint-note">Set the quadratic factor equal to zero:</p>
+        <div class="formula-block">\\( x^2+3x+1=0 \\)</div>
+        <p class="hint-note">Apply the quadratic formula with \\( a=1,\\ b=3,\\ c=1 \\):</p>
+        <div class="formula-block">\\( x=\\dfrac{-3\\pm\\sqrt{3^2-4(1)(1)}}{2(1)} \\)</div>
+        <p class="hint-note">Evaluate:</p>
+        <div class="formula-block">\\( x=\\dfrac{-3\\pm\\sqrt{5}}{2} \\)</div>
+        <p class="hint-note">Decimal values of the two remaining roots:</p>
+        <div class="formula-block">\\( x=-0.382\\ \\ \\text{or}\\ \\ x=-2.618 \\)</div>
+        <div class="hint-answer">Answer: \\( x=3,\\ x=-0.382,\\ x=-2.618 \\)</div>
+      </div>
+    </div>
+  </div>
+
+<h2>V. Matrices</h2>
+  <div class="concept-card">
+    <div class="cc-title">Transpose Matrix</div>
+    <div class="cc-desc">The transpose \\( A^T \\) of an \\( m\\times n \\) matrix is an \\( n\\times m \\) matrix constructed by taking the \\( i \\)th row and making it the \\( i \\)th column.</div>
+    <div class="formula-grid-2">
+      <div class="formula-block">\\( A=\\begin{bmatrix}1&6&9\\\\2&3&4\\\\7&1&5\\end{bmatrix} \\)</div>
+      <div class="formula-block">\\( A^T=\\begin{bmatrix}1&2&7\\\\6&3&1\\\\9&4&5\\end{bmatrix} \\)</div>
+    </div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-title">Multiplication and Addition of Matrices</div>
+    <div class="cc-desc">Use the calculator.</div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-title">Determinant</div>
+    <div class="cc-desc">The determinant can be solved using the calculator. Properties:</div>
+    <div class="cc-desc">A. If \\( A \\) has a row or column of zeros, the determinant is zero.</div>
+    <div class="cc-desc">B. If \\( A \\) has two identical rows or columns, the determinant is zero.</div>
+    <div class="cc-desc">C. Multiplying one row (or one column) of \\( A \\) by a constant multiplies the determinant by that constant.</div>
+  </div>
+  <div class="concept-card">
+    <div class="cc-title">Cofactor and Classical Adjoint</div>
+    <div class="cc-desc">A. Cofactors are determinants of submatrices associated with particular entries in the original square matrix. For a \\( 3\\times3 \\) matrix:</div>
+    <div class="formula-block">\\( A=\\begin{pmatrix}a_{11}&a_{12}&a_{13}\\\\a_{21}&a_{22}&a_{23}\\\\a_{31}&a_{32}&a_{33}\\end{pmatrix} \\)</div>
+    <div class="cc-desc">The minor corresponding to entry \\( a_{12} \\) in a \\( 3\\times3 \\) matrix is the determinant of the matrix created by eliminating row 1 and column 2.</div>
+    <div class="formula-block">\\( \\text{minor}\\ a_{12}=\\begin{vmatrix}a_{21}&a_{23}\\\\a_{31}&a_{33}\\end{vmatrix} \\)</div>
+    <div class="cc-desc">The cofactor of an entry is its minor with the sign \\( (-1)^{i+j} \\):</div>
+    <div class="formula-grid-2">
+          <div class="formula-block">\\( C_{ij}=(-1)^{i+j}M_{ij} \\)</div>
+          <div class="formula-block">\\( C_{12}=-\\begin{vmatrix}a_{21}&a_{23}\\\\a_{31}&a_{33}\\end{vmatrix} \\)</div>
+          <div class="formula-block">\\( C_{11}=+\\begin{vmatrix}a_{22}&a_{23}\\\\a_{32}&a_{33}\\end{vmatrix} \\)</div>
+          <div class="formula-block">\\( \\text{sign pattern}=\\begin{pmatrix}+&-&+\\\\-&+&-\\\\+&-&+\\end{pmatrix} \\)</div>
+        </div>
+    <div class="cc-desc">B. The classical adjoint is the transpose of the cofactor matrix. The inverse follows from it.</div>
+    <div class="formula-grid-2">
+          <div class="formula-block">\\( C=\\begin{pmatrix}+M_{11}&-M_{12}&+M_{13}\\\\-M_{21}&+M_{22}&-M_{23}\\\\+M_{31}&-M_{32}&+M_{33}\\end{pmatrix} \\)</div>
+          <div class="formula-block">\\( \\text{adj}(A)=C^T \\)</div>
+          <div class="formula-block">\\( A^{-1}=\\dfrac{1}{\\det A}\\,\\text{adj}(A) \\)</div>
+        </div>
+    <div class="var-def-grid">
+      <div class="var-chip">\\( M_{ij} \\) = minor of \\( a_{ij} \\)</div>
+      <div class="var-chip">\\( C_{ij} \\) = cofactor of \\( a_{ij} \\)</div>
+      <div class="var-chip">\\( C \\) = cofactor matrix</div>
+      <div class="var-chip">\\( \\text{adj}(A) \\) = classical adjoint of \\( A \\)</div>
+    </div>
+  </div>
+
+  <h3>Sample Problems: Matrices</h3>
+
+  <div class="sample-problem">
+    <div class="sp-title">1. Given \\( A=\\begin{bmatrix}1&6&0\\\\4&2&7\\\\0&5&3\\end{bmatrix} \\) and \\( B=\\begin{bmatrix}1&-2&-4\\\\-3&6&-7\\\\4&-4&-6\\end{bmatrix} \\).<br>Find: A. Determinant of matrix \\( A \\) and matrix \\( B \\). B. Product of matrix \\( A \\) and matrix \\( B \\). C. Inverse of matrix \\( A \\). D. Transpose of matrix \\( B \\). E. Cofactor of matrix \\( A \\). F. Classical adjoint of matrix \\( A \\).</div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"determinant"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\det A,\\ \\det B \\)</span></div><div class="kw-row"><span class="kw-phrase">"product"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( AB \\)</span></div><div class="kw-row"><span class="kw-phrase">"inverse"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( A^{-1}=\\dfrac{1}{\\det A}\\,\\text{adj}(A) \\)</span></div><div class="kw-row"><span class="kw-phrase">"transpose"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( B^T \\)</span></div><div class="kw-row"><span class="kw-phrase">"cofactor"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( C_{ij}=(-1)^{i+j}M_{ij} \\)</span></div><div class="kw-row"><span class="kw-phrase">"classical adjoint"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{adj}(A)=C^T \\)</span></div></div>
+        <span class="problem-type-tag">Matrices (Determinant, Product, Inverse, Transpose, Cofactor, Adjoint)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="formula-grid-2"><div class="formula-block">\\( C_{ij}=(-1)^{i+j}M_{ij} \\)</div><div class="formula-block">\\( \\text{adj}(A)=C^T \\)</div><div class="formula-block">\\( A^{-1}=\\dfrac{1}{\\det A}\\,\\text{adj}(A) \\)</div><div class="formula-block">\\( (B^T)_{ij}=B_{ji} \\)</div></div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( A\\ \\text{and}\\ B\\ \\text{are}\\ 3\\times3\\ \\text{matrices} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+          <div class="formula-block">\\( A=\\begin{bmatrix}1&6&0\\\\4&2&7\\\\0&5&3\\end{bmatrix} \\)</div>
+          <div class="formula-block">\\( B=\\begin{bmatrix}1&-2&-4\\\\-3&6&-7\\\\4&-4&-6\\end{bmatrix} \\)</div>
+        </div>
+        <div class="formula-block">\\( \\det A=a_{11}\\begin{vmatrix}a_{22}&a_{23}\\\\a_{32}&a_{33}\\end{vmatrix}-a_{12}\\begin{vmatrix}a_{21}&a_{23}\\\\a_{31}&a_{33}\\end{vmatrix}+a_{13}\\begin{vmatrix}a_{21}&a_{22}\\\\a_{31}&a_{32}\\end{vmatrix} \\)</div>
+        <p class="hint-note"><strong>Part A.</strong> Determinant of \\( A \\), expanding along the first row:</p>
+        <div class="formula-block">\\( \\det A=1\\begin{vmatrix}2&7\\\\5&3\\end{vmatrix}-6\\begin{vmatrix}4&7\\\\0&3\\end{vmatrix}+0\\begin{vmatrix}4&2\\\\0&5\\end{vmatrix} \\)</div>
+        <p class="hint-note">Evaluate each \\( 2\\times2 \\) determinant:</p>
+        <div class="formula-block">\\( \\det A=1(6-35)-6(12-0)+0(20-0) \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( \\det A=-101 \\)</div>
+        <p class="hint-note">Determinant of \\( B \\), expanding along the first row the same way:</p>
+        <div class="formula-block">\\( \\det B=1\\begin{vmatrix}6&-7\\\\-4&-6\\end{vmatrix}-(-2)\\begin{vmatrix}-3&-7\\\\4&-6\\end{vmatrix}+(-4)\\begin{vmatrix}-3&6\\\\4&-4\\end{vmatrix} \\)</div>
+        <p class="hint-note">Evaluate each \\( 2\\times2 \\) determinant:</p>
+        <div class="formula-block">\\( \\det B=1(-36-28)-(-2)(18+28)+(-4)(12-24) \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( \\det B=76 \\)</div>
+        <p class="hint-note"><strong>Part B.</strong> Product of \\( A \\) and \\( B \\) (use the calculator):</p>
+        <div class="formula-block">\\( AB=\\begin{bmatrix}1&6&0\\\\4&2&7\\\\0&5&3\\end{bmatrix}\\begin{bmatrix}1&-2&-4\\\\-3&6&-7\\\\4&-4&-6\\end{bmatrix} \\)</div>
+        <p class="hint-note">Multiply:</p>
+        <div class="formula-block">\\( AB=\\begin{bmatrix}-17&34&-46\\\\26&-24&-72\\\\-3&18&-53\\end{bmatrix} \\)</div>
+        <p class="hint-note"><strong>Part D.</strong> Transpose of \\( B \\): make each row of \\( B \\) a column:</p>
+        <div class="formula-block">\\( B^T=\\begin{bmatrix}1&-3&4\\\\-2&6&-4\\\\-4&-7&-6\\end{bmatrix} \\)</div>
+        <p class="hint-note"><strong>Part E.</strong> Cofactor of \\( A \\). First find the minor of each entry (delete its row and column):</p>
+        <div class="formula-grid-3">
+          <div class="formula-block">\\( M_{11}=\\begin{vmatrix}2&7\\\\5&3\\end{vmatrix}=-29 \\)</div>
+          <div class="formula-block">\\( M_{12}=\\begin{vmatrix}4&7\\\\0&3\\end{vmatrix}=12 \\)</div>
+          <div class="formula-block">\\( M_{13}=\\begin{vmatrix}4&2\\\\0&5\\end{vmatrix}=20 \\)</div>
+          <div class="formula-block">\\( M_{21}=\\begin{vmatrix}6&0\\\\5&3\\end{vmatrix}=18 \\)</div>
+          <div class="formula-block">\\( M_{22}=\\begin{vmatrix}1&0\\\\0&3\\end{vmatrix}=3 \\)</div>
+          <div class="formula-block">\\( M_{23}=\\begin{vmatrix}1&6\\\\0&5\\end{vmatrix}=5 \\)</div>
+          <div class="formula-block">\\( M_{31}=\\begin{vmatrix}6&0\\\\2&7\\end{vmatrix}=42 \\)</div>
+          <div class="formula-block">\\( M_{32}=\\begin{vmatrix}1&0\\\\4&7\\end{vmatrix}=7 \\)</div>
+          <div class="formula-block">\\( M_{33}=\\begin{vmatrix}1&6\\\\4&2\\end{vmatrix}=-22 \\)</div>
+        </div>
+        <p class="hint-note">Apply the sign pattern \\( (-1)^{i+j} \\) to the minors:</p>
+        <div class="formula-block">\\( C=\\begin{bmatrix}+(-29)&-(12)&+(20)\\\\-(18)&+(3)&-(5)\\\\+(42)&-(7)&+(-22)\\end{bmatrix} \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( C=\\begin{bmatrix}-29&-12&20\\\\-18&3&-5\\\\42&-7&-22\\end{bmatrix} \\)</div>
+        <p class="hint-note"><strong>Part F.</strong> The classical adjoint is the transpose of the cofactor matrix:</p>
+        <div class="formula-block">\\( \\text{adj}(A)=C^T \\)</div>
+        <p class="hint-note">Transpose \\( C \\):</p>
+        <div class="formula-block">\\( \\text{adj}(A)=\\begin{bmatrix}-29&-18&42\\\\-12&3&-7\\\\20&-5&-22\\end{bmatrix} \\)</div>
+        <p class="hint-note"><strong>Part C.</strong> Inverse of \\( A \\) (solved after the adjoint, which it needs):</p>
+        <div class="formula-block">\\( A^{-1}=\\dfrac{1}{\\det A}\\,\\text{adj}(A) \\)</div>
+        <p class="hint-note">Substitute \\( \\det A=-101 \\) and the adjoint:</p>
+        <div class="formula-block">\\( A^{-1}=\\dfrac{1}{-101}\\begin{bmatrix}-29&-18&42\\\\-12&3&-7\\\\20&-5&-22\\end{bmatrix} \\)</div>
+        <p class="hint-note">Multiply through by \\( -1 \\):</p>
+        <div class="formula-block">\\( A^{-1}=\\dfrac{1}{101}\\begin{bmatrix}29&18&-42\\\\12&-3&7\\\\-20&5&22\\end{bmatrix} \\)</div>
+        <div class="hint-answer">Answer:<br>A. \\( \\det A=-101,\\ \\det B=76 \\)<br>B. \\( AB=\\begin{bmatrix}-17&34&-46\\\\26&-24&-72\\\\-3&18&-53\\end{bmatrix} \\)<br>C. \\( A^{-1}=\\dfrac{1}{101}\\begin{bmatrix}29&18&-42\\\\12&-3&7\\\\-20&5&22\\end{bmatrix} \\)<br>D. \\( B^T=\\begin{bmatrix}1&-3&4\\\\-2&6&-4\\\\-4&-7&-6\\end{bmatrix} \\)<br>E. \\( C=\\begin{bmatrix}-29&-12&20\\\\-18&3&-5\\\\42&-7&-22\\end{bmatrix} \\)<br>F. \\( \\text{adj}(A)=\\begin{bmatrix}-29&-18&42\\\\-12&3&-7\\\\20&-5&-22\\end{bmatrix} \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem">
+    <div class="sp-title">2. What is the inverse of the given matrix \\( \\begin{pmatrix}\\cos\\theta&-\\sin\\theta\\\\\\sin\\theta&\\cos\\theta\\end{pmatrix} \\)?</div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"inverse of a matrix"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( A^{-1}=\\dfrac{1}{\\det A}\\,\\text{adj}(A) \\)</span></div></div>
+        <span class="problem-type-tag">Matrices (Inverse)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( A^{-1}=\\dfrac{1}{\\det A}\\,\\text{adj}(A) \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( \\cos^2\\theta+\\sin^2\\theta=1 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( A=\\begin{pmatrix}\\cos\\theta&-\\sin\\theta\\\\\\sin\\theta&\\cos\\theta\\end{pmatrix} \\)</div>
+        <div class="formula-block">\\( A^{-1}=\\dfrac{1}{\\det A}\\,\\text{adj}(A) \\)</div>
+        <p class="hint-note">Find the determinant of \\( A \\):</p>
+        <div class="formula-block">\\( \\det A=\\cos\\theta\\cos\\theta-(-\\sin\\theta)(\\sin\\theta) \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( \\det A=\\cos^2\\theta+\\sin^2\\theta \\)</div>
+        <p class="hint-note">Apply the identity \\( \\cos^2\\theta+\\sin^2\\theta=1 \\):</p>
+        <div class="formula-block">\\( \\det A=1 \\)</div>
+        <p class="hint-note">Cofactor matrix (\\( C_{11}=+a_{22},\\ C_{12}=-a_{21},\\ C_{21}=-a_{12},\\ C_{22}=+a_{11} \\)):</p>
+        <div class="formula-block">\\( C=\\begin{pmatrix}\\cos\\theta&-\\sin\\theta\\\\\\sin\\theta&\\cos\\theta\\end{pmatrix} \\)</div>
+        <p class="hint-note">Transpose to get the classical adjoint:</p>
+        <div class="formula-block">\\( \\text{adj}(A)=\\begin{pmatrix}\\cos\\theta&\\sin\\theta\\\\-\\sin\\theta&\\cos\\theta\\end{pmatrix} \\)</div>
+        <p class="hint-note">Substitute \\( \\det A=1 \\):</p>
+        <div class="formula-block">\\( A^{-1}=\\dfrac{1}{1}\\begin{pmatrix}\\cos\\theta&\\sin\\theta\\\\-\\sin\\theta&\\cos\\theta\\end{pmatrix} \\)</div>
+        <div class="hint-answer">Answer: \\( A^{-1}=\\begin{pmatrix}\\cos\\theta&\\sin\\theta\\\\-\\sin\\theta&\\cos\\theta\\end{pmatrix} \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem">
+    <div class="sp-title">3. If the determinant of matrix \\( A \\) is \\( -40 \\), what is the determinant of matrix \\( B \\)?<br>\\( A=\\begin{vmatrix}4&3&2&1\\\\0&1&2&-1\\\\2&3&-1&1\\\\1&1&1&2\\end{vmatrix} \\)<br>\\( B=\\begin{vmatrix}2&1.5&1&0.5\\\\0&1&2&-1\\\\2&3&-1&1\\\\1&1&1&2\\end{vmatrix} \\)</div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"determinant of a related matrix"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{row}\\ \\times\\ c\\ \\Rightarrow\\ \\det\\ \\times\\ c \\)</span></div></div>
+        <span class="problem-type-tag">Matrices (Determinant Properties)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formulas</button>
+      <div class="hint-panel"><div class="hint-formula">\\( \\text{one row}\\ \\times\\ c\\ \\Rightarrow\\ \\det\\ \\times\\ c \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( R_1^{B}\\ \\text{vs.}\\ R_1^{A} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( \\det A=-40 \\)</div>
+        <div class="formula-block">\\( \\text{one row}\\ \\times\\ c\\ \\Rightarrow\\ \\det\\ \\times\\ c \\)</div>
+        <p class="hint-note">Compare the two matrices: every row is identical except the first row, and the first row of \\( B \\) is half of the first row of \\( A \\):</p>
+        <div class="formula-block">\\( R_1^{B}=\\dfrac{1}{2}R_1^{A} \\)</div>
+        <p class="hint-note">So the determinant of \\( B \\) is half the determinant of \\( A \\):</p>
+        <div class="formula-block">\\( \\det B=\\dfrac{1}{2}\\det A \\)</div>
+        <p class="hint-note">Substitute \\( \\det A=-40 \\):</p>
+        <div class="formula-block">\\( \\det B=\\dfrac{1}{2}(-40) \\)</div>
+        <p class="hint-note">Evaluate:</p>
+        <div class="formula-block">\\( \\det B=-20 \\)</div>
+        <div class="hint-answer">Answer: \\( \\det B=-20 \\)</div>
+      </div>
+    </div>
+  </div>
+`;
 
 document.getElementById("handout-math-9").innerHTML = `
 <h2>I. Differentiation Formulas</h2>

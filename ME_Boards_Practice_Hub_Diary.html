@@ -712,14 +712,22 @@ const entries = {
     ]
   },
   "2026-10-04": {
-    stamp: "v1.3.10.0 (no version change)",
-    title: "First Claude Code web session, GitHub Pages deploy set up",
+    stamp: "v1.3.10.0 – v1.3.11.0",
+    title: "First Claude Code web session, GitHub Pages deploy set up, Math Handout Day 1 built",
     body: [
       "Moved work to a Claude Code cloud session on the GitHub repo; had Claude read the project (CLAUDE.md, diary, the in-file RULINGS block, and the file's structure) and confirm the rulings, naming convention, and changelog/diary workflow",
       "Asked how to put the app online as a link; chose GitHub Pages. Pages needs an index.html, but the app file is renamed on every version bump and has a space in its name, so a hand-kept copy would go stale",
       "Added .github/workflows/pages.yml: on every push to main it picks the highest-versioned MEBoards_*.html and publishes it as index.html, so the online app always matches the latest file and the naming convention is untouched",
       "Deploy-only change, nothing in the app itself changed, so no version bump and no changelog entry; the diary and dev log stay out of the published site",
-      "Still to do by hand on GitHub: make the repo public, set Settings → Pages → Source to GitHub Actions, and merge the working branch into main"
+      "Still to do by hand on GitHub: make the repo public, set Settings → Pages → Source to GitHub Actions, and merge the working branch into main",
+      "Uploaded 'Handouts Math Day 1.docx' (Algebra Day 1: Significant Figures, Factoring, Laws of Exponents, Equations, Matrices). No pandoc or docx library in the cloud container, so unzipped the docx and parsed its XML with a small script that turns the embedded OMML math into LaTeX",
+      "The source had reference material plus problem statements only (no worked solutions, four problems with printed choices), so solved all 14 problems by hand and verified every answer with sympy before encoding anything: Cramer's rule on two 3×3 systems, quadratic and cubic roots, two nested-radical equations, and a 3×3 matrix set (determinants, product, inverse, transpose, cofactor, adjoint) plus the 4×4 determinant property",
+      "Source problems found and handled rather than copied blindly: (x+y+z) = x²+3x²y+3xy²−y³ is a typo for (x+y)³ = x³+3x²y+3xy²+y³; x^(a/b) was printed with a cube root and is really the b-th root; \"Quadric\" (fourth degree) written as Quartic; the adjoint/cofactor matrices were garbled in extraction and rebuilt from the standard cofactor definition; list items 6–10 were duplicated by the extraction and kept once",
+      "Added three things the source did not state but its own problems need: the row-scaling property of determinants (used by the 4×4 problem), A⁻¹ = adj(A)/det A, and the cofactor sign formula (−1)^(i+j)",
+      "Built Math Handout Day 1 in the Day 9–12 page structure: 5 sections, 14 concept cards, and 14 sample problems (4 with printed choices), each with the 4-hint system and a full solution following the given-per-equation-boxed chain; the matrix problem with six parts is solved in a convenient order (inverse last) with a note saying so",
+      "Hit the recurring placeholder-loop bug again (the pending-upload loop covered Days 1–12 and would have wiped Day 1); started the loop at Day 2 and removed Day 1 from the pending list so it is not blurred",
+      "Verified: node --check, CSS brace balance, question count unchanged at 967, line endings still CRLF, zero mojibake, a real Chromium render with a local MathJax copy (0 math errors, 0 raw delimiters, 405 rendered expressions), the §1a grep audit, a backslash-run check, and a note/box chain check on all 14 solutions",
+      "Bumped to v1.3.11.0 (minor, since a Handout went from not existing to fully built), renamed the file to match, and added the changelog entry. Known cosmetic point: the widest determinant-expansion boxes scroll sideways on phones (formula boxes already scroll), same as other handouts"
     ]
   },
 };
