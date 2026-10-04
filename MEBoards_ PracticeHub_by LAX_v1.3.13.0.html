@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ME Boards Practice Hub</title>
-<!-- VERSION: 1.3.12.0 — 2026-10-04 (see in-app Changelog on the home page for details) -->
+<!-- VERSION: 1.3.13.0 — 2026-10-04 (see in-app Changelog on the home page for details) -->
 <!--
 ================================================================================
   RULINGS / STYLE GUIDE FOR CLAUDE — READ THIS BEFORE EDITING THIS FILE
@@ -3820,7 +3820,12 @@ function appendQuestionContent(el, content) {
 
   tokens.forEach(tok => {
     if (tok.kind === "space") {
-      if (buffer.length) buffer.push(tok);
+      if (buffer.length) {
+        buffer.push(tok);
+        // A line break ends the math group, otherwise the nowrap wrapper swallows it
+        // (only matters when "\n" sits between two math segments, e.g. stacked equations).
+        if (tok.text.indexOf("\n") !== -1) flush();
+      }
       else el.appendChild(document.createTextNode(tok.text));
       return;
     }
@@ -4296,7 +4301,7 @@ function makeMenuItem(label, available, onclickFn) {
 // Days that are unlocked but still awaiting real content — shown blurred
 // wherever they appear (featured section or subject browse panel).
 const pendingContentTriviaDays = [1, 2, 3, 4];
-const pendingContentProblemSets = [1, 2, 3, 4];
+const pendingContentProblemSets = [2, 3, 4];
 const pendingContentPpeTriviaDays = [9, 10, 11, 12];
 const pendingContentPpeProblemSets = [9, 10, 11, 12];
 const pendingContentMathHandouts = [2, 3, 4, 5, 6, 7, 8];
@@ -4408,6 +4413,9 @@ function onSubjectToggleClick(subjectKey) {
 // in the diary's own entries only, and skip (don't renumber around) any
 // version whose only changes are diary-only.
 const CHANGELOG = [
+  { version: "1.3.13.0", date: "2026-10-04", changes: [
+    "Math Problem Set Day 1 added (31 questions: significant figures, factoring, exponents, equations, matrices, averages and median), each with the full hint system and \"Practice by formula\" filtering"
+  ] },
   { version: "1.3.12.0", date: "2026-10-04", changes: [
     "Math Sample Problems Day 1 added (16 questions: inequalities, evaluating polynomials, fractions and ratio, net profit and loss, and factoring by grouping), each with the full hint system and \"Practice by formula\" filtering"
   ] },
@@ -23337,8 +23345,8 @@ const ps12Data = [
 
 renderQuiz("quiz-ps-12", ps12Data, "Problem Set Day 12", "timer-ps-12", math12FormulaOutline);
 
-// ---- Math Problem Set Days 1-4 (pending upload; Days 9-12 have real content) ----
-[1, 2, 3, 4].forEach((i) => {
+// ---- Math Problem Set Days 2-4 (pending upload; Day 1 and Days 9-12 have real content) ----
+[2, 3, 4].forEach((i) => {
   const data = [];
   document.getElementById(`quiz-ps-${i}-subtitle`).textContent =
     `${data.length} questions · click a choice to check your answer`;
@@ -28317,16 +28325,474 @@ attachStaticTopicFilter("samples-math-12", math12FormulaOutline);
 // sample problems add inequalities and arithmetic/word problems, so the
 // outline has extra groups rather than forcing a fit to the Handout headings).
 const math1FormulaOutline = [
-  { section: "I. Inequalities", subsections: [
+  { section: "I. Significant Figures", subsections: [
+    { name: null, items: ["Significant Figures"] },
+  ] },
+  { section: "II. Factoring and Polynomials", subsections: [
+    { name: null, items: ["Common Factoring Identities", "Factoring Trinomials", "Factoring by Grouping", "Evaluating a Polynomial"] },
+  ] },
+  { section: "III. Laws of Exponents", subsections: [
+    { name: null, items: ["Laws of Exponents"] },
+  ] },
+  { section: "IV. Equations", subsections: [
+    { name: null, items: ["Quadratic Equation", "Linear Equations in Two Unknowns", "Simultaneous Equations (Three Unknowns)", "Simultaneous Equations (Product Form)", "Exponential Equation"] },
+  ] },
+  { section: "V. Matrices", subsections: [
+    { name: null, items: ["Matrix Addition and Subtraction", "Matrix Multiplication", "Determinant", "Cofactor and Classical Adjoint", "Inverse of a Matrix"] },
+  ] },
+  { section: "VI. Inequalities", subsections: [
     { name: null, items: ["Linear Inequality", "Absolute Value Inequality"] },
   ] },
-  { section: "II. Polynomials and Factoring", subsections: [
-    { name: null, items: ["Evaluating a Polynomial", "Factoring by Grouping"] },
+  { section: "VII. Arithmetic and Word Problems", subsections: [
+    { name: null, items: ["Fraction Arithmetic (Mixed Numbers)", "Fractions (Part of a Whole)", "Ratio and Proportion", "Net Profit and Loss", "Average (Mean)", "Median", "Number Word Problems"] },
   ] },
-  { section: "III. Arithmetic and Word Problems", subsections: [
-    { name: null, items: ["Fraction Arithmetic (Mixed Numbers)", "Fractions (Part of a Whole)", "Ratio and Proportion", "Net Profit and Loss"] },
+  { section: "VIII. Complex Numbers and Indeterminate Forms", subsections: [
+    { name: null, items: ["Powers of i", "Indeterminate Forms"] },
   ] },
 ];
+
+// ---- Math Problem Set Day 1 quiz data ----
+// Shares math1FormulaOutline with Math Sample Problems Day 1 (same convention as Day 9-12).
+const ps1Data = [
+  { q: ["Which number has four significant figures?"],
+    choices: [
+      "0.0025",
+      "0.02525",
+      "0.0252",
+      "2.4250"
+    ], answer: 1,
+    topics: ["Significant Figures"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"significant figures"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{start counting at the first non-zero digit} \\)</span></div></div><span class="problem-type-tag">Significant Figures</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{Count every digit from the first non-zero digit onward} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Leading zeros are not significant; zeros after the last non-zero digit of a decimal are significant} \\)</div>`,
+      `<p class="hint-given">Given: the four numbers in choices A to D.</p><div class="formula-block">\\( \\text{Significant figures}=\\text{digits counted from the first non-zero digit} \\)</div><p class="hint-note">Choice A (the two leading zeros do not count):</p><div class="formula-block">\\( 0.0025\\ \\to\\ 2\\ \\text{significant figures} \\)</div><p class="hint-note">Choice B (the leading zeros do not count; 2, 5, 2, 5 all count):</p><div class="formula-block">\\( 0.02525\\ \\to\\ 4\\ \\text{significant figures} \\)</div><p class="hint-note">Choice C:</p><div class="formula-block">\\( 0.0252\\ \\to\\ 3\\ \\text{significant figures} \\)</div><p class="hint-note">Choice D (the trailing zero after the decimal point counts):</p><div class="formula-block">\\( 2.4250\\ \\to\\ 5\\ \\text{significant figures} \\)</div><div class="hint-answer">Answer: B. 0.02525</div>`
+    ] },
+  { q: ["What is the solution of the equation ", { latex: "25x^2+2(x-4)^2=-3" }, ", where x is a real-valued variable?"],
+    choices: [
+      "-6.12 and -3.88",
+      "-0.52 and 0.700",
+      "7.55",
+      "no solution"
+    ], answer: 3,
+    topics: ["Quadratic Equation"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"solution of the equation, real-valued x"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( ax^2+bx+c=0 \\)</span></div></div><span class="problem-type-tag">Quadratic Equation</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( D=b^2-4ac \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( x=\\dfrac{-b\\pm\\sqrt{b^2-4ac}}{2a} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( D<0\\ \\Rightarrow\\ \\text{no real solution} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( 25x^2+2(x-4)^2=-3 \\)</div><div class="formula-block">\\( D=b^2-4ac \\)</div><p class="hint-note">Expand the square:</p><div class="formula-block">\\( 25x^2+2(x^2-8x+16)=-3 \\)</div><p class="hint-note">Distribute the 2:</p><div class="formula-block">\\( 25x^2+2x^2-16x+32=-3 \\)</div><p class="hint-note">Move every term to the left side:</p><div class="formula-block">\\( 27x^2-16x+35=0 \\)</div><p class="hint-note">Identify the coefficients:</p><div class="formula-grid-3"><div class="formula-block">\\( a=27 \\)</div><div class="formula-block">\\( b=-16 \\)</div><div class="formula-block">\\( c=35 \\)</div></div><p class="hint-note">Substitute into the discriminant:</p><div class="formula-block">\\( D=(-16)^2-4(27)(35) \\)</div><p class="hint-note">D is negative, so the equation has no real solution:</p><div class="hint-answer">Answer: D. no solution</div>`
+    ] },
+  { q: ["What is the determinant of the following 2 × 2 matrix?", "\n", { latex: "A=\\begin{bmatrix}4&1\\\\2&6\\end{bmatrix}" }],
+    choices: [
+      "18",
+      "20",
+      "22",
+      "24"
+    ], answer: 2,
+    topics: ["Determinant"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"determinant of a 2 × 2 matrix"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\det A=ad-bc \\)</span></div></div><span class="problem-type-tag">Determinant</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\begin{vmatrix}a&b\\\\c&d\\end{vmatrix}=ad-bc \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( A=\\begin{bmatrix}a&b\\\\c&d\\end{bmatrix} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( A=\\begin{bmatrix}4&1\\\\2&6\\end{bmatrix} \\)</div><div class="formula-block">\\( \\det A=ad-bc \\)</div><p class="hint-note">Substitute \\( a=4 \\), \\( b=1 \\), \\( c=2 \\), \\( d=6 \\):</p><div class="formula-block">\\( \\det A=(4)(6)-(1)(2) \\)</div><p class="hint-note">Evaluate:</p><div class="hint-answer">Answer: C. 22</div>`
+    ] },
+  { q: ["What is the determinant of the following matrix?", "\n", { latex: "A=\\begin{bmatrix}1&3&6\\\\2&-1&1\\\\1&2&-1\\end{bmatrix}" }],
+    choices: [
+      "30",
+      "34",
+      "38",
+      "42"
+    ], answer: 2,
+    topics: ["Determinant"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"determinant of a 3 × 3 matrix"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\det A=a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13} \\)</span></div></div><span class="problem-type-tag">Determinant</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\det A=a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( M_{ij}=\\text{determinant left after deleting row }i\\text{ and column }j \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block fb-long">\\( A=\\begin{bmatrix}1&3&6\\\\2&-1&1\\\\1&2&-1\\end{bmatrix} \\)</div><div class="formula-block fb-long">\\( \\det A=a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13} \\)</div><p class="hint-note">Expand along the first row:</p><div class="formula-block fb-long">\\( \\det A=1\\begin{vmatrix}-1&1\\\\2&-1\\end{vmatrix}-3\\begin{vmatrix}2&1\\\\1&-1\\end{vmatrix}+6\\begin{vmatrix}2&-1\\\\1&2\\end{vmatrix} \\)</div><p class="hint-note">Evaluate each 2 × 2 determinant:</p><div class="formula-block fb-long">\\( \\det A=1\\left[(-1)(-1)-(1)(2)\\right]-3\\left[(2)(-1)-(1)(1)\\right]+6\\left[(2)(2)-(-1)(1)\\right] \\)</div><p class="hint-note">Evaluate:</p><div class="hint-answer">Answer: C. 38</div>`
+    ] },
+  { q: ["Solve the following set of simultaneous linear equations for A, B, and C.", "\n", { latex: "2A+3B-C=-10" }, "\n", { latex: "A+4B+2C=-4" }, "\n", { latex: "2A-2B+5C=30" }],
+    choices: [
+      "8.38, -4.81, 4.32",
+      "1.38, -5.81, 4.32",
+      "1.38, -2.81, 5.32",
+      "1.38, -2.81, 4.32"
+    ], answer: 3,
+    topics: ["Simultaneous Equations (Three Unknowns)"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"simultaneous linear equations for A, B, and C"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{three equations, three unknowns: Cramer's rule} \\)</span></div></div><span class="problem-type-tag">Simultaneous Equations (Three Unknowns)</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( A=\\dfrac{D_A}{D},\\quad B=\\dfrac{D_B}{D},\\quad C=\\dfrac{D_C}{D} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( D=\\text{determinant of the coefficients;}\\ D_A,D_B,D_C=D\\text{ with that column replaced by the constants} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-3"><div class="formula-block">\\( 2A+3B-C=-10 \\)</div><div class="formula-block">\\( A+4B+2C=-4 \\)</div><div class="formula-block">\\( 2A-2B+5C=30 \\)</div></div><div class="formula-grid-3"><div class="formula-block">\\( A=\\dfrac{D_A}{D} \\)</div><div class="formula-block">\\( B=\\dfrac{D_B}{D} \\)</div><div class="formula-block">\\( C=\\dfrac{D_C}{D} \\)</div></div><p class="hint-note">Coefficient determinant:</p><div class="formula-block fb-long">\\( D=\\begin{vmatrix}2&3&-1\\\\1&4&2\\\\2&-2&5\\end{vmatrix}=55 \\)</div><p class="hint-note">Replace the \\( A \\) column with the constants:</p><div class="formula-block fb-long">\\( D_A=\\begin{vmatrix}-10&3&-1\\\\-4&4&2\\\\30&-2&5\\end{vmatrix}=112 \\)</div><p class="hint-note">Replace the \\( B \\) column with the constants:</p><div class="formula-block fb-long">\\( D_B=\\begin{vmatrix}2&-10&-1\\\\1&-4&2\\\\2&30&5\\end{vmatrix}=-188 \\)</div><p class="hint-note">Replace the \\( C \\) column with the constants:</p><div class="formula-block fb-long">\\( D_C=\\begin{vmatrix}2&3&-10\\\\1&4&-4\\\\2&-2&30\\end{vmatrix}=210 \\)</div><p class="hint-note">Divide each by \\( D \\):</p><div class="formula-grid-3"><div class="formula-block">\\( A=\\dfrac{112}{55} \\)</div><div class="formula-block">\\( B=\\dfrac{-188}{55} \\)</div><div class="formula-block">\\( C=\\dfrac{210}{55} \\)</div></div><p class="hint-note">Heads-up: with the equations exactly as printed, this gives A ≈ 2.04, B ≈ −3.42, C ≈ 3.82, which is not one of the choices. Choice D (the answer key) satisfies equations 1 and 3 but not equation 2 as printed, so equation 2 in the source likely has a typo. Following the answer key:</p><div class="hint-answer">Answer: D. 1.38, −2.81, 4.32 (per the answer key)</div>`
+    ] },
+  { q: ["What is the value of A satisfying the expression ", { latex: "A^{-\\frac{5}{4}}=0.001" }, "?"],
+    choices: [
+      "211.19",
+      "231.19",
+      "251.19",
+      "271.19"
+    ], answer: 2,
+    topics: ["Laws of Exponents"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"negative fractional exponent"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( (a^m)^n=a^{mn} \\)</span></div></div><span class="problem-type-tag">Laws of Exponents</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( (a^m)^n=a^{mn} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Raise both sides to the reciprocal power so the exponent of }A\\text{ becomes }1 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( A^{-\\frac{5}{4}}=0.001 \\)</div><div class="formula-block">\\( (a^m)^n=a^{mn} \\)</div><p class="hint-note">Raise both sides to the power \\( -\\dfrac{4}{5} \\):</p><div class="formula-block">\\( \\left(A^{-\\frac{5}{4}}\\right)^{-\\frac{4}{5}}=(0.001)^{-\\frac{4}{5}} \\)</div><p class="hint-note">The exponents on the left multiply to 1:</p><div class="formula-block">\\( A=(0.001)^{-\\frac{4}{5}} \\)</div><p class="hint-note">Evaluate:</p><div class="hint-answer">Answer: C. 251.19</div>`
+    ] },
+  { q: ["Refer to the following systems of equations.", "\n", { latex: "4x+3y+10z=5" }, "\n", { latex: "8x-2y+9z=5" }, "\n", { latex: "8x+y-10z=5" }, "\n", "What is the classical adjoint of the coefficient matrix?"],
+    choices: [
+      [{ latex: "\\begin{bmatrix}10&42&47\\\\152&-120&44\\\\24&20&-32\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}11&40&57\\\\152&-120&44\\\\64&20&-32\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}11&152&24\\\\40&-120&20\\\\47&44&-32\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}11&40&47\\\\152&-120&44\\\\24&20&-32\\end{bmatrix}" }]
+    ], answer: 3,
+    topics: ["Cofactor and Classical Adjoint"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"classical adjoint of the coefficient matrix"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{adj}\\,A=C^T \\)</span></div></div><span class="problem-type-tag">Cofactor and Classical Adjoint</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( C_{ij}=(-1)^{i+j}M_{ij} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{adj}\\,A=C^T \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( C=\\text{matrix of cofactors};\\ \\text{adj}\\,A=\\text{transpose of }C \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block fb-long">\\( A=\\begin{bmatrix}4&3&10\\\\8&-2&9\\\\8&1&-10\\end{bmatrix} \\)</div><div class="formula-block">\\( C_{ij}=(-1)^{i+j}M_{ij} \\)</div><p class="hint-note">Substitute each cofactor of row 1:</p><div class="formula-grid-3"><div class="formula-block">\\( C_{11}=+\\left[(-2)(-10)-(9)(1)\\right] \\)</div><div class="formula-block">\\( C_{12}=-\\left[(8)(-10)-(9)(8)\\right] \\)</div><div class="formula-block">\\( C_{13}=+\\left[(8)(1)-(-2)(8)\\right] \\)</div></div><p class="hint-note">Evaluate:</p><div class="formula-grid-3"><div class="formula-block">\\( C_{11}=11 \\)</div><div class="formula-block">\\( C_{12}=152 \\)</div><div class="formula-block">\\( C_{13}=24 \\)</div></div><p class="hint-note">Substitute each cofactor of row 2:</p><div class="formula-grid-3"><div class="formula-block">\\( C_{21}=-\\left[(3)(-10)-(10)(1)\\right] \\)</div><div class="formula-block">\\( C_{22}=+\\left[(4)(-10)-(10)(8)\\right] \\)</div><div class="formula-block">\\( C_{23}=-\\left[(4)(1)-(3)(8)\\right] \\)</div></div><p class="hint-note">Evaluate:</p><div class="formula-grid-3"><div class="formula-block">\\( C_{21}=40 \\)</div><div class="formula-block">\\( C_{22}=-120 \\)</div><div class="formula-block">\\( C_{23}=20 \\)</div></div><p class="hint-note">Substitute each cofactor of row 3:</p><div class="formula-grid-3"><div class="formula-block">\\( C_{31}=+\\left[(3)(9)-(10)(-2)\\right] \\)</div><div class="formula-block">\\( C_{32}=-\\left[(4)(9)-(10)(8)\\right] \\)</div><div class="formula-block">\\( C_{33}=+\\left[(4)(-2)-(3)(8)\\right] \\)</div></div><p class="hint-note">Evaluate:</p><div class="formula-grid-3"><div class="formula-block">\\( C_{31}=47 \\)</div><div class="formula-block">\\( C_{32}=44 \\)</div><div class="formula-block">\\( C_{33}=-32 \\)</div></div><p class="hint-note">Assemble the cofactor matrix:</p><div class="formula-block fb-long">\\( C=\\begin{bmatrix}11&152&24\\\\40&-120&20\\\\47&44&-32\\end{bmatrix} \\)</div><p class="hint-note">The classical adjoint is the transpose of the cofactor matrix:</p><div class="formula-block fb-long">\\( \\text{adj}\\,A=C^T \\)</div><div class="hint-answer">Answer: D. \\( \\text{adj}\\,A=\\begin{bmatrix}11&40&47\\\\152&-120&44\\\\24&20&-32\\end{bmatrix} \\)</div>`
+    ] },
+  { q: ["Refer to the following systems of equations.", "\n", { latex: "4x+3y+10z=5" }, "\n", { latex: "8x-2y+9z=5" }, "\n", { latex: "8x+y-10z=5" }, "\n", "What is the inverse of the coefficient matrix?"],
+    choices: [
+      [{ latex: "\\begin{bmatrix}0.0648&0.054&0.535\\\\0.2054&-0.162&0.0594\\\\0.0324&0.027&-0.043\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}0.0148&0.054&0.0635\\\\0.2054&-0.162&0.0594\\\\0.0324&0.027&-0.043\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}0.0148&0.454&0.0635\\\\0.6054&-0.162&0.0594\\\\0.0324&0.027&-0.043\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}0.5148&0.054&0.2635\\\\0.2054&-0.462&0.0594\\\\0.0324&0.027&-0.043\\end{bmatrix}" }]
+    ], answer: 1,
+    topics: ["Inverse of a Matrix"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"inverse of the coefficient matrix"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( A^{-1}=\\dfrac{\\text{adj}\\,A}{\\det A} \\)</span></div></div><span class="problem-type-tag">Inverse of a Matrix</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( A^{-1}=\\dfrac{\\text{adj}\\,A}{\\det A} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\det A=a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13};\\quad \\text{adj}\\,A=C^T \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block fb-long">\\( A=\\begin{bmatrix}4&3&10\\\\8&-2&9\\\\8&1&-10\\end{bmatrix} \\)</div><div class="formula-block">\\( A^{-1}=\\dfrac{\\text{adj}\\,A}{\\det A} \\)</div><p class="hint-note">Find the determinant by expanding along the first row:</p><div class="formula-block fb-long">\\( \\det A=4\\begin{vmatrix}-2&9\\\\1&-10\\end{vmatrix}-3\\begin{vmatrix}8&9\\\\8&-10\\end{vmatrix}+10\\begin{vmatrix}8&-2\\\\8&1\\end{vmatrix} \\)</div><p class="hint-note">Evaluate each 2 × 2 determinant:</p><div class="formula-block fb-long">\\( \\det A=4(11)-3(-152)+10(24) \\)</div><p class="hint-note">Evaluate:</p><div class="formula-block">\\( \\det A=740 \\)</div><p class="hint-note">Use the classical adjoint found for the same matrix (cofactors transposed):</p><div class="formula-block fb-long">\\( \\text{adj}\\,A=\\begin{bmatrix}11&40&47\\\\152&-120&44\\\\24&20&-32\\end{bmatrix} \\)</div><p class="hint-note">Substitute the adjoint and the determinant:</p><div class="formula-block fb-long">\\( A^{-1}=\\dfrac{1}{740}\\begin{bmatrix}11&40&47\\\\152&-120&44\\\\24&20&-32\\end{bmatrix} \\)</div><p class="hint-note">Divide every entry by 740 (rounded as in the choices):</p><div class="hint-answer">Answer: B. \\( A^{-1}=\\begin{bmatrix}0.0148&0.054&0.0635\\\\0.2054&-0.162&0.0594\\\\0.0324&0.027&-0.043\\end{bmatrix} \\)</div>`
+    ] },
+  { q: ["What is the matrix difference A – B of matrices A and B?", "\n", { latex: "A=\\begin{bmatrix}3&4&1\\\\5&2&-2\\end{bmatrix}" }, "\n", { latex: "B=\\begin{bmatrix}5&2&-6\\\\-5&4&7\\end{bmatrix}" }],
+    choices: [
+      [{ latex: "\\begin{bmatrix}8&6&-5\\\\0&6&5\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}2&-2&-7\\\\-10&2&9\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}-2&2&-5\\\\10&-2&-9\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}-2&2&7\\\\10&-2&-9\\end{bmatrix}" }]
+    ], answer: 3,
+    topics: ["Matrix Addition and Subtraction"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"matrix difference A – B"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( A-B=[a_{ij}-b_{ij}] \\)</span></div></div><span class="problem-type-tag">Matrix Addition and Subtraction</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( A-B=\\left[a_{ij}-b_{ij}\\right] \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Subtract the entries in the same row and column position} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-2"><div class="formula-block">\\( A=\\begin{bmatrix}3&4&1\\\\5&2&-2\\end{bmatrix} \\)</div><div class="formula-block">\\( B=\\begin{bmatrix}5&2&-6\\\\-5&4&7\\end{bmatrix} \\)</div></div><div class="formula-block">\\( A-B=\\left[a_{ij}-b_{ij}\\right] \\)</div><p class="hint-note">Subtract entry by entry:</p><div class="formula-block fb-long">\\( A-B=\\begin{bmatrix}3-5&4-2&1-(-6)\\\\5-(-5)&2-4&-2-7\\end{bmatrix} \\)</div><p class="hint-note">Evaluate:</p><div class="hint-answer">Answer: D. \\( A-B=\\begin{bmatrix}-2&2&7\\\\10&-2&-9\\end{bmatrix} \\)</div>`
+    ] },
+  { q: ["The determinant of matrix A is -7. What is the missing value a?", "\n", { latex: "A=\\begin{bmatrix}1&-3&2\\\\0&1&2\\\\3&-1&a\\end{bmatrix}" }],
+    choices: [
+      "11",
+      "45",
+      "75",
+      "15"
+    ], answer: 3,
+    topics: ["Determinant"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"determinant of matrix A is -7, missing value a"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\det A=a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13} \\)</span></div></div><span class="problem-type-tag">Determinant</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\det A=a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Expand }\\det A\\text{ in terms of }a\\text{, then set it equal to }-7 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-2"><div class="formula-block">\\( \\det A=-7 \\)</div><div class="formula-block">\\( A=\\begin{bmatrix}1&-3&2\\\\0&1&2\\\\3&-1&a\\end{bmatrix} \\)</div></div><div class="formula-block fb-long">\\( \\det A=a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13} \\)</div><p class="hint-note">Expand along the first row:</p><div class="formula-block fb-long">\\( \\det A=1\\begin{vmatrix}1&2\\\\-1&a\\end{vmatrix}-(-3)\\begin{vmatrix}0&2\\\\3&a\\end{vmatrix}+2\\begin{vmatrix}0&1\\\\3&-1\\end{vmatrix} \\)</div><p class="hint-note">Evaluate each 2 × 2 determinant:</p><div class="formula-block fb-long">\\( \\det A=1(a+2)+3(0-6)+2(0-3) \\)</div><p class="hint-note">Simplify:</p><div class="formula-block">\\( \\det A=a-22 \\)</div><p class="hint-note">Set it equal to the given determinant:</p><div class="formula-block">\\( a-22=-7 \\)</div><p class="hint-note">Solve for \\( a \\):</p><div class="hint-answer">Answer: D. 15</div>`
+    ] },
+  { q: ["How many significant digits do the 20,540.00 have?"],
+    choices: [
+      "7",
+      "5",
+      "6",
+      "4"
+    ], answer: 0,
+    topics: ["Significant Figures"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"significant digits of 20,540.00"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{count digits from the first non-zero digit} \\)</span></div></div><span class="problem-type-tag">Significant Figures</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{With a decimal point, every digit from the first non-zero digit onward is significant} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Zeros between non-zero digits and zeros after the decimal point are significant} \\)</div>`,
+      `<p class="hint-given">Given: the number 20,540.00 (it has a decimal point).</p><div class="formula-block">\\( \\text{Significant digits}=\\text{every digit from the first non-zero digit onward} \\)</div><p class="hint-note">List the digits from the first non-zero digit (2):</p><div class="formula-block">\\( 2,\\ 0,\\ 5,\\ 4,\\ 0,\\ 0 \\)</div><p class="hint-note">Count them:</p><div class="formula-block">\\( \\text{number of digits}=7 \\)</div><div class="hint-answer">Answer: A. 7</div>`
+    ] },
+  { q: ["Which of the following is not true of the given equations below?"],
+    choices: [
+      [{ latex: "x^{\\frac{m}{n}}=\\sqrt[n]{x^{m}}" }],
+      [{ latex: "m^{x}=m^{y}" }, ", then ", { latex: "x=y" }],
+      [{ latex: "\\sqrt{a^{2}+b^{2}}=a+b" }],
+      [{ latex: "\\left(\\dfrac{x}{y}\\right)^{a}=x^{a}y^{-a}" }]
+    ], answer: 2,
+    topics: ["Laws of Exponents"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"which of the following is not true"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{check each law of exponents and radicals} \\)</span></div></div><span class="problem-type-tag">Laws of Exponents</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( x^{\\frac{m}{n}}=\\sqrt[n]{x^m} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\left(\\dfrac{x}{y}\\right)^{a}=x^{a}y^{-a} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{A square root of a sum is not the sum of the square roots} \\)</div>`,
+      `<p class="hint-given">Given: the four statements in choices A to D.</p><div class="formula-block">\\( x^{\\frac{m}{n}}=\\sqrt[n]{x^m} \\)</div><p class="hint-note">Choices A, B and D are true laws (radical form of an exponent, equal bases with equal powers, and the quotient and negative-exponent laws). Test choice C with \\( a=3 \\) and \\( b=4 \\):</p><div class="formula-block">\\( \\sqrt{3^2+4^2}=5 \\)</div><p class="hint-note">Compare with the right side:</p><div class="formula-block">\\( a+b=3+4=7 \\)</div><p class="hint-note">Since 5 is not 7, choice C is not true:</p><div class="hint-answer">Answer: C. \\( \\sqrt{a^{2}+b^{2}}=a+b \\) (this is the false statement)</div>`
+    ] },
+  { q: ["Solve for x: ", { latex: "x=\\dfrac{(b^2-4b+16)(b^2-16)}{b^3+64}" }],
+    choices: [
+      [{ latex: "b+4" }],
+      [{ latex: "\\dfrac{b-4}{b+4}" }],
+      [{ latex: "\\dfrac{b^2-4}{b+4}" }],
+      [{ latex: "b-4" }]
+    ], answer: 3,
+    topics: ["Common Factoring Identities"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"factor numerator and denominator"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( a^3+b^3=(a+b)(a^2-ab+b^2);\\ a^2-b^2=(a+b)(a-b) \\)</span></div></div><span class="problem-type-tag">Common Factoring Identities</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( a^3+b^3=(a+b)(a^2-ab+b^2) \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( a^2-b^2=(a+b)(a-b) \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Factor the denominator (sum of cubes) and the numerator (difference of squares), then cancel} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block fb-long">\\( x=\\dfrac{(b^2-4b+16)(b^2-16)}{b^3+64} \\)</div><p class="hint-note">Factor the sum of cubes in the denominator:</p><div class="formula-block">\\( b^3+64=(b+4)(b^2-4b+16) \\)</div><p class="hint-note">Factor the difference of squares in the numerator:</p><div class="formula-block">\\( b^2-16=(b+4)(b-4) \\)</div><p class="hint-note">Substitute both and cancel the common factors:</p><div class="formula-block fb-long">\\( x=\\dfrac{\\cancel{(b^2-4b+16)}\\,\\cancel{(b+4)}(b-4)}{\\cancel{(b+4)}\\,\\cancel{(b^2-4b+16)}} \\)</div><div class="hint-answer">Answer: D. \\( b-4 \\)</div>`
+    ] },
+  { q: ["Factor the expression as completely as possible ", { latex: "3x^3-3x^2-18x" }, "."],
+    choices: [
+      "3x(x+2)(x+3)",
+      "3x(x-2)(x-3)",
+      "2x(x+2)(x-3)",
+      "3x(x+2)(x-3)"
+    ], answer: 3,
+    topics: ["Factoring Trinomials"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"factor as completely as possible"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{common factor first, then factor the trinomial} \\)</span></div></div><span class="problem-type-tag">Factoring Trinomials</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( x^2+(p+q)x+pq=(x+p)(x+q) \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Find two numbers with product }-6\\text{ and sum }-1 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( 3x^3-3x^2-18x \\)</div><p class="hint-note">Factor out the common factor \\( 3x \\):</p><div class="formula-block">\\( 3x(x^2-x-6) \\)</div><p class="hint-note">Factor the trinomial (the numbers are −3 and 2):</p><div class="formula-block">\\( 3x(x-3)(x+2) \\)</div><div class="hint-answer">Answer: D. \\( 3x(x+2)(x-3) \\)</div>`
+    ] },
+  { q: ["Factor the expression as completely as possible ", { latex: "x^4-y^4" }, "."],
+    choices: [
+      [{ latex: "(x^2-y^2)(x+y)(x-y)" }],
+      [{ latex: "(x^2+y^2)(x-y)(x-y)" }],
+      [{ latex: "(x^2+y^2)(x+y)(x+y)" }],
+      [{ latex: "(x^2+y^2)(x+y)(x-y)" }]
+    ], answer: 3,
+    topics: ["Common Factoring Identities"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"factor as completely as possible, x⁴ − y⁴"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( a^2-b^2=(a+b)(a-b) \\)</span></div></div><span class="problem-type-tag">Common Factoring Identities</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( a^2-b^2=(a+b)(a-b) \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Apply the difference of squares twice, until no factor can be factored further} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( x^4-y^4 \\)</div><div class="formula-block">\\( a^2-b^2=(a+b)(a-b) \\)</div><p class="hint-note">Write it as a difference of squares:</p><div class="formula-block">\\( x^4-y^4=(x^2)^2-(y^2)^2 \\)</div><p class="hint-note">Apply the identity:</p><div class="formula-block">\\( x^4-y^4=(x^2+y^2)(x^2-y^2) \\)</div><p class="hint-note">Factor the remaining difference of squares:</p><div class="formula-block">\\( x^4-y^4=(x^2+y^2)(x+y)(x-y) \\)</div><div class="hint-answer">Answer: D. \\( (x^2+y^2)(x+y)(x-y) \\)</div>`
+    ] },
+  { q: ["Factor the expression as completely as possible ", { latex: "x^2+8x+16" }, "."],
+    choices: [
+      [{ latex: "(x+6)^2" }],
+      [{ latex: "(x+4)^2" }],
+      [{ latex: "(x-4)^2" }],
+      [{ latex: "(x+4)^3" }]
+    ], answer: 1,
+    topics: ["Common Factoring Identities"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"factor as completely as possible, x² + 8x + 16"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( a^2+2ab+b^2=(a+b)^2 \\)</span></div></div><span class="problem-type-tag">Common Factoring Identities</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( a^2+2ab+b^2=(a+b)^2 \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( a=x,\\quad 2ab=8x,\\quad b^2=16 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( x^2+8x+16 \\)</div><div class="formula-block">\\( a^2+2ab+b^2=(a+b)^2 \\)</div><p class="hint-note">Match the first and last terms:</p><div class="formula-grid-2"><div class="formula-block">\\( a=x \\)</div><div class="formula-block">\\( b=4 \\)</div></div><p class="hint-note">Check the middle term:</p><div class="formula-block">\\( 2ab=2(x)(4) \\)</div><p class="hint-note">The middle term is 8x, so it is a perfect square trinomial:</p><div class="formula-block">\\( x^2+8x+16=(x+4)^2 \\)</div><div class="hint-answer">Answer: B. \\( (x+4)^2 \\)</div>`
+    ] },
+  { q: [{ latex: "\\dfrac{\\infty-4000}{\\infty}" }, " = ?"],
+    choices: [
+      "0",
+      "1",
+      "infinity",
+      "indeterminate"
+    ], answer: 3,
+    topics: ["Indeterminate Forms"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"infinity minus a number, divided by infinity"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\dfrac{\\infty}{\\infty} \\)</span></div></div><span class="problem-type-tag">Indeterminate Forms</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\dfrac{\\infty}{\\infty},\\ \\dfrac{0}{0},\\ 0\\cdot\\infty,\\ \\infty-\\infty\\ \\text{are indeterminate forms} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\infty-c=\\infty\\ \\text{for any finite number }c \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( \\dfrac{\\infty-4000}{\\infty} \\)</div><p class="hint-note">Subtracting a finite number from infinity still gives infinity:</p><div class="formula-block">\\( \\infty-4000=\\infty \\)</div><p class="hint-note">The expression becomes:</p><div class="formula-block">\\( \\dfrac{\\infty}{\\infty} \\)</div><p class="hint-note">This ratio is an indeterminate form:</p><div class="hint-answer">Answer: D. indeterminate</div>`
+    ] },
+  { q: [{ latex: "i^{23}" }, " is equal to"],
+    choices: [
+      "i",
+      "1",
+      "-1",
+      "-i"
+    ], answer: 3,
+    topics: ["Powers of i"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"i raised to a large power"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( i^2=-1,\\ \\ i^4=1 \\)</span></div></div><span class="problem-type-tag">Powers of i</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( i=\\sqrt{-1} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( i^2=-1 \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( i^4=1 \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{The powers of }i\\text{ repeat every 4: }i,\\ -1,\\ -i,\\ 1 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-2"><div class="formula-block">\\( i^2=-1 \\)</div><div class="formula-block">\\( i^4=1 \\)</div></div><p class="hint-note">Split the exponent into multiples of 4 plus a remainder:</p><div class="formula-block">\\( i^{23}=(i^4)^5\\,i^3 \\)</div><p class="hint-note">Substitute \\( i^4=1 \\):</p><div class="formula-block">\\( i^{23}=(1)^5\\,i^3 \\)</div><p class="hint-note">Simplify:</p><div class="formula-block">\\( i^{23}=i^3 \\)</div><p class="hint-note">Write \\( i^3 \\) as \\( i^2 \\) times \\( i \\):</p><div class="formula-block">\\( i^3=(-1)(i) \\)</div><div class="hint-answer">Answer: D. \\( -i \\)</div>`
+    ] },
+  { q: ["Factor the expression as completely as possible ", { latex: "ay+ax-xb-by" }, "."],
+    choices: [
+      [{ latex: "(x+y)(a-b)" }],
+      [{ latex: "(x+y)(a+b)" }],
+      [{ latex: "(x-y)(a-b)" }],
+      [{ latex: "(x-y)(a+b)" }]
+    ], answer: 0,
+    topics: ["Factoring by Grouping"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"four terms, factor as completely as possible"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{group the terms in pairs} \\)</span></div></div><span class="problem-type-tag">Factoring by Grouping</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( ax+ay-bx-by=a(x+y)-b(x+y) \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Group two terms at a time and factor out the common binomial} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( ay+ax-xb-by \\)</div><p class="hint-note">Rearrange so that terms with a and terms with b sit together:</p><div class="formula-block">\\( ax+ay-bx-by \\)</div><p class="hint-note">Factor \\( a \\) from the first pair and \\( -b \\) from the second pair:</p><div class="formula-block">\\( a(x+y)-b(x+y) \\)</div><p class="hint-note">Factor out the common binomial \\( (x+y) \\):</p><div class="formula-block">\\( (x+y)(a-b) \\)</div><div class="hint-answer">Answer: A. \\( (x+y)(a-b) \\)</div>`
+    ] },
+  { q: ["Solve the equation simultaneously", "\n", { latex: "4x+2y=5" }, "\n", { latex: "5x-3y=-2" }],
+    choices: [
+      "1, 2",
+      [{ frac: ["1", "2"] }, ", ", { frac: ["3", "2"] }],
+      "2, 3",
+      [{ frac: ["1", "2"] }, ", ", { frac: ["3", "4"] }]
+    ], answer: 1,
+    topics: ["Linear Equations in Two Unknowns"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"solve the equations simultaneously"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{eliminate one unknown} \\)</span></div></div><span class="problem-type-tag">Linear Equations in Two Unknowns</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{Multiply the equations so one unknown has equal and opposite coefficients, then add} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( 4x+2y=5\\quad\\text{and}\\quad 5x-3y=-2 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-2"><div class="formula-block">\\( 4x+2y=5 \\)</div><div class="formula-block">\\( 5x-3y=-2 \\)</div></div><p class="hint-note">Multiply the first equation by 3 and the second by 2:</p><div class="formula-grid-2"><div class="formula-block">\\( 12x+6y=15 \\)</div><div class="formula-block">\\( 10x-6y=-4 \\)</div></div><p class="hint-note">Add the equations to eliminate \\( y \\):</p><div class="formula-block">\\( 22x=11 \\)</div><p class="hint-note">Solve for \\( x \\):</p><div class="formula-block">\\( x=\\dfrac{1}{2} \\)</div><p class="hint-note">Substitute \\( x \\) into the first equation:</p><div class="formula-block">\\( 4\\left(\\dfrac{1}{2}\\right)+2y=5 \\)</div><p class="hint-note">Solve for \\( y \\):</p><div class="formula-block">\\( y=\\dfrac{3}{2} \\)</div><div class="hint-answer">Answer: B. \\( x=\\dfrac{1}{2},\\ y=\\dfrac{3}{2} \\)</div>`
+    ] },
+  { q: ["Solve for x:", "\n", { latex: "x-3y=10" }, "\n", { latex: "2x+y=6" }],
+    choices: [
+      "1",
+      "2",
+      "3",
+      "4"
+    ], answer: 3,
+    topics: ["Linear Equations in Two Unknowns"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"solve for x, two equations"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{eliminate y} \\)</span></div></div><span class="problem-type-tag">Linear Equations in Two Unknowns</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{Multiply one equation so y has equal and opposite coefficients, then add} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( x-3y=10\\quad\\text{and}\\quad 2x+y=6 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-2"><div class="formula-block">\\( x-3y=10 \\)</div><div class="formula-block">\\( 2x+y=6 \\)</div></div><p class="hint-note">Multiply the second equation by 3:</p><div class="formula-block">\\( 6x+3y=18 \\)</div><p class="hint-note">Add it to the first equation to eliminate \\( y \\):</p><div class="formula-block">\\( 7x=28 \\)</div><p class="hint-note">Solve for \\( x \\):</p><div class="formula-block">\\( x=4 \\)</div><div class="hint-answer">Answer: D. 4</div>`
+    ] },
+  { q: ["Three bars of iron weigh ", { latex: "3\\dfrac{2}{5}" }, ", ", { latex: "5\\dfrac{1}{2}" }, ", and ", { latex: "7\\dfrac{3}{10}" }, " kilograms. Find their average weight."],
+    choices: [
+      "4.4 kg",
+      "5.4 kg",
+      "6.4 kg",
+      "7.4 kg"
+    ], answer: 1,
+    topics: ["Average (Mean)"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"find their average weight"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{Average}=\\dfrac{\\text{sum of values}}{\\text{number of values}} \\)</span></div></div><span class="problem-type-tag">Average (Mean)</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{Average}=\\dfrac{\\text{sum of values}}{\\text{number of values}} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Convert each mixed number to a decimal, add them, then divide by 3} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-3"><div class="formula-block">\\( w_1=3\\dfrac{2}{5}\\ \\text{kg} \\)</div><div class="formula-block">\\( w_2=5\\dfrac{1}{2}\\ \\text{kg} \\)</div><div class="formula-block">\\( w_3=7\\dfrac{3}{10}\\ \\text{kg} \\)</div></div><div class="formula-block">\\( \\text{Average}=\\dfrac{\\text{sum of values}}{\\text{number of values}} \\)</div><p class="hint-note">Convert each weight to a decimal:</p><div class="formula-grid-3"><div class="formula-block">\\( w_1=3.4\\ \\text{kg} \\)</div><div class="formula-block">\\( w_2=5.5\\ \\text{kg} \\)</div><div class="formula-block">\\( w_3=7.3\\ \\text{kg} \\)</div></div><p class="hint-note">Substitute the values:</p><div class="formula-block">\\( \\text{Average}=\\dfrac{3.4+5.5+7.3}{3}\\ \\text{kg} \\)</div><div class="hint-answer">Answer: B. \\( 5.4\\ \\text{kg} \\)</div>`
+    ] },
+  { q: ["A number minus 4 is 9. Find the number."],
+    choices: [
+      "10",
+      "11",
+      "12",
+      "13"
+    ], answer: 3,
+    topics: ["Number Word Problems"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"a number minus 4 is 9"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( x-4=9 \\)</span></div></div><span class="problem-type-tag">Number Word Problems</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{number}-4=9 \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Let }x\\text{ be the number} \\)</div>`,
+      `<p class="hint-given">Given: let \\( x \\) be the number.</p><div class="formula-block">\\( x-4=9 \\)</div><p class="hint-note">Add 4 to both sides:</p><div class="formula-block">\\( x=9+4 \\)</div><p class="hint-note">Evaluate:</p><div class="hint-answer">Answer: D. 13</div>`
+    ] },
+  { q: ["What are the solutions to the following equation?", "\n", { latex: "x^2-x-20=0" }],
+    choices: [
+      [{ latex: "x_{1}=3;\\ x_{2}=-4" }],
+      [{ latex: "x_{1}=5;\\ x_{2}=-4" }],
+      [{ latex: "x_{1}=7;\\ x_{2}=-4" }],
+      [{ latex: "x_{1}=9;\\ x_{2}=-4" }]
+    ], answer: 1,
+    topics: ["Quadratic Equation"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"solutions to the quadratic equation"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( ax^2+bx+c=0 \\)</span></div></div><span class="problem-type-tag">Quadratic Equation</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( x^2+(p+q)x+pq=(x+p)(x+q) \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Find two numbers with product }-20\\text{ and sum }-1 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( x^2-x-20=0 \\)</div><p class="hint-note">Factor the trinomial (the numbers are −5 and 4):</p><div class="formula-block">\\( (x-5)(x+4)=0 \\)</div><p class="hint-note">Set each factor equal to zero:</p><div class="formula-grid-2"><div class="formula-block">\\( x-5=0 \\)</div><div class="formula-block">\\( x+4=0 \\)</div></div><p class="hint-note">Solve each:</p><div class="formula-grid-2"><div class="formula-block">\\( x_1=5 \\)</div><div class="formula-block">\\( x_2=-4 \\)</div></div><div class="hint-answer">Answer: B. \\( x_{1}=5;\\ x_{2}=-4 \\)</div>`
+    ] },
+  { q: ["Determine the SUM of the positive-valued solutions to the simultaneously equations:", "\n", { latex: "xy=24" }, "\n", { latex: "yz=32" }, "\n", { latex: "xz=48" }],
+    choices: [
+      "18",
+      "16",
+      "15",
+      "17"
+    ], answer: 0,
+    topics: ["Simultaneous Equations (Product Form)"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"xy = 24, yz = 32, xz = 48"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( (xy)(yz)(xz)=(xyz)^2 \\)</span></div></div><span class="problem-type-tag">Simultaneous Equations (Product Form)</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( (xy)(yz)(xz)=(xyz)^2 \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Multiply the three equations to get }xyz\\text{, then divide by each product} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-3"><div class="formula-block">\\( xy=24 \\)</div><div class="formula-block">\\( yz=32 \\)</div><div class="formula-block">\\( xz=48 \\)</div></div><div class="formula-block">\\( (xy)(yz)(xz)=(xyz)^2 \\)</div><p class="hint-note">Substitute the three given products:</p><div class="formula-block">\\( (24)(32)(48)=(xyz)^2 \\)</div><p class="hint-note">Take the positive square root:</p><div class="formula-block">\\( xyz=192 \\)</div><p class="hint-note">Divide \\( xyz \\) by each given product:</p><div class="formula-grid-3"><div class="formula-block">\\( x=\\dfrac{192}{32} \\)</div><div class="formula-block">\\( y=\\dfrac{192}{48} \\)</div><div class="formula-block">\\( z=\\dfrac{192}{24} \\)</div></div><p class="hint-note">Evaluate:</p><div class="formula-grid-3"><div class="formula-block">\\( x=6 \\)</div><div class="formula-block">\\( y=4 \\)</div><div class="formula-block">\\( z=8 \\)</div></div><p class="hint-note">Add the positive solutions:</p><div class="formula-block">\\( x+y+z=6+4+8 \\)</div><div class="hint-answer">Answer: A. 18</div>`
+    ] },
+  { q: ["Solve for x: ", { latex: "3^{x}+9^{x}=27^{x}" }, "."],
+    choices: [
+      "0.438",
+      "0.460",
+      "0.415",
+      "0.482"
+    ], answer: 0,
+    topics: ["Exponential Equation"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"unknown in the exponent, bases 3, 9, 27"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{rewrite every base as a power of }3 \\)</span></div></div><span class="problem-type-tag">Exponential Equation</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( (a^m)^n=a^{mn} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div><div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( x=\\dfrac{\\ln c}{\\ln 3}\\ \\text{ if }\\ 3^x=c \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Let }u=3^x\\text{, solve the quadratic in }u\\text{, then take logarithms} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( 3^x+9^x=27^x \\)</div><p class="hint-note">Write every base as a power of 3:</p><div class="formula-block">\\( 3^x+(3^2)^x=(3^3)^x \\)</div><p class="hint-note">Simplify the exponents:</p><div class="formula-block">\\( 3^x+(3^x)^2=(3^x)^3 \\)</div><p class="hint-note">Let \\( u=3^x \\):</p><div class="formula-block">\\( u+u^2=u^3 \\)</div><p class="hint-note">Divide both sides by \\( u \\):</p><div class="formula-block">\\( 1+u=u^2 \\)</div><p class="hint-note">Move every term to one side:</p><div class="formula-block">\\( u^2-u-1=0 \\)</div><p class="hint-note">Use the quadratic formula:</p><div class="formula-block">\\( u=\\dfrac{-b\\pm\\sqrt{b^2-4ac}}{2a} \\)</div><p class="hint-note">Substitute \\( a=1 \\), \\( b=-1 \\), \\( c=-1 \\):</p><div class="formula-block fb-long">\\( u=\\dfrac{-(-1)\\pm\\sqrt{(-1)^2-4(1)(-1)}}{2(1)} \\)</div><p class="hint-note">Keep the positive root, since \\( 3^x \\) is always positive:</p><div class="formula-block">\\( u=\\dfrac{1+\\sqrt{5}}{2} \\)</div><p class="hint-note">Return to \\( u=3^x \\):</p><div class="formula-block">\\( 3^x=\\dfrac{1+\\sqrt{5}}{2} \\)</div><p class="hint-note">Take the natural logarithm of both sides:</p><div class="formula-block">\\( x\\ln 3=\\ln\\left(\\dfrac{1+\\sqrt{5}}{2}\\right) \\)</div><p class="hint-note">Shift-solve the value of x:</p><div class="hint-answer">Answer: A. 0.438</div>`
+    ] },
+  { q: ["Determine the product of the following matrices:", "\n", { latex: "\\begin{bmatrix}2&-1\\\\1&0\\\\3&4\\end{bmatrix}\\times\\begin{bmatrix}1&-2&-5\\\\3&4&0\\end{bmatrix}" }],
+    choices: [
+      [{ latex: "\\begin{bmatrix}-1&-8&-10\\\\1&-2&-5\\\\15&10&-15\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}-1&-8&-10\\\\-1&-2&5\\\\9&22&15\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}0&0&-10\\\\1&-2&-5\\\\0&21&15\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}0&0&-10\\\\1&-2&-5\\\\0&21&-15\\end{bmatrix}" }]
+    ], answer: 0,
+    topics: ["Matrix Multiplication"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"product of the following matrices"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( c_{ij}=\\text{(row }i\\text{ of the first)}\\cdot\\text{(column }j\\text{ of the second)} \\)</span></div></div><span class="problem-type-tag">Matrix Multiplication</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( c_{ij}=a_{i1}b_{1j}+a_{i2}b_{2j} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( (3\\times2)(2\\times3)\\ \\Rightarrow\\ \\text{a }3\\times3\\text{ product} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-2"><div class="formula-block">\\( A=\\begin{bmatrix}2&-1\\\\1&0\\\\3&4\\end{bmatrix} \\)</div><div class="formula-block">\\( B=\\begin{bmatrix}1&-2&-5\\\\3&4&0\\end{bmatrix} \\)</div></div><div class="formula-block">\\( c_{ij}=a_{i1}b_{1j}+a_{i2}b_{2j} \\)</div><p class="hint-note">Row 1 of A times each column of B:</p><div class="formula-block fb-long">\\( \\text{row 1}=\\begin{bmatrix}(2)(1)+(-1)(3)&(2)(-2)+(-1)(4)&(2)(-5)+(-1)(0)\\end{bmatrix} \\)</div><p class="hint-note">Row 2 of A times each column of B:</p><div class="formula-block fb-long">\\( \\text{row 2}=\\begin{bmatrix}(1)(1)+(0)(3)&(1)(-2)+(0)(4)&(1)(-5)+(0)(0)\\end{bmatrix} \\)</div><p class="hint-note">Row 3 of A times each column of B:</p><div class="formula-block fb-long">\\( \\text{row 3}=\\begin{bmatrix}(3)(1)+(4)(3)&(3)(-2)+(4)(4)&(3)(-5)+(4)(0)\\end{bmatrix} \\)</div><p class="hint-note">Evaluate every entry:</p><div class="hint-answer">Answer: A. \\( AB=\\begin{bmatrix}-1&-8&-10\\\\1&-2&-5\\\\15&10&-15\\end{bmatrix} \\)</div>`
+    ] },
+  { q: ["If ", { latex: "A=\\begin{bmatrix}2&3&1\\\\-1&2&4\\\\0&5&7\\end{bmatrix}" }, ". What is the cofactor with the second row, third column element?"],
+    choices: [
+      [{ latex: "\\begin{vmatrix}2&3\\\\0&5\\end{vmatrix}" }],
+      [{ latex: "-\\begin{vmatrix}2&3\\\\0&5\\end{vmatrix}" }],
+      [{ latex: "-\\begin{vmatrix}3&1\\\\5&7\\end{vmatrix}" }],
+      [{ latex: "\\begin{vmatrix}3&1\\\\5&7\\end{vmatrix}" }]
+    ], answer: 1,
+    topics: ["Cofactor and Classical Adjoint"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"cofactor of the second row, third column element"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( C_{ij}=(-1)^{i+j}M_{ij} \\)</span></div></div><span class="problem-type-tag">Cofactor and Classical Adjoint</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( C_{ij}=(-1)^{i+j}M_{ij} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( M_{ij}=\\text{determinant left after deleting row }i\\text{ and column }j \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block fb-long">\\( A=\\begin{bmatrix}2&3&1\\\\-1&2&4\\\\0&5&7\\end{bmatrix} \\)</div><div class="formula-block">\\( C_{ij}=(-1)^{i+j}M_{ij} \\)</div><p class="hint-note">The element is in row 2, column 3, so \\( i=2 \\) and \\( j=3 \\):</p><div class="formula-block">\\( C_{23}=(-1)^{2+3}M_{23} \\)</div><p class="hint-note">Simplify the sign:</p><div class="formula-block">\\( C_{23}=-M_{23} \\)</div><p class="hint-note">Delete row 2 and column 3 to find the minor:</p><div class="formula-block">\\( M_{23}=\\begin{vmatrix}2&3\\\\0&5\\end{vmatrix} \\)</div><p class="hint-note">Put the minor back into the cofactor:</p><div class="hint-answer">Answer: B. \\( C_{23}=-\\begin{vmatrix}2&3\\\\0&5\\end{vmatrix} \\)</div>`
+    ] },
+  { q: ["A student had an average of 72 so far in her 4 quizzes. How much should she get in her fifth quiz to raise her average to 75?"],
+    choices: [
+      "83",
+      "85",
+      "87",
+      "89"
+    ], answer: 2,
+    topics: ["Average (Mean)"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"average so far, raise her average to 75"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{Sum}=n\\times\\text{Average} \\)</span></div></div><span class="problem-type-tag">Average (Mean)</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{Average}=\\dfrac{\\text{Sum}}{n} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Fifth score}=\\text{total needed for 5 quizzes}-\\text{total of the first 4} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-4"><div class="formula-block">\\( n_1=4 \\)</div><div class="formula-block">\\( \\bar{x}_1=72 \\)</div><div class="formula-block">\\( n_2=5 \\)</div><div class="formula-block">\\( \\bar{x}_2=75 \\)</div></div><div class="formula-block">\\( \\text{Sum}=n\\times\\text{Average} \\)</div><p class="hint-note">Total of the first 4 quizzes:</p><div class="formula-block">\\( \\text{Sum}_4=4(72) \\)</div><p class="hint-note">Total needed over 5 quizzes:</p><div class="formula-block">\\( \\text{Sum}_5=5(75) \\)</div><p class="hint-note">The fifth score is the difference of the two totals:</p><div class="formula-block">\\( x_5=\\text{Sum}_5-\\text{Sum}_4 \\)</div><p class="hint-note">Substitute:</p><div class="formula-block">\\( x_5=5(75)-4(72) \\)</div><p class="hint-note">Evaluate:</p><div class="hint-answer">Answer: C. 87</div>`
+    ] },
+  { q: ["The average of six scores is 83. If the highest score is removed, the average of the remaining scores is 81.2. Find the highest score."],
+    choices: [
+      "91",
+      "92",
+      "93",
+      "94"
+    ], answer: 1,
+    topics: ["Average (Mean)"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"average of six scores, highest score removed"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{Sum}=n\\times\\text{Average} \\)</span></div></div><span class="problem-type-tag">Average (Mean)</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{Average}=\\dfrac{\\text{Sum}}{n} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Highest score}=\\text{total of 6 scores}-\\text{total of the other 5} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-4"><div class="formula-block">\\( n_1=6 \\)</div><div class="formula-block">\\( \\bar{x}_1=83 \\)</div><div class="formula-block">\\( n_2=5 \\)</div><div class="formula-block">\\( \\bar{x}_2=81.2 \\)</div></div><div class="formula-block">\\( \\text{Sum}=n\\times\\text{Average} \\)</div><p class="hint-note">Total of all six scores:</p><div class="formula-block">\\( \\text{Sum}_6=6(83) \\)</div><p class="hint-note">Total of the remaining five scores:</p><div class="formula-block">\\( \\text{Sum}_5=5(81.2) \\)</div><p class="hint-note">The highest score is the difference of the two totals:</p><div class="formula-block">\\( x_{high}=\\text{Sum}_6-\\text{Sum}_5 \\)</div><p class="hint-note">Substitute:</p><div class="formula-block">\\( x_{high}=6(83)-5(81.2) \\)</div><p class="hint-note">Evaluate:</p><div class="hint-answer">Answer: B. 92</div>`
+    ] },
+  { q: ["Jody’s English quiz scores are 56, 93, 72, 89 and 87. What is the median of her scores?"],
+    choices: [
+      "87",
+      "85",
+      "72",
+      "56"
+    ], answer: 0,
+    topics: ["Median"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"median of her scores"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{middle value of the ordered list} \\)</span></div></div><span class="problem-type-tag">Median</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{Median position}=\\dfrac{n+1}{2}\\ \\text{(for odd }n\\text{)} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{Arrange the scores in order, then pick the middle one} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( n=5 \\)</div><div class="formula-block">\\( \\text{Median position}=\\dfrac{n+1}{2} \\)</div><p class="hint-note">Arrange the scores in ascending order:</p><div class="formula-block">\\( 56,\\ 72,\\ 87,\\ 89,\\ 93 \\)</div><p class="hint-note">Substitute \\( n=5 \\):</p><div class="formula-block">\\( \\text{Median position}=\\dfrac{5+1}{2} \\)</div><p class="hint-note">Evaluate, then pick the value in that position (the 3rd score):</p><div class="hint-answer">Answer: A. 87</div>`
+    ] }
+];
+document.getElementById("quiz-ps-1-subtitle").textContent =
+  `${ps1Data.length} questions · click a choice to check your answer`;
+renderQuiz("quiz-ps-1", ps1Data, "Problem Set Day 1", "timer-ps-1", math1FormulaOutline);
+
 
 document.getElementById("samples-math-1").innerHTML = `
 <h2>Sample Problems: Algebra &amp; Arithmetic</h2>
