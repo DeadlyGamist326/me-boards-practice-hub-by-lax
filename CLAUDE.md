@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.11.4.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.12.0.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -753,7 +753,7 @@ Changelog view.
   Economics for 12) are now fully built across all four content types —
   Handout, Sample Problems, Problem Set, and Trivia — for every day 9
   through 12, including Problem Set Day 12's full 77 questions (completed
-  in v1.3.8.0). Math Handout Day 1 was added in v1.3.11.0 (Algebra:
+  in v1.3.8.0). Math Sample Problems Day 1 (16 problems; the source docx was truncated at #16) was added in v1.3.12.0. Math Handout Day 1 was added in v1.3.11.0 (Algebra:
   significant figures, factoring, exponents, equations, matrices). Math
   Handouts 2–8 and PPE/MD Day 9–12 content remain empty/pending, out of
   scope until content is supplied.

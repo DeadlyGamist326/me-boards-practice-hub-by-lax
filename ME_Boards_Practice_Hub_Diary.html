@@ -712,7 +712,7 @@ const entries = {
     ]
   },
   "2026-10-04": {
-    stamp: "v1.3.10.0 – v1.3.11.4",
+    stamp: "v1.3.10.0 – v1.3.12.0",
     title: "First Claude Code web session, GitHub Pages deploy set up, Math Handout Day 1 built",
     body: [
       "Moved work to a Claude Code cloud session on the GitHub repo; had Claude read the project (CLAUDE.md, diary, the in-file RULINGS block, and the file's structure) and confirm the rulings, naming convention, and changelog/diary workflow",
@@ -731,7 +731,12 @@ const entries = {
       "Reported that the live site did not show Handout Day 1: deploy was fine (Pages run succeeded); Day 1 lives under Full Course Library > Math, not the Day 9-12 Quick Access row. Then changed Common Factoring Identities in Handout Day 1 from a 2-column formula-grid to single-column one-line boxes (long equations); bumped to v1.3.11.1 (patch) and renamed the file.",
       "Added the long-box ruling to the in-file RULINGS block (\u00a74o area) and CLAUDE.md \u00a75c: boxes with long content take one full row instead of a 2-column grid. Ruling-only change, so v1.3.11.2 (patch) with no user-facing changelog entry; file renamed.",
       "Applied the long-box ruling to Handout Day 1: added CSS class .fb-long (grid-column 1/-1) and tagged 30 long formula blocks inside formula-grid-2/3 so each takes a full row (threshold ~26 visible chars in 2-col grids, ~20 in 3-col). Short ones stay in the grid. v1.3.11.3 patch, file renamed, changelog entry added.",
-      "Handout Day 1 Matrices Sample Problem 1: the six Find: parts (A-F) were one dense paragraph; split into one line per part with <br>. v1.3.11.4 patch, file renamed, changelog entry added."
+      "Handout Day 1 Matrices Sample Problem 1: the six Find: parts (A-F) were one dense paragraph; split into one line per part with <br>. v1.3.11.4 patch, file renamed, changelog entry added.",
+      "Uploaded 'Sample Problems Math Day 1.docx' and built Math Sample Problems Day 1 (16 problems) as a new samples-math-1 view, wired into availableMathSampleProblems so it shows under Full Course Library > Math. Same parse approach as before (unzip docx, small script turning OMML into LaTeX). The docx has no answer marks, so every answer was derived and checked by hand",
+      "Source issues handled: the docx stops partway through Problem 16 (solution cut off after the grouping step), so I finished the factoring by grouping to (3x-2a)(2x-3b); Problem 1's solution showed '-4t < -8' which is wrong, replaced with the proper divide-by-negative step; Problem 3 gave only the first absolute-value case, so I added the second case (x <= 0); Problem 5 was 'f apples' (If) and choice C lacked a $; Problem 13's solution printed S130 (should be $30); Problem 10's printed prices (1 1/4, 4 1/4) do not match its solution (1 3/4, 4 1/2), so the key answer D was followed with a disclosure line in Given",
+      "Applied rulings: every fraction and mixed number is a standing \\dfrac fraction, each algebraic step is its own boxed formula-block with a note before it, short givens go in a formula-grid, no long boxes needed, the choices stay in the boxed layout; the Matrices-style one-line-per-item split did not apply (no multi-part questions)",
+      "Added 'Practice by formula' for the page (math1FormulaOutline: Inequalities, Polynomials and Factoring, Arithmetic and Word Problems) via attachStaticTopicFilter and data-topic on all 16 problems",
+      "Verified: node --check, CSS brace balance, question count unchanged at 967, zero mojibake, CRLF preserved, and a real Chromium render with local MathJax (16 problems, 210 rendered expressions, 0 math errors, no raw delimiters, filter present, clicking the correct choice marks it right). v1.3.12.0 (minor, since a Sample Problems set went from not existing to fully built), file renamed, changelog entry added"
     ]
   },
 };
