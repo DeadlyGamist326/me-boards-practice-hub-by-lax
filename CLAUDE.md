@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.10.0.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.11.0.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -45,14 +45,15 @@ the repo. Only the app file is published (not the diary). Keep the
 separate, developer-facing log of everything done in each session —
 technical or not — distinct from the in-app, user-facing Changelog.
 
-**CRITICAL — the `entries` object (near the bottom of the file) is keyed by
-actual REAL-WORLD CALENDAR DAY-OF-MONTH (1-30 for September), NOT by a
-simple incrementing counter/ID.** The calendar UI does `entries[d]` for
-`d` from 1 to `daysInMonth` — any key outside that range (31, 32, 38, ...)
-is invisible to the calendar and was a real bug (caught by the user as
-"September 38"), not a valid way to add a new entry. **Before adding a new
-diary entry, find today's actual real-world day-of-month and check whether
-that key already exists in `entries`:**
+**CRITICAL — the `entries` object (near the bottom of the diary file) is keyed
+by the full ISO date string of the REAL-WORLD CALENDAR DAY, e.g.
+`"2026-10-04"` (changed on 2026-10-01 from bare day-of-month keys; the
+calendar has prev/next month navigation and computes every month itself),
+NOT by a version number or an incrementing counter/ID. A made-up key is
+invisible to the calendar and was a real bug (caught by the user as
+"September 38"). **Before adding a new diary entry, find today's actual
+real-world date and check whether that exact key already exists in
+`entries`:**
 - If it doesn't exist yet, create it: `stamp` is that version (or, if
   several versions ship the same real day, a range like `"v1.8.7 – v1.8.10"`),
   `title` summarizes the day's work, `body` is the array of bullets.
@@ -61,10 +62,8 @@ that key already exists in `entries`:**
   same day's existing `body` array, and extend its `stamp` to cover the
   new version(s) too (e.g. `"v1.8.6"` → `"v1.8.6 – v1.8.9"`). One calendar
   day = one entry, however many version bumps happened on it.
-- If `monthLabel`/`daysInMonth`/`startDow` no longer match the real current
-  month (i.e. the month has rolled over), update those three too before
-  adding the first entry of the new month — don't keep stuffing new-month
-  work into the old month's numbering.
+- Month rollover needs no extra work: the calendar derives the month label,
+  length and first weekday from the date keys, so just add the new ISO date.
 
 **Update this diary at the end of every session** (the user explicitly
 asked for this to be standing practice).
@@ -743,11 +742,12 @@ Changelog view.
   Economics for 12) are now fully built across all four content types —
   Handout, Sample Problems, Problem Set, and Trivia — for every day 9
   through 12, including Problem Set Day 12's full 77 questions (completed
-  in v1.3.8.0). Math Handouts 1–8 and PPE/MD Day 9–12 content remain
-  empty/pending, out of scope until content is supplied.
-- No `formulaOutline`/`topics:` filter has been built yet for any Math Day
-  9–12 quiz — the "Practice by formula" filter panel (§3) doesn't appear on
-  these yet. Only PPE Day 1–8 have outlines so far.
+  in v1.3.8.0). Math Handout Day 1 was added in v1.3.11.0 (Algebra:
+  significant figures, factoring, exponents, equations, matrices). Math
+  Handouts 2–8 and PPE/MD Day 9–12 content remain empty/pending, out of
+  scope until content is supplied.
+- (Stale line removed: the "Practice by formula" filter now exists for all of
+  Math Day 9–12, see §3's v1.3.10.0 update.)
 - PS1–PS4 topics/filters are done (all 8 PPE Day 1–4 quizzes verified), but
   double-check nothing regressed if further handout content edits happen,
   since `handout1..4FormulaOutline` topic lists were built by
