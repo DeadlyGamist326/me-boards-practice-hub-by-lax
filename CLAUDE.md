@@ -34,6 +34,13 @@ exponent, or worked-solution content.** Ignore its §5 (references an old
 Windows machine) and §7 (says hints are "currently implemented ONLY on
 ppeDay1Data," which is long since stale — hints are now on every quiz).
 
+**Hosting (GitHub Pages)**: `.github/workflows/pages.yml` deploys on every
+push to `main`. It picks the highest-versioned `MEBoards_*.html` (via
+`sort -V`) and publishes it as `index.html`, so the rename-on-version-bump
+convention needs no extra step. Never hand-maintain an `index.html` copy in
+the repo. Only the app file is published (not the diary). Keep the
+`MEBoards_*.html` filename prefix intact or the workflow won't find it.
+
 **Dev diary**: `ME_Boards_Practice_Hub_Diary.html` (same folder) is a
 separate, developer-facing log of everything done in each session —
 technical or not — distinct from the in-app, user-facing Changelog.
