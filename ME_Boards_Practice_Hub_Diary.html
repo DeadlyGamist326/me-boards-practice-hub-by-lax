@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Development Log — ME Boards Practice Hub</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --panel: #ffffff;
+    --ink: #1a1a1a;
+    --ink-soft: #333333;
+    --muted: #6b7280;
+    --line: #d8dde3;
+    --heat-1: #e3edf9;
+    --heat-2: #a9c9ec;
+    --heat-3: #5c93d8;
+    --heat-4: #2563b0;
+    --heat-5: #123a6b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121417;
+      --panel: #1b1e23;
+      --ink: #eaeaea;
+      --ink-soft: #cfcfcf;
+      --muted: #8a8f98;
+      --line: #333844;
+      --heat-1: #1c2b3d;
+      --heat-2: #274a72;
+      --heat-3: #336aa8;
+      --heat-4: #4d8fd6;
+      --heat-5: #7fb4ec;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121417;
+    --panel: #1b1e23;
+    --ink: #eaeaea;
+    --ink-soft: #cfcfcf;
+    --muted: #8a8f98;
+    --line: #333844;
+    --heat-1: #1c2b3d;
+    --heat-2: #274a72;
+    --heat-3: #336aa8;
+    --heat-4: #4d8fd6;
+    --heat-5: #7fb4ec;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px 20px 70px;
+  }
+
+  header.masthead { margin-bottom: 24px; }
+  .eyebrow { font-size: 13px; color: var(--muted); }
+  h1 {
+    font-weight: 700;
+    font-size: clamp(24px, 5vw, 32px);
+    margin: 4px 0 6px;
+    line-height: 1.2;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 14.5px;
+    max-width: 52ch;
+    line-height: 1.5;
+  }
+
+  /* Calendar */
+  .cal-card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 18px;
+  }
+  .cal-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .cal-month {
+    font-weight: 700;
+    font-size: 15px;
+    min-width: 150px;
+    text-align: center;
+  }
+  .cal-month-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cal-month-btn {
+    background: none;
+    border: 1px solid var(--line, #444);
+    border-radius: 6px;
+    color: inherit;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 4px 9px;
+  }
+  .cal-month-btn:hover {
+    background: var(--line, #444);
+  }
+  .cal-legend {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+  .cal-dow {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    padding-bottom: 4px;
+  }
+  .cal-cell {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: var(--ink-soft);
+    border: 1px solid var(--line);
+  }
+  .cal-cell.empty { visibility: hidden; border: none; }
+  .cal-cell.has-entry {
+    cursor: pointer;
+    font-weight: 600;
+    border-color: transparent;
+    transition: outline-color 0.12s ease;
+  }
+  .cal-cell.has-entry:hover { outline: 2px solid var(--heat-4); outline-offset: 1px; }
+  .cal-cell.has-entry:focus-visible {
+    outline: 2px solid var(--heat-4);
+    outline-offset: 2px;
+  }
+  .cal-cell.has-entry.selected {
+    outline: 2px solid var(--ink);
+    outline-offset: -2px;
+  }
+  .heat-1 { background: var(--heat-1); color: var(--ink); }
+  .heat-2 { background: var(--heat-2); color: #0a1f33; }
+  .heat-3 { background: var(--heat-3); color: #ffffff; }
+  .heat-4 { background: var(--heat-4); color: #ffffff; }
+  .heat-5 { background: var(--heat-5); color: #ffffff; }
+  .cal-cell.empty-day {
+    color: var(--muted);
+    opacity: 0.45;
+    border-style: dashed;
+  }
+
+  /* Entry panel */
+  #entry-panel { margin-top: 22px; }
+  .entry {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 22px;
+  }
+  .entry-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 4px;
+  }
+  .entry-date {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .stamp {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--heat-4);
+    background: var(--heat-1);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .entry-title {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 6px 0 14px;
+    line-height: 1.3;
+  }
+  .entry-body ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .entry-body li {
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 0 0 9px;
+    padding-left: 16px;
+    position: relative;
+    color: var(--ink-soft);
+  }
+  .entry-body li::before {
+    content: "\2013";
+    position: absolute;
+    left: 0;
+    color: var(--heat-4);
+  }
+  .entry-body li:last-child { margin-bottom: 0; }
+  .no-content {
+    font-size: 14.5px;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 36px 20px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .nav-row {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 14px;
+    font-size: 12.5px;
+  }
+  .nav-btn {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    padding: 7px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+  }
+  .nav-btn:hover { border-color: var(--heat-4); color: var(--heat-4); }
+  .nav-btn:disabled { opacity: 0.35; cursor: default; }
+  .nav-btn:disabled:hover { border-color: var(--line); color: var(--ink-soft); }
+
+  @media (max-width: 480px) {
+    .wrap { padding: 22px 14px 56px; }
+    .entry { padding: 18px 16px; }
+    .cal-cell { font-size: 11.5px; }
+  }
+</style>
+</head>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">development log</div>
+    <h1>ME Boards Practice Hub</h1>
+    <div class="sub">A day-by-day record of what got built, found, and fixed — from when it was still called "Question Lister" through to the current version. Click any highlighted date.</div>
+  </header>
+
+  <div class="cal-card">
+    <div class="cal-head">
+      <div class="cal-month-nav">
+        <button type="button" class="cal-month-btn" id="cal-prev-month" aria-label="Previous month">&larr;</button>
+        <div class="cal-month" id="cal-month-label">SEPTEMBER 2026</div>
+        <button type="button" class="cal-month-btn" id="cal-next-month" aria-label="Next month">&rarr;</button>
+      </div>
+      <div class="cal-legend">darker = more logged that day</div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <div id="entry-panel"></div>
+
+</div>
+
+<script>
+const entries = {
+  "2026-09-11": {
+    stamp: "v1.1.0.0 \u2014 \u201cQuestion Lister\u201d",
+    title: "First quiz encoded, first formatting rules",
+    body: [
+      "Uploaded Trivia Day 5 (15 questions) with an answer key for encoding",
+      "Flagged four unclear items before encoding: a log-base notation, an ambiguous squared term, a garbled \u201cIn(In x)\u201d, and a duplicate answer choice",
+      "Decided the log-base number should get special subscript positioning (log\u2088 60)",
+      "Confirmed the ambiguous term meant sin\u00b2\u03b8, not sin(2\u03b8)",
+      "Confirmed \u201cIn(In x)\u201d was an OCR misread of ln(ln x)",
+      "Invented a new distractor answer to replace an accidental duplicate choice",
+      "Built subscript rendering support for log-base notation",
+      "Built standing-fraction support for a multi-term trig expression",
+      "Encoded Trivia Day 5, all 15 questions",
+      "Noticed sin\u00b2\u03b8 was wrongly getting the same centered-exponent treatment meant only for a lone single-term numerator/denominator",
+      "Fixed sin\u00b2\u03b8 to use a plain superscript character instead of the centered style",
+      "Set the rule: centered exponent styling only applies when the exponent's term stands alone as the whole numerator or denominator",
+      "Requested no space between a trig function and its angle (sec\u03b8, not sec \u03b8)",
+      "Requested no space between multiplied trig functions (tan\u03b8sec\u03b8, not tan \u03b8 sec \u03b8)",
+      "Fixed spacing across the affected expressions and their answer choices to match both rules"
+    ]
+  },
+  "2026-09-12": {
+    stamp: "v1.1.1.0",
+    title: "Pause, Retake, saved progress, sticky bar",
+    body: [
+      "Resumed a testing pass that had gotten cut off mid-session",
+      "Unlocked Problem Set Day 5 (40 questions) with an answer key",
+      "Added a \u201cMade by Lax\u201d credit \u2014 gold, LaTeX-styled font, upper right corner",
+      "Added a Pause button that dims/blurs the screen and holds the timer",
+      "Wrote a first pause message (\u201cYou are paused chuchu\u201d)",
+      "Added a Retake button with a confirmation prompt before clearing progress",
+      "Added persistent saved progress via localStorage, surviving a closed and reopened browser",
+      "Verified pause/resume, retake, and save/restore behavior with automated tests",
+      "Reported the back/pause/timer/retake row wasn't sticky or thin enough",
+      "Combined Back, Pause, Timer, and Retake into a single thin bar, fixed to the top while scrolling",
+      "Found and fixed a bug where Retake used the wrong container ID on Trivia days",
+      "Requested that opening an already-completed quiz jump straight to its results screen instead of restarting",
+      "Changed completed-quiz behavior to skip the prep modal and land directly on results",
+      "Added an inline Retake button directly inside the results/stats box",
+      "Called out that \u201cYou are paused chuchu\u201d sounded unpolished and asked for a rewrite",
+      "Replaced the single pause message with five randomized, more polished variations",
+      "Added \u201cTap anywhere to continue\u201d as the resume hint text",
+      "Requested that clicking Retake scroll the page back to the top",
+      "Added scroll-to-top behavior after Retake, from both the topbar and the results box"
+    ]
+  },
+  "2026-09-14": {
+    stamp: "v1.2.0.0 \u2014 official rename",
+    title: "Became \u201cME Boards Practice Hub\u201d",
+    body: [
+      "Requested a UI for a second subject track (PPE), matching the existing Math Problem Set/Trivia pattern",
+      "Asked for a bullet list to be rewritten in cleaner English instead of a direct word-for-word translation",
+      "Rewrote a feature list into 8 separated bullets instead of run-together compound items",
+      "Corrected a misunderstanding: a described feature was meant to be a whole new \u201cSample Problems\u201d category, not an addition to the existing Problem Set/Trivia modes",
+      "Rebuilt the description to clearly separate \u201cSample Problems\u201d as its own category, alongside Problem Set and Trivia",
+      "Requested a closing line inviting suggestions",
+      "Added \u201cGot a suggestion? Let Lax know!\u201d with a separator and italic styling",
+      "Requested the app be renamed",
+      "Renamed the page title and heading to \u201cME Boards Practice Hub\u201d",
+      "Requested mobile optimization with automatic mobile view",
+      "Found the viewport meta tag was missing entirely",
+      "Added the viewport meta tag",
+      "Found the \u201cMade by Lax\u201d credit overlapping the quiz topbar on mobile",
+      "Hid the credit while inside a quiz, kept it visible on the home page only",
+      "Added mobile media queries for smaller padding and font sizes",
+      "Changed the 4-column home grid to 2 columns on mobile, 1 column under 360px",
+      "Fixed the quiz topbar wrapping awkwardly on small screens",
+      "Fixed the prep and pause modals to fit small screens better"
+    ]
+  },
+  "2026-09-15": {
+    stamp: "v1.2.0.1",
+    title: "PPE Day 3 opens, a dangling unit chain gets fixed",
+    body: [
+      "Unlocked PPE Problem Set Day 3 with an answer key, including a heat-engine validity question and several Diesel/Otto-cycle questions transcribed from LaTeX-formatted OCR",
+      "Asked whether a pressure-unit cancellation (Pa = N/m\u00b2) was being carried all the way through a derivation",
+      "Found the derivation stopped short, leaving units unresolved instead of reducing to kPa",
+      "Completed the cancellation chain through N/m\u00b2 \u2192 Pa \u2192 kPa in one line",
+      "Noted a separate barometer question didn't need the same fix, since its left side was already in Pa",
+      "Found a units string (\u201ccu.m/kg\u201d) in an answer choice still written as plain text instead of a standing fraction",
+      "Fixed that answer choice to use a proper standing fraction"
+    ]
+  },
+  "2026-09-16": {
+    stamp: "v1.2.0.2",
+    title: "One-line cancellation, ratio form, and a \u201ccancel\u201d mix-up",
+    body: [
+      "Complained that a full conversion chain (kPa/1000 kPa, Pa/1 N/m\u00b2) wasn't shown together, canceling visibly, in one line",
+      "Rewrote the derivation into a single chained line, canceling kg, then m/s\u00b2, then N/m\u00b2 (relabeled Pa), then Pa, arriving directly at the final kPa value",
+      "Updated the internal rulings to require this single-line chained-cancellation format going forward",
+      "Pointed out a later, similar derivation still wasn't canceling all of \u03c1's kg and g's m/s\u00b2 on the numerator side, only the conversion factor",
+      "Fixed that derivation to show every unit canceling, numerator and conversion factor alike",
+      "Asked for a Diesel-cycle T2 step to show the ratio form (T2/T1 = ...) before solving, matching how T3 was handled",
+      "Rewrote the T2 step into ratio form, substituted T1, then solved on its own line",
+      "Asked to cancel a redundant V3/V2 term in a ratio, since it wasn't needed",
+      "Removed the V3/V2 term entirely",
+      "Was corrected: \u201ccancel\u201d meant mark with a strikethrough, not delete the line",
+      "Restored the line and applied a strikethrough/cancel mark to V3/V2 instead of deleting it"
+    ]
+  },
+  "2026-09-19": {
+    stamp: "v1.2.1.0",
+    title: "A simpler manometer fix, capital W, a combined formula",
+    body: [
+      "Uploaded a full HTML file for review",
+      "Reviewed a manometer question (Q24) with a claimed answer of 1.27 m and a full worked solution",
+      "Found a simpler approach: using the given specific gravity directly instead of an unneeded fluid-mixture calculation",
+      "Rewrote the solution to match the simpler, direct approach",
+      "Noticed lowercase \u201cw\u201d that should be capitalized \u201cW\u201d for Work",
+      "Fixed three lowercase-w instances across two questions to capital W",
+      "Suggested a mixed-stream mass-flow question be solved with one combined substituted equation instead of solving each stream separately",
+      "Combined the two streams into a single formula box, then a second box with areas substituted directly",
+      "Asked for an intermediate symbolic step to be kept, showing the combined formula before substitution",
+      "Restored a 4-step breakdown: base density calculation, symbolic combined formula, area-expanded version, fully substituted version with cancellation",
+      "Requested hints be built for PPE Problem Set Day 3 and Trivia Day 3, following the established rulings"
+    ]
+  },
+  "2026-09-22": {
+    stamp: "v1.2.2.0",
+    title: "Handout Day 5 formulas, escaping bugs squashed",
+    body: [
+      "Uploaded formula reference content for PPE Handout Day 5: Fuels & Combustion, Power Plant Load Factors, Boilers",
+      "Requested formatting cleanup: convert unit fractions to standing fractions, group content for readability, remove lettered/numbered list markers",
+      "Converted 38 unit labels (12 left-side, 26 right-side) from plain text to true standing fractions",
+      "Found and fixed a bug introduced during that conversion (single backslash instead of double), restored from a checkpoint and redid it correctly",
+      "Verified zero broken instances across all 242 labels",
+      "Found a combustion equation rendering with literal underscores and unescaped text commands instead of proper LaTeX",
+      "Fixed the equation's escaping so it displayed correctly",
+      "Hit a LaTeX rendering error caused by an unescaped \u201c#\u201d character",
+      "Found the unescaped \u201c#\u201d inside a \u201cCombined Efficiency\u201d formula in the Steam Power Plant section of Handout 6",
+      "Fixed it by removing the \u201c#\u201d placeholder pattern and rewording the formula",
+      "Scanned the whole file for the same unescaped-# pattern and confirmed no other instances remained",
+      "Requested that formulas inside every \u201cHint 2: Formulas\u201d panel, across all four-hint quizzes, get the same left/center/right column alignment used elsewhere",
+      "Began that alignment pass, starting with Handout 1"
+    ]
+  },
+  "2026-09-23": {
+    stamp: "v1.2.3.0 \u2014 Wednesday",
+    title: "\u201cPractice by formula\u201d is born",
+    body: [
+      "Asked whether Problem Set Day 6 was finished, requested it be completed",
+      "Computed all 26 solutions for Problem Set Day 6 before writing any hints",
+      "Found and fixed a Willan's line variable that should have been actual kW load rather than a percentage",
+      "Found and fixed a repeated \u201cs_g\u201d that should have read \u201cs_fg\u201d",
+      "Found and fixed a question that needed dividing by actual load at 75% rather than rated capacity",
+      "Hit an f-string brace-escaping bug while generating hints, solved by switching to raw strings with a post-processing backslash-doubling step",
+      "Found and fixed a doubled triple-quote character in one question before it was saved",
+      "Completed Problem Set Day 6, all 26 questions, with the full hint system",
+      "Asked how the hidden formula-name notes were coming along for Problem Set Day 5 and Day 6",
+      "Checked coverage: found Day 5's notes correctly referenced Handout 5's real numbered formula list, while Day 6 mostly said \u201cnot on a numbered handout list,\u201d since no numbered list existed yet for Handout 6",
+      "Found and fixed a mislabeled note on one question during that check",
+      "Explained the real intended purpose: these formula-name notes were meant to power a filter, letting a learner select one formula and see only the questions using it",
+      "Began converting the flat hidden-note system into an actual functional show/hide filter"
+    ]
+  },
+  "2026-09-24": {
+    stamp: "v1.2.4.0",
+    title: "Formatting scan finished, Handout Day 8 opens",
+    body: [
+      "Asked whether earlier fixes across four quizzes were complete, requested a comprehensive scan if not",
+      "Scanned all four quizzes for literal underscores in question/answer text that should have been proper subscripts",
+      "Found and converted 9 underscore instances across Trivia 6 and Problem Set 6 into subscript formatting",
+      "Scanned for plain-text slashes that should have been standing fractions",
+      "Converted 4 question-text slashes in Trivia 5 and 3 more in Trivia 6",
+      "Flagged that Problem Set 5 and 6 still had many more plain-text slashes pending (30 and 32 respectively)",
+      "Was told the scan had missed a large number of cases in Problem Set 5, with specific question numbers listed",
+      "Fixed all listed questions in Problem Set 5, plus two more found during a full re-check that hadn't been mentioned",
+      "Verified zero answer mismatches and confirmed all 40 questions in Problem Set 5 were free of plain-text slashes",
+      "Requested PPE Handout Day 8 be unlocked, with the four-hint system, subscripts, and standing fractions applied from the start",
+      "Uploaded Handout Day 8 source material: Machine Foundation design procedure and Heat Transfer formulas, plus six sample problems",
+      "Verified all six sample-problem computations before writing hints",
+      "Found and fixed a Python string-escaping bug that had produced 169 single-backslash instances instead of double, using a byte-level check to catch it",
+      "Completed Handout Day 8 with both sections, 24 hint buttons total, verified zero broken backslashes or emoji"
+    ]
+  },
+  "2026-09-25": {
+    stamp: "v1.2.5.0",
+    title: "Handout Day 7, peso fractions, situational questions",
+    body: [
+      "Requested PPE Handout Day 7 be unlocked, again with subscripts, standing fractions, and the four-hint system throughout",
+      "Uploaded Handout Day 7 source material: Diesel Power Plant and Hydroelectric Power Plant formulas, plus sample problems",
+      "Discussed how to handle a currency-rate fraction where the denominator had no explicit \u201c1\u201d",
+      "Decided on a narrow rule: only peso/currency-rate fractions need an explicit \u201c1\u201d in the denominator, leaving ordinary SI unit fractions unchanged",
+      "Converted all 22 instances of a plain \u201cP\u201d being used for peso into a proper \u20b1 symbol",
+      "Applied the new denominator rule to the one relevant peso-rate fraction",
+      "Converted a plain-text peso-per-liter phrase into a proper standing fraction",
+      "Requested that a three-question situational block (Q24-26) each show its own full premise instead of a \u201c(continued)\u201d shorthand",
+      "Found that line breaks inside question text were being collapsed by default CSS whitespace handling",
+      "Added a CSS rule to preserve line breaks in question text",
+      "Rewrote Q24, Q25, and Q26 to each carry the full situational premise independently, with proper line breaks and an extra blank line before the final question line",
+      "Verified the question count was unchanged and unrelated questions weren't affected by the new CSS rule"
+    ]
+  },
+  "2026-09-26": {
+    stamp: "v1.2.5.1",
+    title: "Boilers rebuilt, PDF made (keepsake only, not used), handed off to Claude Code",
+    body: [
+      "Reported an unresolved unit issue in Q12: a specific-heat value missing its \u201cK\u201d in the denominator, plus two film-coefficient values needing the same check",
+      "Fixed the incomplete denominator",
+      "Requested the \u201cIII. Boilers\u201d section of Handout 5 be rebuilt using the same formula-row and boxed-variable layout used for the Load Factors section",
+      "Rebuilt Boilers into four subsections and seventeen formulas, with thirty-four boxed variable definitions",
+      "Verified the Sample Problems subsection was left untouched",
+      "Asked to update the existing formula-reference PDF and make it lighter to open (kept only as a keepsake artifact, not used in the actual app)",
+      "Re-extracted the updated Handout 5 content, finding the formula count had grown from 60 to 72 after the Boilers rewrite",
+      "Lowered image resolution and added compression to shrink the PDF",
+      "Regenerated the PDF, reducing file size by roughly 29% despite the added content",
+      "Found that regenerating the PDF from the build script had silently reverted an earlier page-size and page-break customization",
+      "Fixed the build script itself so the customization would no longer be lost on rebuild",
+      "Reported that a section still looked like it had an unwanted page break",
+      "Checked every page in the regenerated PDF and found no literal forced page break anywhere",
+      "Found a real, different bug instead: two plain-text citation notes in the Machine Foundation section had lost all their spacing, because they were being run through math-mode rendering instead of being treated as plain text",
+      "Fixed the detection so plain-English notes render as text, not math, preserving normal spacing",
+      "Reported the same section still looked cut off, before the conversation moved to a different topic",
+      "Decided to move ongoing edits out of Claude Chat and into Claude Code instead",
+      "Asked for all established rulings and conventions to be written into a single reference file",
+      "Wrote a 9-section reference document covering file architecture, the sticky header, the practice-by-formula filter system, question-data quirks, LaTeX formatting rules, the formula-row/variable-box pattern, the PDF pipeline, a verification checklist, and outstanding pending items",
+      "Connected a local project folder to a Claude Code session",
+      "Confirmed edits going forward would happen directly against the local file instead of through upload/download in Claude Chat",
+      "Compared model options for cost and reliability on this kind of detailed editing work"
+    ]
+  },
+  "2026-09-27": {
+    stamp: "v1.2.6.0",
+    title: "4-hint system finished across Day 1-4, prep/retake go modal",
+    body: [
+      "Requested a stale “III. Boilers PDF issue” pending item be removed from the project's reference document, since it no longer applied",
+      "Removed the stale item",
+      "Requested Handout 5's Load Factor variable names be brought in line with a newer naming convention already used elsewhere in that handout's reference cards",
+      "Updated variable names across the Load Factor sample problems, Trivia Day 5, and Problem Set Day 5 to match",
+      "Requested a way to cancel the pre-quiz “Ready” prompt by clicking outside it, instead of being forced to press Start",
+      "Added click-outside-to-cancel to the prep prompt",
+      "Requested the Retake button get the same modal treatment as the prep prompt, with a mobile-friendly press-and-hold confirm instead of a plain click",
+      "Rebuilt Retake as a modal matching the prep prompt's style, with a press-and-hold confirm button that works on both mouse and touch",
+      "Reported the “turn off filter” completion banner wasn't scrolling the way it should",
+      "First attempt suppressed the page-jump entirely — was corrected that the jump-to-bottom was intentional and should stay",
+      "Rebuilt the behavior as: clear the filter, jump straight to the bottom of the page, hold briefly, then smooth-scroll up to the next unanswered question",
+      "Set a standing rule going forward: ask for clarification first whenever a request is ambiguous, rather than guessing at the exact intent",
+      "Opened a discussion (no code yet) on how to help retention and pattern-recognition of problem types through repetitive exposure",
+      "Talked through retrieval practice, spaced repetition via the existing formula filter, mixed/random drills, weak-topic tracking, a clustered-distractor “Identify the Formula” mini-game concept, and reworded-vs-renumbered practice variants",
+      "Requested the 4-part hint system already used on Trivia/Problem Set Day 5-8 be brought up to the same standard on Day 1-4",
+      "Found Trivia Day 4 had no hints at all yet, and Problem Set Day 3 and 4 each had a handful of questions missing hints entirely",
+      "Wrote hints from scratch for all 15 Trivia Day 4 questions and the remaining gaps in Problem Set Day 3 and 4",
+      "Was asked to re-verify the 4-hint system across the board",
+      "Found 183 questions across Trivia Day 1-3, Problem Set Day 1-2, and the rest of Problem Set Day 3-4 were still on an older 3-part hint format, missing the keyword-map step and a separate variables step",
+      "Converted all 183 questions to the current 4-part format one quiz at a time, preserving every original number and derivation",
+      "Verified final counts across all 8 quizzes: Trivia Day 1-4 at 15 questions each, Problem Set Day 1 at 50, Day 2 at 42, Day 3 at 28, Day 4 at 30 — 210 questions total, all fully converted",
+      "Requested a mobile fix for hint boxes that were overflowing off-screen, so they extend/wrap instead of getting cut off",
+      "Fixed the keyword-map rows to wrap and stack on narrow screens instead of clipping, and made the hint panel itself respect the screen width"
+    ]
+  },
+  "2026-09-28": {
+    stamp: "v1.3.0.0",
+    title: "MD subject, Handout Day 9, home page rebuilt twice, Changelog added",
+    body: [
+      "Requested PPE Handout, Problem Set, and Trivia Day 9-12 be unlocked",
+      "Clarified content would be uploaded later; built the view scaffolding, empty placeholder data, and home-menu entries for all three, Day 9-12",
+      "Requested every other remaining locked button be unlocked too — Math Trivia/Problem Set Day 1-4 and 9-12, and Math Handouts 1-12",
+      "Extended the availability lists and built the missing Math view scaffolding to match",
+      "Requested empty/unfilled buttons look visibly unfinished instead of like finished content",
+      "Added a blur-plus-“pending upload” treatment, applied to every newly-unlocked but still-empty quiz and handout",
+      "Requested the keyword-map rows stack instead of overflowing on narrow screens when they don't fit side by side",
+      "Made keyword-map rows stack on mobile instead of clipping off-screen",
+      "Asked for that stacked layout to align left/right instead of both full-width — turned out to mean the unit/formula/unit reference rows, not the keyword-map rows",
+      "Reverted the keyword-map change and applied the left/right-aligned stacking to the unit/formula/unit rows instead",
+      "Requested the home page's “Pending Features” list be cleaned up, removing shipped items and adding a mini-game idea from an earlier brainstorm",
+      "Updated that list and reworded the welcome note to mention hints double as a study tool",
+      "Requested Math Day 9-12 specifically not be blurred, since content for it was coming soon",
+      "Un-blurred Math Day 9-12 across Trivia, Problem Set, and Handouts while leaving the rest of the still-empty days blurred",
+      "Received source material for Handout Day 9 (Differential Calculus) — differentiation formulas, applications, and worked problems",
+      "Verified every derivation by hand, then built Handout Day 9 with three sections and 14 sample problems, each with the full hint system",
+      "Confirmed the MD subject's Handout day range would stop at Day 6 once introduced, and would never extend to 7-12",
+      "Discussed a file-naming/versioning approach (brainstorm) — landed on a semver filename, a version comment inside the file, and an in-app Changelog, skipping a date-stamped filename",
+      "Requested Handout Day 9's sample problems sit directly after their matching formula section instead of all being grouped at the very end",
+      "Reordered the Velocity/Acceleration and Critical Points sample problems to sit right after their own reference sections",
+      "Requested multiple-choice answer boxes be boxed instead of one run-on line, folding to 2 columns or 1 depending on length",
+      "Added a boxed, responsive choices layout and applied it across Handout Day 9's sample problems, using a single-column variant for long expressions",
+      "Requested “Answer:” lines be boxed, centered, and actually rendered as math instead of plain text",
+      "Clarified scope: box-and-center styling would apply everywhere (low risk, CSS only), while converting every existing answer line to real rendered math was flagged as too large to do all at once and scoped to Handout Day 9 for now",
+      "Rewrote Handout Day 9's answer lines as real rendered math and applied the boxed/centered answer style app-wide",
+      "Requested Handout Day 9's sample-problem choices be checkable — click one to see right or wrong immediately, and clicking Full Solution reveals the correct answer even if unanswered, without saving the pick between visits",
+      "Added click-to-check choices with correct/incorrect coloring and a full-solution reveal hook, scoped to Handout Day 9, explicitly left unsaved",
+      "Opened a discussion (no code yet) on whether the home page navigation needed a refresh, since more sample problems were coming",
+      "Recommended an in-page jump-nav for long handouts as a smaller fix; was told the real complaint was simply too many buttons on the home screen, with only active ones shown and inactive ones tucked away or dropdown-hidden",
+      "Proposed a per-subject accordion layout as one way to do that; got approval to try it",
+      "Built a first version: Math/PPE/MD sections each with an active grid plus a “Show N more (in progress)” toggle for empty days",
+      "Was told that version was still confusing, and given a simpler spec: keep Math Day 9-12 (Handout, Problem Set, Trivia) always visible up top, move everything else behind a subject dropdown (Math/PPE/MD) listing that subject's full day range as a flat list",
+      "Rebuilt the home page to that simpler spec, removing the accordion/toggle version entirely",
+      "Found and removed a batch of leftover dead code from the discarded version that referenced functions which no longer existed, which would have silently crashed the rest of the script",
+      "Requested Handouts be listed before Problem Set/Trivia in both the featured section and the subject-browse panel",
+      "Reordered both sections accordingly",
+      "Requested a Machine Design (MD) subject be added, with its own Problem Set and Trivia, Day 1-6",
+      "Added MD as a third subject alongside Math and PPE, with its own home-page section and Handouts column, pending/blurred until content arrives",
+      "Confirmed MD Handouts would never extend past Day 6, and that the missing Day 7-12 columns for MD should stay permanently absent rather than just temporarily pending",
+      "Requested an in-app Changelog page with a version marker inside the file",
+      "Added a Changelog view, a version comment at the top of the file, and a first v1.8.0 entry",
+      "Requested the actual filename be updated to match the version number",
+      "Renamed the file from v1.7.4 to v1.8.0",
+      "Was given the user's own historical changelog text (v1.0.0 through v1.7.4) and asked to enrich it with real question and sample-problem counts",
+      "Counted real question totals per quiz and formula/sample-problem totals per handout directly from the file, and backfilled every historical entry with verified numbers instead of guesses",
+      "Was told every changelog bullet describing an addition needed its own count, not just some entries",
+      "Added counts to entries that had been left vague — Handout 5's original addition, Problem Set 6's hint completion, and the Boilers section's specific expansion",
+      "Was told changelog wording must stay user-facing, with no class names, CSS, or technical terms, since it's written for users rather than developers",
+      "Rewrote the v1.8.0 entries in plain, user-facing language and left a standing reminder comment in the code itself",
+      "Requested nested sub-bullets under changelog entries for extra breakdown detail",
+      "Added a details field per changelog item and a nested sub-list renderer, then broke the Handout 5/7/8/9 and 4-hint-standardization entries down into per-section/per-quiz sub-bullets",
+      "Was told this diary log is separate from the changelog and should record everything done, technical or not, since the changelog is written for users only"
+    ]
+  },
+  "2026-09-29": {
+    stamp: "v1.3.0.1 – v1.3.3.0",
+    title: "Boxed choices/formulas, Handout Day 10, Math Day 9 fully encoded, CLAUDE.md refreshed",
+    body: [
+      "Requested multiple-choice options never ragged-wrap into a leftover “3+1” row on mobile or desktop",
+      "Rebuilt the boxed-choices layout on CSS Grid with media-query breakpoints (4-across, 2×2, or 1-column only) plus a content-length check that adds a stacking override class when a choice actually wraps to multiple lines",
+      "Fixed a threshold bug in that content-length check that was miscounting box padding/border and collapsing every choice to the 1-column layout regardless of length",
+      "Requested every multi-statement formula line be boxed instead of comma-joined in prose, and that all fractions — including exponent fractions like x^(1/2) — render as true stacked fractions",
+      "Added formula-grid-2/3/4 CSS classes for boxing multiple related formulas side by side, and converted comma-joined formula lines and inline exponent fractions across the app to match",
+      "Requested “Given:” lines be unboxed plain text sitting before a separately-boxed given equation, rather than merged into one boxed sentence",
+      "Added the hint-given convention and applied it across the app",
+      "Received a Word document for Handout Day 10 (Integral Calculus — despite the file being named “Day 9”) and was asked to build it, diagrams included",
+      "Read the docx by unzipping it and hand-parsing its XML (text and embedded OMML math) since no pandoc/LibreOffice was installed on this machine, extracted its 5 diagrams, and built Handout Day 10 with four sections and 16 sample problems",
+      "Requested Time Rate's worked-example steps sit in their own boxed rows outside the “Steps:” label, and a line break between an intro sentence and its formula",
+      "Applied both formatting fixes across the Time Rate section",
+      "Walked through a full rewrite of one sample problem (Maxima/Minima) demonstrating a much more granular “one algebraic step per box, with a short connecting note between steps” solution style",
+      "Rewrote all 16 Handout Day 10 sample problems to match that granular step-by-step style",
+      "Applied the unboxed-label/boxed-equation Given: pattern (from v1.8.2) to all 16 Given: lines in Handout Day 10",
+      "Uploaded Sample Problems Day 9 (32 questions), Problem Set Day 9 (63 questions), and Trivia Day 9 (15 questions), all Math/Differential Calculus, with answer keys",
+      "Verified and encoded all 110 questions with the full hint system, flagging roughly 8 Problem Set 9 items where the source choices didn't cleanly match the derived algebra (likely OCR issues) rather than silently forcing a fit",
+      "Uploaded Problem Set Day 10 (65 questions, Integral Calculus/Time Rate/Maxima-Minima), with an answer key, and asked for full 4-part hints matching the established standard",
+      "Solved and verified all 65 questions by hand, encoded them with the full hint system, and flagged one item (area between two lines, #9) where the algebra doesn't land on any printed choice — followed the answer key with a disclosed discrepancy note",
+      "Requested this diary be kept up to date as part of the regular workflow going forward",
+      "Reported seeing a lot of literal “\\(\\)” text (unrendered LaTeX source) in Handout Day 10, and Problem Set Day 9 content not appearing in LaTeX/math formatting at all",
+      "Confirmed Problem Set Day 9's question/choice text itself is clean (no stray LaTeX delimiters) and structurally balanced (braces, backticks, hint/answer counts all matched the 63-question total) — root cause of the rendering complaint not yet isolated; browser access was unavailable this session to visually reproduce it, so this is carried over as an open item for the next session",
+      "Requested CLAUDE.md be brought up to date so a session on another device starts fully oriented",
+      "Rewrote CLAUDE.md: corrected the stale filename reference, added the dev-diary maintenance convention, documented the boxed-choices CSS Grid system (§5b) and the formula-grid/hint-given conventions (§5c)",
+      "Requested the single lumped v1.9.0 bump be split into the correct per-change versions instead, each dated when the work actually happened (9/29), not the day the versioning was cleaned up (9/30)",
+      "Split the single v1.9.0 changelog/diary entry into v1.8.1 through v1.8.5, one per logical change, all dated 2026-09-29, and renamed the file to match v1.8.5 as the current version"
+    ]
+  },
+  "2026-09-30": {
+    stamp: "v1.3.3.1 – v1.3.6.3",
+    title: "PS9/PS10 rendering bug root-caused, Math Day 11 & 12 built, given-box rulings tightened",
+    body: [
+      "Reported seeing raw “\\(\\)” text and un-rendered fractions specifically in Problem Set Day 9, with other Day 9 content (Sample Problems, Trivia) working fine, narrowing the bug to something specific to that one quiz's render path",
+      "Got console errors from the user (“Cannot read properties of undefined (reading 'forEach')” and “Cannot access 'banner' before initialization”) and traced the real root cause: appendMixedContent (the function that draws every multiple-choice answer) called .forEach on a choice's content with no undefined check — Problem Set 9's question 9 only had 3 choices instead of 4, so choice D's content was undefined, undefined.forEach threw, and the crash aborted the rest of that quiz's build before MathJax ever got a chance to typeset it",
+      "Fixed appendMixedContent to treat a missing choice as empty instead of crashing (protects every quiz in the file going forward, not just this one), gave question 9 a real 4th choice, and wrapped the quiz-render step in showView in a try/catch with an on-screen error notice so a future broken question can't silently kill an entire page's math rendering again",
+      "Reported Problem Set Day 10 wasn't showing on its home-page button — traced to a stale “pending” flag left in the home-page config that was never cleared when the content was added; fixed",
+      "Reported Problem Set Day 10 opened to “0 questions / pending upload” even after that fix — found a second, separate bug: a leftover placeholder loop (for the days that still have no content) still listed Day 10 and was overwriting the real Problem Set 10 data with an empty quiz immediately after it was registered; removed Day 10 from that loop",
+      "Went back and forth over many messages fixing individual reported instances of plain-text fractions, un-rendered square roots, bare unicode π/√/∫/∂, un-boxed exponent fractions, and non-LaTeX coordinate points across Problem Set Day 9 and Day 10 (both question text and multiple-choice answers)",
+      "Discovered mid-way that `.formula-block` styling (the box outline) was CSS-scoped only to `.handout-content`, meaning every boxed formula inside every quiz's hints — not just Day 9/10 — had been rendering unboxed this whole session; added the missing `.hint-panel .formula-block`/`.formula-grid-2/3/4` CSS rules",
+      "Was told directly that this pattern — the user repeatedly having to point out individual instances of already-documented rules — meant the rules weren't being actively re-read/applied each time; re-read the file's own full in-file RULINGS comment block in full for the first time this session",
+      "Added new rules to that in-file block per explicit request: coordinate pairs with fractions must be LaTeX, every \\int/\\lim anywhere in the file must have \\displaystyle immediately before it (otherwise the symbol renders at cramped inline height instead of full size), fractional exponents must be wrapped in \\frac{}{} and never left as bare \"2/3\" inside ^{...}, and formulas bounded by an integral must be one full LaTeX block",
+      "Added a new mandatory post-batch self-audit checklist (§1a) to the same in-file block, specifically because the same categories of violation kept being caught one at a time across many separate messages instead of in one pass — the checklist exists to make that stop",
+      "Immediately ran that new audit as a real grep pass instead of just writing it down, and caught 20 more \\lim occurrences (on top of ones already found) still missing \\displaystyle across Problem Set Day 9 and 10; fixed all of them in one bulk pass",
+      "Verified brace/bracket balance and exact question counts (63 for Day 9, 65 for Day 10) after every edit in this session, including catching and fixing one self-introduced brace-count false-positive inside the new ruling text itself",
+      "Extracted 'Handouts math day 11.docx' via the established OMML-aware unzip/parse pipeline (Volume by Integration, Centroids) and built Math Handout Day 11 following the Day 9/10 page structure — h2 section, concept-cards, then that section's own sample problems directly beneath it",
+      "Requested a general ruling for handout page structure so future Handout days don't need this re-explained; documented it as §4a in the in-file ruling block, using Day 9/10/11 as the concrete templates",
+      "Same source docx turned out to also be the Sample Problems Day 11 material; built Math Sample Problems Day 11 with the full hint system, preserving every algebraic step from the source as its own boxed formula",
+      "Pasted the full Problem Set Day 11 text (35 questions) plus answer key directly in chat; solved and verified all 35 against the given key, catching and fixing one self-introduced error where a duplicate differential-equation question had been dropped during transcription",
+      "Pasted the full Trivia Day 11 text (15 questions) plus answer key directly in chat, interrupting Problem Set 11 work mid-turn; built it right after, again strictly following the given→box→note→box solution shape",
+      "Caught and fixed a self-introduced transcription error on Trivia 11 question 14 (correct derivation matched choice D, but the stored answer letter and hint text still said A) by cross-checking the full answer-letter sequence against the given key",
+      "Found and fixed the same recurring 'placeholder loop overwrites new content' bug for both new quizzes (a leftover pending-upload loop was still listing Days 11/12 and wiping out the real data immediately after it was registered)",
+      "Asked for the reference-card variable legend (the little boxes listing what each symbol means) to size itself to its own content instead of sitting in a fixed-width grid, and for every math symbol inside those boxes to be real rendered LaTeX instead of plain text",
+      "Changed .var-def-grid/.var-chip from a fixed CSS grid to a flex-wrap row — each chip now sizes to its own one-line content and only wraps to the next row when it actually runs out of space",
+      "Retrofitted Handout 11's variable chips to the new convention and updated the in-file ruling block and CLAUDE.md so every future handout follows it automatically",
+      "Extracted 'Handouts math day 12.docx' via the same docx pipeline; the content turned out to be Engineering Economics (simple interest, discount, compound interest, nominal/effective rate, continuous compounding, decreasing value, break-even analysis) rather than Calculus like the rest of the Math Day 9–11 track",
+      "Flagged the subject-matter mismatch before building anything; was told directly to proceed anyway ('day 12 is day 12, ito na yun')",
+      "Built Math Handout Day 12 following the same Day 9–11 page structure, with the 4 source diagrams embedded as base64 images and 13 worked sample problems, all hand-solved and cross-checked against the source's own partial solutions/answer choices where given",
+      "Extracted 'Sample Problems math day 12.docx' (11 questions, all Simple Interest/Compound Interest with printed multiple-choice answers) and built Math Sample Problems Day 12 with the full hint system; verified the full answer-letter sequence against the source's printed choices",
+      "Was told the given→box→note→box→...→answer solution shape must hold everywhere, specifically that the given line must be followed immediately by a box (not a note) before anything else happens; wrote this as an explicit addition to §4(o) in the in-file ruling block and CLAUDE.md, and retrofitted every Handout 12 solution to open with a box right after its given line",
+      "Since no Sample Problems Day 12 scaffolding existed yet (unlike Handout 12, which already had an empty view), added the view/container HTML and wired it into the availableMathSampleProblems/pendingContentMathSampleProblems arrays",
+      "Was told the ruling needed to go further: every given equation or notation with an \"=\" sign must be its own separate boxed formula-block (not bundled into one plain-text given sentence), before the note→box chain begins; updated §4(o) and CLAUDE.md accordingly and retrofitted every Handout 12 and Sample Problems 12 solution to split each given value into its own box",
+      "Was told to scope that retrofit to Math Day 9-12 only for now, with Days 9-11's much larger volume of existing content deferred to a later pass",
+      "Extracted 'Problem Set math day 12.docx' (77 questions, Engineering Economics, with a full answer key) — given the size (comparable to Problem Set 9's 63 or Problem Set 11's 35), proposed building it in verified batches rather than all at once, and built/verified the first batch (questions 1-10) against the given answer key",
+      "Found and fixed the same recurring placeholder-loop-overwrites-new-content bug for Problem Set 12 as well",
+      "Was told the diary calendar was showing invalid dates like “September 38” — discovered the entries object is keyed by actual calendar day-of-month (not a simple incrementing counter as had been assumed), and that five version bumps landing on the same real day (9/29, then again on 9/30) had each been given their own made-up key past the 30-day range instead of being merged into that day's single entry",
+      "Merged the five Sept 29 entries (v1.8.1-v1.8.5) into one day-29 entry and the five Sept 30 entries (v1.8.6-v1.8.10) into one day-30 entry, and added a ruling documenting the day-of-month keying convention so this doesn't happen again",
+      "Bumped the app through v1.8.7–v1.8.10 for this session's batch of work, renamed the file to match v1.8.10, and updated the in-app Changelog and this diary"
+    ]
+  },
+  "2026-10-01": {
+    stamp: "v1.3.7.0 – v1.3.8.1",
+    title: "Given-per-equation ruling, Math Trivia Day 12 built, diary made multi-month, semver ruling adopted, Problem Set Day 12 completed, Retake LaTeX bug fixed",
+    body: [
+      "Solved and verified all 15 Trivia Day 12 questions (pasted directly in chat across several messages, plus a separate answer key) by hand against the given key before encoding anything",
+      "Built Math Trivia Day 12 with the full hint system, following the given-boxed-per-equation ruling from the previous session throughout",
+      "Found and fixed the same recurring placeholder-loop-overwrites-new-content bug for Trivia 12 as well",
+      "Was asked whether the diary's date bug was really fixed, prompting a second look — found the calendar was still fundamentally single-month (entries keyed by bare day-of-month, hardcoded to “September 2026”), which would have broken the exact same way the moment work crossed into October",
+      "Proposed three options (extend to real multi-month dates with a month switcher, freeze on September for now, or just flip to October and let September become unreachable) and was told to do the full multi-month fix",
+      "Rekeyed every entries object key from a bare day number to a full ISO date string (e.g. “2026-09-30”), added prev/next month navigation to the calendar header, and made the grid, heat-map coloring, and date-panel navigation all compute against the currently-viewed year/month instead of a hardcoded September",
+      "Updated CLAUDE.md's diary section to describe the new date-keyed, multi-month structure instead of the old (already-wrong) “keyed by version number” description",
+      "Was asked to brainstorm a real convention for when a version bump should be a patch vs. a minor vs. a major, since every bump so far had just been patch-level regardless of size",
+      "Proposed patch = one self-contained change, minor = a chapter closes (a day/handout/feature fully completed), major = the app's own shape changes (new subject track, rename, structural rebuild) or a true content-complete milestone",
+      "Was told to write it up as a real ruling and, since the whole point was to apply it consistently, to renumber the ENTIRE existing changelog history to match rather than only using it going forward",
+      "Added §8b to CLAUDE.md documenting the convention, then remapped all 27 existing changelog entries (v1.0.0 through v1.8.14) onto the new scheme — v1.2.0 (rename + PPE + Sample Problems + mobile pass) and v1.8.0 (MD subject + Math Handout 9) became major bumps (v2.0.0, v3.0.0), each completed Handout/Problem Set/day became its own minor bump, and pure fixes/UI tweaks/ruling updates stayed patches — landing on v3.7.1 as the current version",
+      "Updated the developer diary's own stamp labels to match the same renumbering, including replacing its old informal pre-changelog labels (“pre-v1.0”, “v1.1”, “v1.2”, ...) with the real corresponding versions",
+      "Was told two of the just-added changelog entries described developer-diary-only fixes rather than anything a user would ever see; removed both, re-scanned the rest of the changelog to confirm nothing else slipped through, and wrote a permanent ruling (in-file comment plus CLAUDE.md §8b) that diary-only work never gets a changelog entry — only its own diary entry and version bump",
+      "Resumed Problem Set Math Day 12, building and verifying the remaining 67 questions (11–77) in six batches, hand-solving each against the given answer key before encoding it with the full given-boxed-per-equation hint chain",
+      "Flagged five genuine source-side discrepancies with disclosure notes rather than silently forcing a fit: item 20 (a cost-comparison table missing from the docx text extraction), items 25/30/69 (direct algebra disagrees with the printed key answer), and item 66 (a printed choice truncated during extraction, reconstructed from the calculation)",
+      "Cross-checked the full 77-letter answer sequence against the source answer key as a final pass and caught a self-introduced error: item 11 had been wrongly treated as a sixth discrepancy (given answer D) when its own direct algebra actually matches the key's answer (C) cleanly — corrected it and removed the incorrect note",
+      "Verified brace/bracket balance and the full answer-key match after every batch; Problem Set Math Day 12 is now complete at 77/77 questions",
+      "Was told the retake button was producing literal \\(\\) (unrendered LaTeX) on quiz questions after being clicked; traced it to performRetake() rebuilding a quiz's DOM via renderQuizNow() without going through showView() again — renderQuizNow() never typesets on its own by design, so the rebuilt hint panels were left showing raw LaTeX source",
+      "Fixed performRetake() to call MathJax.typesetPromise() on the rebuilt container itself, matching what showView() already does, and corrected a stale in-file comment that had wrongly claimed this typesetting was already handled generically",
+      "Updated CLAUDE.md's Lazy rendering section and the known-pending-items list to document the fix and note that the original, separately-reported \\(\\) sighting in Handout 10 / PS9 was never confirmed to share this same root cause"
+    ]
+  },
+  "2026-10-03": {
+    stamp: "v1.3.9.0 – v1.3.10.0",
+    title: "Practice by formula for Math Day 9–12, PS9 fraction fixes, centered choices",
+    body: [
+      "Found one-liner fractions (∂f/∂y, ∂V/∂x, dy/dx, (3–x)/(x²–1), x = 1/4) written as flat text in Problem Set Day 9 and converted all 12 to standing fractions; wrote the ruling (in-file §1 and CLAUDE.md) that calculus/algebra quotients are fractions too",
+      "Ruled that quiz answer choices must be vertically centered; made .choice a flex box with a single inner span so tall fractions no longer push a choice high or low",
+      "Added the Math 9–12 'Practice by formula' scope ruling, then built it for Day 9 and 10: tagged all 158 Trivia/Problem Set questions with topics (reusing each question's existing problem-type-tag) and wrote math9FormulaOutline / math10FormulaOutline matching the Handout headings",
+      "Caught a serious mistake of my own mid-way: bulk-tagging via PowerShell Get-Content + WriteAllLines silently corrupted ~1,400 non-ASCII characters (em dashes etc.) across the whole file. Recovered it by re-encoding through Windows-1252 and re-decoding as UTF-8, verified zero mojibake and balanced braces, and documented a never-do-this ruling in CLAUDE.md §8 item 6 and the in-file workflow section",
+      "Sample Problems are static HTML (no quiz data array), so added a data-topic attribute to all 39 Day 9/10 sample problems and one shared attachStaticTopicFilter() function that reuses the quiz filter's markup/CSS; topics missing from an outline fall into an automatic 'Other' group. Added 7 SP-only topics to math9FormulaOutline",
+      "User noticed Sample Problems had no filter yet (the tagging was done but the filter function wasn't wired) — completed it",
+      "User then pointed out Day 11 and 12 had no filter at all; extended it: tagged Trivia 11 and Problem Set 11 (50 questions) from their problem-type-tags (Trivia/PS 12 already had topics), added data-topic to all 20 Day 11/12 sample problems, wrote math11FormulaOutline and math12FormulaOutline, wired all quizzes and attachStaticTopicFilter calls — this time using explicit-UTF8 byte read/write, verified zero mojibake",
+      "Day 11 outline adds sections/subsections beyond the Handout headings (III. Differential and Difference Equations, Pappus' Theorem); Day 12 adds VIII. Annuities, Cash Flow and Returns — the quizzes cover those topics but the handouts have no heading for them",
+      "Cross-checked every topic used per day against its outline in both directions: no missing and no zero-question items; Math Day 9–12 now all have Practice by formula for Trivia, Problem Set, and Sample Problems"
+    ]
+  },
+};
+
+const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+const dowLabels = ["S","M","T","W","T","F","S"];
+
+function pad2(n) { return String(n).padStart(2, '0'); }
+function dateKey(y, m, d) { return `${y}-${pad2(m)}-${pad2(d)}`; }
+function daysInMonth(y, m) { return new Date(y, m, 0).getDate(); }
+function startDow(y, m) { return new Date(y, m - 1, 1).getDay(); }
+
+const sortedDates = Object.keys(entries).sort();
+
+// Default to the month of the most recent entry (i.e. "now" for this file).
+let viewYear, viewMonth;
+if (sortedDates.length) {
+  const [ly, lm] = sortedDates[sortedDates.length - 1].split('-').map(Number);
+  viewYear = ly; viewMonth = lm;
+} else {
+  viewYear = 2026; viewMonth = 9;
+}
+
+const grid = document.getElementById('cal-grid');
+const monthLabelEl = document.getElementById('cal-month-label');
+let selected = null;
+
+function formatEntryDate(key) {
+  const [y, m, d] = key.split('-').map(Number);
+  return `${MONTH_NAMES[m - 1].slice(0, 3).toUpperCase()} ${pad2(d)}, ${y}`;
+}
+
+function renderEntry(key) {
+  const panel = document.getElementById('entry-panel');
+  if (!key) {
+    panel.innerHTML = '<div class="empty-state">Select a highlighted date above.</div>';
+    return;
+  }
+  const e = entries[key];
+  const idx = sortedDates.indexOf(key);
+  const prev = sortedDates[idx - 1];
+  const next = sortedDates[idx + 1];
+  panel.innerHTML = `
+    <div class="entry">
+      <div class="entry-head">
+        <span class="entry-date">${formatEntryDate(key)}</span>
+        <span class="stamp">${e.stamp}</span>
+      </div>
+      <div class="entry-title">${e.title}</div>
+      <div class="entry-body">${e.body.length ? '<ul>' + e.body.map(p => `<li>${p}</li>`).join('') + '</ul>' : '<div class="no-content">No practice-hub work recorded for this date.</div>'}</div>
+    </div>
+    <div class="nav-row">
+      <button class="nav-btn" id="prev-btn" ${prev ? '' : 'disabled'}>&larr; ${prev ? formatEntryDate(prev) : ''}</button>
+      <button class="nav-btn" id="next-btn" ${next ? '' : 'disabled'}>${next ? formatEntryDate(next) : ''} &rarr;</button>
+    </div>
+  `;
+  if (prev) document.getElementById('prev-btn').onclick = () => selectDate(prev, true);
+  if (next) document.getElementById('next-btn').onclick = () => selectDate(next, true);
+}
+
+function selectDate(key, jumpMonthIfNeeded) {
+  selected = key;
+  if (jumpMonthIfNeeded) {
+    const [y, m] = key.split('-').map(Number);
+    if (y !== viewYear || m !== viewMonth) {
+      viewYear = y; viewMonth = m;
+      renderCalendar();
+    }
+  }
+  document.querySelectorAll('.cal-cell.has-entry').forEach(c => {
+    c.classList.toggle('selected', c.dataset.key === key);
+  });
+  renderEntry(key);
+  document.getElementById('entry-panel').scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function renderCalendar() {
+  grid.innerHTML = '';
+  monthLabelEl.textContent = `${MONTH_NAMES[viewMonth - 1].toUpperCase()} ${viewYear}`;
+
+  dowLabels.forEach(l => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow';
+    el.textContent = l;
+    grid.appendChild(el);
+  });
+
+  const lead = startDow(viewYear, viewMonth);
+  for (let i = 0; i < lead; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-cell empty';
+    grid.appendChild(el);
+  }
+
+  const total = daysInMonth(viewYear, viewMonth);
+  for (let d = 1; d <= total; d++) {
+    const key = dateKey(viewYear, viewMonth, d);
+    const el = document.createElement('div');
+    const hasEntry = entries.hasOwnProperty(key);
+    el.className = 'cal-cell' + (hasEntry ? ' has-entry' : ' empty-day');
+    el.textContent = d;
+    el.dataset.key = key;
+    if (hasEntry) {
+      const count = entries[key].body.length;
+      let level = 1;
+      if (count >= 18) level = 5;
+      else if (count >= 15) level = 4;
+      else if (count >= 12) level = 3;
+      else if (count >= 9) level = 2;
+      el.classList.add('heat-' + level);
+      if (key === selected) el.classList.add('selected');
+      el.tabIndex = 0;
+      el.setAttribute('role', 'button');
+      el.setAttribute('aria-label', `${MONTH_NAMES[viewMonth - 1]} ${d}, ${count} logged changes`);
+      el.title = `${count} logged changes`;
+      el.addEventListener('click', () => selectDate(key, false));
+      el.addEventListener('keydown', (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); selectDate(key, false); } });
+    }
+    grid.appendChild(el);
+  }
+}
+
+document.getElementById('cal-prev-month').addEventListener('click', () => {
+  viewMonth -= 1;
+  if (viewMonth < 1) { viewMonth = 12; viewYear -= 1; }
+  renderCalendar();
+});
+document.getElementById('cal-next-month').addEventListener('click', () => {
+  viewMonth += 1;
+  if (viewMonth > 12) { viewMonth = 1; viewYear += 1; }
+  renderCalendar();
+});
+
+renderCalendar();
+renderEntry(null);
+</script>
+</body>
+</html>
