@@ -712,7 +712,7 @@ const entries = {
     ]
   },
   "2026-10-04": {
-    stamp: "v1.3.10.0 – v1.3.18.0",
+    stamp: "v1.3.10.0 – v1.3.19.0",
     title: "First Claude Code web session, GitHub Pages deploy set up, Math Handout Day 1 built",
     body: [
       "Moved work to a Claude Code cloud session on the GitHub repo; had Claude read the project (CLAUDE.md, diary, the in-file RULINGS block, and the file's structure) and confirm the rulings, naming convention, and changelog/diary workflow",
@@ -777,7 +777,10 @@ const entries = {
       "Removed the blur placeholder for Math Handout Day 3 (the markPendingEmpty loop now starts at Day 4 and Day 3 left pendingContentMathHandouts)",
       "Source problems found and disclosed: the abs-sum-of-coefficients problem (2x+3y-z)^8 literally gives 6^8 = 1,679,616 (not a choice); the choices match 4^8 = 65,536 (sum of coefficients), so choice A was used and a note added. Its choice A also lost its letter in the docx. Salary problem: exact answer is about $896, closest choice D ($900) used; its choice B lacked the $ sign. Partial fraction Case 2 printed A=2,B=3,C=5,D=1 but the true values are A=3,B=2,C=1,D=5; Case 4 printed B=2,C=-3,D=0,E=-1 but the true values are B=0,C=-1,D=2,E=-3 (the source swapped the two quadratic terms). Both were corrected (checked by exact substitution) and flagged with an on-page note; Case 3 had no printed values so A=1,B=2,C=-2 was added. The binomial general-term formula and the Case 1-4 'form' lines were added because the docx only gave the coefficient note; 0! = 1 was filled in (the docx showed '0! = .'); one unbalanced bracket in the Case 1 example was fixed",
       "Worked examples in the docx (ABC permutations, BANANA) became sample problems 14 and 16; the multi-part problems (clock A/B, (3x+4y)^8 A-D) are single sample problems with one answer line per part",
-      "Version bump: 1.3.18.0 (minor) because a whole Handout day is now built; file renamed to match. Verified: node --check, CSS brace balance, Playwright render (5 sections, 18 sample problems, 4 images, no pending overlay, no page errors) and a MathJax parse of all 407 LaTeX snippets with 0 errors"
+      "Version bump: 1.3.18.0 (minor) because a whole Handout day is now built; file renamed to match. Verified: node --check, CSS brace balance, Playwright render (5 sections, 18 sample problems, 4 images, no pending overlay, no page errors) and a MathJax parse of all 407 LaTeX snippets with 0 errors",
+      "v1.3.19.0: LAX uploaded 'Sample_Problems_math_day_3.docx' (15 questions plus an answer key, no worked solutions; the docx itself is titled \"Trivia Math Day 3, Set A\" even though it was sent as Sample Problems, so it was built as Sample Problems as asked). Parsed the docx XML (OMML) and built the Day 3 sample problems with the 4-tier hints and granular boxed solutions, tagged with data-topic and wired to a new math3FormulaOutline (I. Ratio, Proportion and Variation; II. Clock Problems; III. Permutations and Binomial Theorem; IV. Problem-Solving in Algebra) through attachStaticTopicFilter. Added the missing view-samples-math-3 view, made Day 3 available and removed it from the pending (blurred) sample problem list.",
+      "Worked all 15 independently: all match LAX's key (1 A, 2 B, 3 B, 4 B, 5 C, 6 B, 7 A, 8 C, 9 C, 10 B, 11 D, 12 A, 13 A, 14 C, 15 A). Source typos disclosed in the hints: Q1 ratio printed \"3.2\" (read as 3:2); Q10 exponent printed \"s\" and the choices \"y^B\" (read as 8); Q15 choices B and D are both 8 (kept as printed); the docx scrambled the order of several choice lists, which were re-matched to their questions.",
+      "Version bump: 1.3.19.0 (minor) because Math Sample Problems Day 3 goes from not existing to fully built; file renamed to match (1.3.18.0 was taken by the Day 3 Handout, merged first). CRLF line endings preserved."
     ]
   },
 };
