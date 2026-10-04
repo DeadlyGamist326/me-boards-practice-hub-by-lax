@@ -712,7 +712,7 @@ const entries = {
     ]
   },
   "2026-10-04": {
-    stamp: "v1.3.10.0 – v1.3.14.8",
+    stamp: "v1.3.10.0 – v1.3.14.9",
     title: "First Claude Code web session, GitHub Pages deploy set up, Math Handout Day 1 built",
     body: [
       "Moved work to a Claude Code cloud session on the GitHub repo; had Claude read the project (CLAUDE.md, diary, the in-file RULINGS block, and the file's structure) and confirm the rulings, naming convention, and changelog/diary workflow",
@@ -755,7 +755,8 @@ const entries = {
       "v1.3.14.5: MJ changed his mind: Quick Access should be Math Day 1 to 11 only. Heading and featured loop now stop at 11 (44 buttons); Day 12 is still reachable in the Full Course Library. Patch bump, file renamed, CLAUDE.md filename updated.",
       "v1.3.14.6: LAX (the user now wants to be called LAX) said the A in the logo should be centered on the pointed end of the L. Moved .lax-a margins from -0.36em/-0.1em to -0.447em/-0.013em (same total width, so X does not shift) so the L foot tick nests in the A gap; re-rendered the PNG (/mnt/project-files/logo/LAX_logo.png) and re-embedded favicon, apple-touch-icon and home logo. Patch bump, file renamed, CLAUDE.md filename updated.",
       "v1.3.14.7: LAX asked to move the X a bit to the left without overlapping the A. .lax-a margin-right changed from -0.013em to -0.05em (A position unchanged); checked in a render that the A foot and the X serifs do not touch. Re-rendered the PNG and re-embedded favicon, apple-touch-icon and home logo. Patch bump, file renamed, CLAUDE.md filename updated.",
-      "v1.3.14.8: LAX clarified that the letter boxes may overlap, only the gold ink must not touch. Rendered A and X separately at 352px for margin-right from -0.05em to -0.26em and measured the ink gap: ink touches at about -0.20em, so -0.15em was chosen (about 10px gap at 352px). .lax-a margin-right is now -0.15em. Re-rendered the PNG and re-embedded favicon, apple-touch-icon and home logo. Patch bump, file renamed, CLAUDE.md filename updated."
+      "v1.3.14.8: LAX clarified that the letter boxes may overlap, only the gold ink must not touch. Rendered A and X separately at 352px for margin-right from -0.05em to -0.26em and measured the ink gap: ink touches at about -0.20em, so -0.15em was chosen (about 10px gap at 352px). .lax-a margin-right is now -0.15em. Re-rendered the PNG and re-embedded favicon, apple-touch-icon and home logo. Patch bump, file renamed, CLAUDE.md filename updated.",
+      "v1.3.14.9: LAX asked for the X angle to be similar to the A. Measured stroke slopes (dx/dy) at 352px: A leg 0.36, X 0.67 at normal width. Narrowed the X with scaleX(0.65) (slope about 0.43; 0.6 looked too condensed), with margins re-tuned so the gold ink gap to the A is about 12px. Because a font-based X can not be narrowed reliably across fonts (Windows has Cambria, not Liberation Serif), the header Made by LAX mark now uses the logo PNG (.lax-img) instead of the .lax-brand/.lax-a text styling, which was removed. Re-rendered /mnt/project-files/logo/LAX_logo.png and re-embedded favicon, apple-touch-icon and home logo. Patch bump, file renamed, CLAUDE.md filename updated."
     ]
   },
 };
