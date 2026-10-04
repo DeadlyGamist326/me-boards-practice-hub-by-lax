@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ME Boards Practice Hub</title>
-<!-- VERSION: 1.3.11.4 — 2026-10-04 (see in-app Changelog on the home page for details) -->
+<!-- VERSION: 1.3.12.0 — 2026-10-04 (see in-app Changelog on the home page for details) -->
 <!--
 ================================================================================
   RULINGS / STYLE GUIDE FOR CLAUDE — READ THIS BEFORE EDITING THIS FILE
@@ -2817,6 +2817,12 @@
   <h1>Math Handouts &mdash; Day 9</h1>
   <div id="handout-math-9" class="handout-content"></div>
 </div>
+<div id="view-samples-math-1" class="view">
+  <div class="quiz-topbar"><button class="back-link" onclick="showView('view-home')">&larr; Back</button></div>
+  <h1>Math Sample Problems &mdash; Day 1</h1>
+  <div class="subtitle">No scoring here — click a choice to check it, or reveal the full solution</div>
+  <div id="samples-math-1" class="handout-content"></div>
+</div>
 <div id="view-samples-math-9" class="view">
   <div class="quiz-topbar"><button class="back-link" onclick="showView('view-home')">&larr; Back</button></div>
   <h1>Math Sample Problems &mdash; Day 9</h1>
@@ -4277,7 +4283,7 @@ const availableMdProblemSets = [1, 2, 3, 4, 5, 6];
 const availableMathHandouts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const availablePpeHandouts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const availableMdHandouts = [1, 2, 3, 4, 5, 6];
-const availableMathSampleProblems = [9, 10, 11, 12];
+const availableMathSampleProblems = [1, 9, 10, 11, 12];
 
 function makeMenuItem(label, available, onclickFn) {
   const btn = document.createElement("button");
@@ -4402,6 +4408,9 @@ function onSubjectToggleClick(subjectKey) {
 // in the diary's own entries only, and skip (don't renumber around) any
 // version whose only changes are diary-only.
 const CHANGELOG = [
+  { version: "1.3.12.0", date: "2026-10-04", changes: [
+    "Math Sample Problems Day 1 added (16 questions: inequalities, evaluating polynomials, fractions and ratio, net profit and loss, and factoring by grouping), each with the full hint system and \"Practice by formula\" filtering"
+  ] },
   { version: "1.3.11.4", date: "2026-10-04", changes: [
     "Math Handout Day 1, Matrices Sample Problem 1: the Find: parts (A to F) are now listed one per line instead of one crowded paragraph"
   ] },
@@ -28302,6 +28311,589 @@ document.getElementById("samples-math-11").innerHTML = `
 `;
 attachStaticTopicFilter("samples-math-11", math11FormulaOutline);
 attachStaticTopicFilter("samples-math-12", math12FormulaOutline);
+
+// "Practice by formula" outline for Math Sample Problems Day 1 — sections
+// group the 16 problems by technique (Day 1 Handout covers Algebra; these
+// sample problems add inequalities and arithmetic/word problems, so the
+// outline has extra groups rather than forcing a fit to the Handout headings).
+const math1FormulaOutline = [
+  { section: "I. Inequalities", subsections: [
+    { name: null, items: ["Linear Inequality", "Absolute Value Inequality"] },
+  ] },
+  { section: "II. Polynomials and Factoring", subsections: [
+    { name: null, items: ["Evaluating a Polynomial", "Factoring by Grouping"] },
+  ] },
+  { section: "III. Arithmetic and Word Problems", subsections: [
+    { name: null, items: ["Fraction Arithmetic (Mixed Numbers)", "Fractions (Part of a Whole)", "Ratio and Proportion", "Net Profit and Loss"] },
+  ] },
+];
+
+document.getElementById("samples-math-1").innerHTML = `
+<h2>Sample Problems: Algebra &amp; Arithmetic</h2>
+
+  <div class="sample-problem" data-topic="Linear Inequality">
+    <div class="sp-title">1. Solve \\( -4t>8 \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="D">
+      <span class="sp-choice">A.&nbsp;\\( t<-4 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( t<-1 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( t<-3 \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( t<-2 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"inequality with a negative coefficient"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{dividing by a negative number reverses the inequality} \\)</span></div></div>
+        <span class="problem-type-tag">Linear Inequality</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\text{Dividing both sides by a negative number reverses the sign of the inequality} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( -4t>8 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( -4t>8 \\)</div>
+        <p class="hint-note">To isolate \\( t \\), divide both sides by \\( -4 \\). Since \\( -4 \\) is negative, the direction of the inequality symbol must be reversed:</p>
+        <div class="formula-block">\\( \\dfrac{-4t}{-4}<\\dfrac{8}{-4} \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( t<-2 \\)</div>
+        <div class="hint-answer">Answer: D. \\( t<-2 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Linear Inequality">
+    <div class="sp-title">2. Solve \\( 4x-3>2x+5 \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="D">
+      <span class="sp-choice">A.&nbsp;\\( x>1 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( x>2 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( x>3 \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( x>4 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"solve the inequality using the addition property"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( a>b\\ \\Rightarrow\\ a+c>b+c \\)</span></div></div>
+        <span class="problem-type-tag">Linear Inequality</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( a>b\\ \\Rightarrow\\ a+c>b+c \\)</div><div class="formula-block">\\( a>b\\ \\Rightarrow\\ \\dfrac{a}{c}>\\dfrac{b}{c}\\quad(c>0) \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( \\text{Collect the } x \\text{ terms on one side and the constants on the other} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( 4x-3>2x+5 \\)</div>
+        <p class="hint-note">Using the addition property, add 3 to both sides:</p>
+        <div class="formula-block">\\( 4x-3+3>2x+5+3 \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( 4x>2x+8 \\)</div>
+        <p class="hint-note">Add \\( -2x \\) to both sides:</p>
+        <div class="formula-block">\\( 4x-2x>2x-2x+8 \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( 2x>8 \\)</div>
+        <p class="hint-note">Divide both sides by 2:</p>
+        <div class="formula-block">\\( \\dfrac{2x}{2}>\\dfrac{8}{2} \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( x>4 \\)</div>
+        <div class="hint-answer">Answer: D. \\( x>4 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Absolute Value Inequality">
+    <div class="sp-title">3. Solve for \\( x \\): \\( \\left|\\dfrac{1}{2}x-1\\right|\\ge1 \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="D">
+      <span class="sp-choice">A.&nbsp;\\( x\\ge4\\ \\ \\&\\ \\ x\\le4 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( x\\ge4\\ \\ \\&\\ \\ x\\le3 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( x\\ge4\\ \\ \\&\\ \\ x\\le2 \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( x\\ge4\\ \\ \\&\\ \\ x\\le0 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"absolute value is greater than or equal to a number"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( |u|\\ge a\\ \\Rightarrow\\ u\\ge a\\ \\text{or}\\ u\\le-a \\)</span></div></div>
+        <span class="problem-type-tag">Absolute Value Inequality</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( |u|\\ge a\\ \\Rightarrow\\ u\\ge a\\ \\ \\text{or}\\ \\ u\\le-a \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( u=\\dfrac{1}{2}x-1,\\ a=1 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( \\left|\\dfrac{1}{2}x-1\\right|\\ge1 \\)</div>
+        <p class="hint-note">An absolute-value inequality \\( |u|\\ge a \\) splits into two cases. Case 1: the inside is at least \\( 1 \\):</p>
+        <div class="formula-block">\\( \\dfrac{1}{2}x-1\\ge1 \\)</div>
+        <p class="hint-note">Add 1 to both sides:</p>
+        <div class="formula-block">\\( \\dfrac{1}{2}x-1+1\\ge1+1 \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( \\dfrac{1}{2}x\\ge2 \\)</div>
+        <p class="hint-note">Multiply both sides by 2:</p>
+        <div class="formula-block">\\( x\\ge4 \\)</div>
+        <p class="hint-note">Case 2: the inside is at most \\( -1 \\):</p>
+        <div class="formula-block">\\( \\dfrac{1}{2}x-1\\le-1 \\)</div>
+        <p class="hint-note">Add 1 to both sides:</p>
+        <div class="formula-block">\\( \\dfrac{1}{2}x\\le0 \\)</div>
+        <p class="hint-note">Multiply both sides by 2:</p>
+        <div class="formula-block">\\( x\\le0 \\)</div>
+        <p class="hint-note">Combine the two cases (the solution is either one; choice D prints the connector as &amp;):</p>
+        <div class="formula-block">\\( x\\ge4\\ \\ \\text{or}\\ \\ x\\le0 \\)</div>
+        <div class="hint-answer">Answer: D. \\( x\\ge4\\ \\text{ and }\\ x\\le0 \\) (as printed in the choices)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Evaluating a Polynomial">
+    <div class="sp-title">4. Evaluate the polynomial \\( 3r^3-r^2-8r-9 \\) at \\( r=-1 \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="B">
+      <span class="sp-choice">A.&nbsp;-6</span>
+      <span class="sp-choice">B.&nbsp;-5</span>
+      <span class="sp-choice">C.&nbsp;-4</span>
+      <span class="sp-choice">D.&nbsp;-3</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"evaluate the polynomial at a value"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( f(r)\\ \\text{at}\\ r=-1 \\)</span></div></div>
+        <span class="problem-type-tag">Evaluating a Polynomial</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( f(r)=3r^3-r^2-8r-9 \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( r=-1 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+          <div class="formula-block">\\( f(r)=3r^3-r^2-8r-9 \\)</div>
+          <div class="formula-block">\\( r=-1 \\)</div>
+        </div>
+        <p class="hint-note">Substitute \\( r=-1 \\) into the polynomial:</p>
+        <div class="formula-block">\\( f(-1)=3(-1)^3-(-1)^2-8(-1)-9 \\)</div>
+        <p class="hint-note">Evaluate each power and product:</p>
+        <div class="formula-block">\\( f(-1)=3(-1)-1+8-9 \\)</div>
+        <p class="hint-note">Add the terms:</p>
+        <div class="formula-block">\\( f(-1)=-5 \\)</div>
+        <div class="hint-answer">Answer: B. \\( -5 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Ratio and Proportion">
+    <div class="sp-title">5. If apples cost 68 cents per pound, how much will \\( 2\\dfrac{3}{4} \\) pounds cost?</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="A">
+      <span class="sp-choice">A.&nbsp;$1.87</span>
+      <span class="sp-choice">B.&nbsp;$2.87</span>
+      <span class="sp-choice">C.&nbsp;$3.87</span>
+      <span class="sp-choice">D.&nbsp;$4.8</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"cost per pound, find the cost of a given weight"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\dfrac{68}{1}=\\dfrac{x}{2.75} \\)</span></div></div>
+        <span class="problem-type-tag">Ratio and Proportion</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\dfrac{\\text{cost}_1}{\\text{weight}_1}=\\dfrac{\\text{cost}_2}{\\text{weight}_2} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( 68\\ \\text{cents per 1 lb},\\ 2\\dfrac{3}{4}\\ \\text{lb} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( 68\\ \\text{cents}\\ \\leftrightarrow\\ 1\\ \\text{lb} \\)</div>
+        <div class="formula-block">\\( x\\ \\leftrightarrow\\ 2\\dfrac{3}{4}\\ \\text{lb} \\)</div>
+        <p class="hint-note">Convert the mixed number to a decimal:</p>
+        <div class="formula-block">\\( 2\\dfrac{3}{4}=2.75 \\)</div>
+        <p class="hint-note">By ratio and proportion:</p>
+        <div class="formula-block">\\( \\dfrac{68}{1}=\\dfrac{x}{2.75} \\)</div>
+        <p class="hint-note">Solve for \\( x \\):</p>
+        <div class="formula-block">\\( x=68(2.75) \\)</div>
+        <p class="hint-note">Multiply:</p>
+        <div class="formula-block">\\( x=187\\ \\text{cents} \\)</div>
+        <p class="hint-note">Convert cents to dollars:</p>
+        <div class="formula-block">\\( x=\\$1.87 \\)</div>
+        <div class="hint-answer">Answer: A. \\( \\$1.87 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Fraction Arithmetic (Mixed Numbers)">
+    <div class="sp-title">6. A share of stock was worth \\( \\$43\\dfrac{1}{8} \\) per share on Friday. On Monday it was worth \\( \\$41\\dfrac{1}{2} \\). How much did the stock fall?</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="B">
+      <span class="sp-choice">A.&nbsp;$1.25</span>
+      <span class="sp-choice">B.&nbsp;$1.63</span>
+      <span class="sp-choice">C.&nbsp;$2.18</span>
+      <span class="sp-choice">D.&nbsp;$3.18</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"how much did it fall"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{fall}=\\text{Friday price}-\\text{Monday price} \\)</span></div></div>
+        <span class="problem-type-tag">Fraction Arithmetic (Mixed Numbers)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\text{Fall}=\\text{Friday price}-\\text{Monday price} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( \\text{Friday}=43\\dfrac{1}{8},\\ \\text{Monday}=41\\dfrac{1}{2} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+          <div class="formula-block">\\( \\text{Friday}=\\$43\\dfrac{1}{8} \\)</div>
+          <div class="formula-block">\\( \\text{Monday}=\\$41\\dfrac{1}{2} \\)</div>
+        </div>
+        <p class="hint-note">The fall is the Friday price minus the Monday price:</p>
+        <div class="formula-block">\\( \\text{Fall}=43\\dfrac{1}{8}-41\\dfrac{1}{2} \\)</div>
+        <p class="hint-note">Convert each mixed number to a decimal:</p>
+        <div class="formula-block">\\( \\text{Fall}=43.125-41.50 \\)</div>
+        <p class="hint-note">Subtract:</p>
+        <div class="formula-block">\\( \\text{Fall}=\\$1.625 \\)</div>
+        <div class="hint-answer">Answer: B. \\( \\$1.63 \\) (rounded from \\( \\$1.625 \\))</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Fraction Arithmetic (Mixed Numbers)">
+    <div class="sp-title">7. A dump truck is loaded with 10 tons of gravel. It dumps \\( 2\\dfrac{3}{4} \\) tons at the first stop, and \\( 3\\dfrac{1}{2} \\) tons at the second. How much gravel is left in the truck?</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="C">
+      <span class="sp-choice">A.&nbsp;1.75 tons</span>
+      <span class="sp-choice">B.&nbsp;2.75 tons</span>
+      <span class="sp-choice">C.&nbsp;3.75 tons</span>
+      <span class="sp-choice">D.&nbsp;4.75 tons</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"how much is left after two removals"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{left}=10-2\\dfrac{3}{4}-3\\dfrac{1}{2} \\)</span></div></div>
+        <span class="problem-type-tag">Fraction Arithmetic (Mixed Numbers)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\text{Left}=\\text{Total}-\\text{first stop}-\\text{second stop} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( x=\\text{tons left} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( \\text{Total}=10\\ \\text{tons} \\)</div>
+        <div class="formula-block">\\( \\text{First stop}=2\\dfrac{3}{4}\\ \\text{tons} \\)</div>
+        <div class="formula-block">\\( \\text{Second stop}=3\\dfrac{1}{2}\\ \\text{tons} \\)</div>
+        <p class="hint-note">Let \\( x \\) be the tons left. Subtract both dumps from the total:</p>
+        <div class="formula-block">\\( x=10-2\\dfrac{3}{4}-3\\dfrac{1}{2} \\)</div>
+        <p class="hint-note">Convert the mixed numbers to decimals:</p>
+        <div class="formula-block">\\( x=10-2.75-3.5 \\)</div>
+        <p class="hint-note">Subtract:</p>
+        <div class="formula-block">\\( x=3.75\\ \\text{tons} \\)</div>
+        <div class="hint-answer">Answer: C. 3.75 tons</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Fractions (Part of a Whole)">
+    <div class="sp-title">8. Of 6000 fires in a city, 2250 were caused by smoking in bed. What fraction of the 6000 fires were caused by smoking in bed?</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="D">
+      <span class="sp-choice">A.&nbsp;\\( \\dfrac{1}{8} \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( \\dfrac{1}{2} \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( \\dfrac{3}{4} \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( \\dfrac{3}{8} \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"what fraction of the total"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{fraction}=\\dfrac{\\text{part}}{\\text{whole}} \\)</span></div></div>
+        <span class="problem-type-tag">Fractions (Part of a Whole)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\text{Fraction}=\\dfrac{\\text{part}}{\\text{whole}} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( \\text{part}=2250,\\ \\text{whole}=6000 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+          <div class="formula-block">\\( \\text{Part}=2250 \\)</div>
+          <div class="formula-block">\\( \\text{Whole}=6000 \\)</div>
+        </div>
+        <p class="hint-note">Let \\( x \\) be the fraction caused by smoking in bed:</p>
+        <div class="formula-block">\\( x=\\dfrac{2250}{6000} \\)</div>
+        <p class="hint-note">Reduce to lowest terms:</p>
+        <div class="formula-block">\\( x=\\dfrac{3}{8} \\)</div>
+        <div class="hint-answer">Answer: D. \\( \\dfrac{3}{8} \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Fraction Arithmetic (Mixed Numbers)">
+    <div class="sp-title">9. Linda had \\( 4\\dfrac{1}{2} \\) yards of ribbon. After tying a Christmas package, she had \\( 2\\dfrac{2}{3} \\) yards. How much ribbon was used to tie the package?</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="A">
+      <span class="sp-choice">A.&nbsp;\\( \\dfrac{11}{6} \\) yards</span>
+      <span class="sp-choice">B.&nbsp;\\( \\dfrac{1}{2} \\) yard</span>
+      <span class="sp-choice">C.&nbsp;\\( \\dfrac{13}{6} \\) yards</span>
+      <span class="sp-choice">D.&nbsp;\\( \\dfrac{14}{6} \\) yards</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"how much was used"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( 4\\dfrac{1}{2}-x=2\\dfrac{2}{3} \\)</span></div></div>
+        <span class="problem-type-tag">Fraction Arithmetic (Mixed Numbers)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\text{Original}-\\text{used}=\\text{left} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( x=\\text{ribbon used} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+          <div class="formula-block">\\( \\text{Original}=4\\dfrac{1}{2}\\ \\text{yd} \\)</div>
+          <div class="formula-block">\\( \\text{Left}=2\\dfrac{2}{3}\\ \\text{yd} \\)</div>
+        </div>
+        <p class="hint-note">Let \\( x \\) be the ribbon used. The original length minus the used length equals what is left:</p>
+        <div class="formula-block">\\( 4\\dfrac{1}{2}-x=2\\dfrac{2}{3} \\)</div>
+        <p class="hint-note">Convert the mixed numbers to improper fractions:</p>
+        <div class="formula-block">\\( \\dfrac{9}{2}-x=\\dfrac{8}{3} \\)</div>
+        <p class="hint-note">Solve for \\( x \\):</p>
+        <div class="formula-block">\\( x=\\dfrac{9}{2}-\\dfrac{8}{3} \\)</div>
+        <p class="hint-note">Use the common denominator 6:</p>
+        <div class="formula-block">\\( x=\\dfrac{27-16}{6} \\)</div>
+        <p class="hint-note">Subtract:</p>
+        <div class="formula-block">\\( x=\\dfrac{11}{6}\\ \\text{yards} \\)</div>
+        <div class="hint-answer">Answer: A. \\( \\dfrac{11}{6} \\) yards</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Fraction Arithmetic (Mixed Numbers)">
+    <div class="sp-title">10. The prices of three different penny stocks are \\( \\$1\\dfrac{1}{4} \\), \\( \\$2\\dfrac{3}{8} \\), and \\( \\$4\\dfrac{1}{4} \\). Find their average price.</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="D">
+      <span class="sp-choice">A.&nbsp;$1.875</span>
+      <span class="sp-choice">B.&nbsp;$3.875</span>
+      <span class="sp-choice">C.&nbsp;$4.785</span>
+      <span class="sp-choice">D.&nbsp;$2.875</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"find their average price"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{average}=\\dfrac{\\text{sum of prices}}{\\text{number of prices}} \\)</span></div></div>
+        <span class="problem-type-tag">Fraction Arithmetic (Mixed Numbers)</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\text{Average}=\\dfrac{\\text{sum of prices}}{\\text{number of prices}} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( \\text{3 prices} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given: the source solution (and the answer key) uses the prices \\( 1\\dfrac{3}{4} \\), \\( 2\\dfrac{3}{8} \\) and \\( 4\\dfrac{1}{2} \\), which do not match the printed question; the key's answer D is followed.</p>
+        <div class="formula-block">\\( n=3 \\)</div>
+        <p class="hint-note">Average = sum of the prices divided by the number of prices:</p>
+        <div class="formula-block">\\( \\text{Average}=\\dfrac{1\\dfrac{3}{4}+2\\dfrac{3}{8}+4\\dfrac{1}{2}}{3} \\)</div>
+        <p class="hint-note">Convert the mixed numbers to decimals:</p>
+        <div class="formula-block">\\( \\text{Average}=\\dfrac{1.75+2.875+4.5}{3} \\)</div>
+        <p class="hint-note">Add and divide:</p>
+        <div class="formula-block">\\( \\text{Average}=\\$2.875 \\)</div>
+        <div class="hint-answer">Answer: D. \\( \\$2.875 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Ratio and Proportion">
+    <div class="sp-title">11. A recipe for 16 brownies requires \\( \\dfrac{2}{3} \\) cup of flour. How much flour is needed to make one dozen brownies?</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="D">
+      <span class="sp-choice">A.&nbsp;\\( \\dfrac{1}{3} \\) cup</span>
+      <span class="sp-choice">B.&nbsp;\\( \\dfrac{1}{5} \\) cup</span>
+      <span class="sp-choice">C.&nbsp;\\( \\dfrac{1}{7} \\) cup</span>
+      <span class="sp-choice">D.&nbsp;\\( \\dfrac{1}{2} \\) cup</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"flour for a different number of brownies"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\dfrac{16}{2/3}=\\dfrac{12}{x} \\)</span></div></div>
+        <span class="problem-type-tag">Ratio and Proportion</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\dfrac{\\text{brownies}_1}{\\text{flour}_1}=\\dfrac{\\text{brownies}_2}{\\text{flour}_2} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( 16\\ \\text{brownies}\\leftrightarrow\\dfrac{2}{3}\\ \\text{cup},\\ 12\\ \\text{brownies}\\leftrightarrow x \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( 16\\ \\text{brownies}\\ \\leftrightarrow\\ \\dfrac{2}{3}\\ \\text{cup} \\)</div>
+        <div class="formula-block">\\( 1\\ \\text{dozen}=12\\ \\text{brownies} \\)</div>
+        <p class="hint-note">By ratio and proportion (let \\( x \\) be the flour for 12 brownies):</p>
+        <div class="formula-block">\\( \\dfrac{16}{2/3}=\\dfrac{12}{x} \\)</div>
+        <p class="hint-note">Solve for \\( x \\):</p>
+        <div class="formula-block">\\( x=\\dfrac{12\\left(\\dfrac{2}{3}\\right)}{16} \\)</div>
+        <p class="hint-note">Simplify the numerator:</p>
+        <div class="formula-block">\\( x=\\dfrac{8}{16} \\)</div>
+        <p class="hint-note">Reduce:</p>
+        <div class="formula-block">\\( x=\\dfrac{1}{2}\\ \\text{cup} \\)</div>
+        <div class="hint-answer">Answer: D. \\( \\dfrac{1}{2} \\) cup</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Net Profit and Loss">
+    <div class="sp-title">12. A furniture store sold two rugs at a loss of $27 per rug, three paintings at a loss of $13 per painting, and seven lamps at a profit of $32 per lamp. Determine the net profit on the 12 sales.</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="B">
+      <span class="sp-choice">A.&nbsp;$128</span>
+      <span class="sp-choice">B.&nbsp;$131</span>
+      <span class="sp-choice">C.&nbsp;$135</span>
+      <span class="sp-choice">D.&nbsp;$139</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"determine the net profit"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{net profit}=\\text{profits}-\\text{losses} \\)</span></div></div>
+        <span class="problem-type-tag">Net Profit and Loss</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\text{Net profit}=\\text{total profit}-\\text{total loss} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( 2\\ \\text{rugs},\\ 3\\ \\text{paintings},\\ 7\\ \\text{lamps} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given: 2 rugs at a loss of $27 each, 3 paintings at a loss of $13 each, and 7 lamps at a profit of $32 each.</p>
+        <p class="hint-note">Profit from the lamps minus the losses on the rugs and paintings:</p>
+        <div class="formula-block">\\( \\text{Net profit}=32(7)-27(2)-13(3) \\)</div>
+        <p class="hint-note">Evaluate each product:</p>
+        <div class="formula-block">\\( \\text{Net profit}=224-54-39 \\)</div>
+        <p class="hint-note">Subtract:</p>
+        <div class="formula-block">\\( \\text{Net profit}=\\$131 \\)</div>
+        <div class="hint-answer">Answer: B. \\( \\$131 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Net Profit and Loss">
+    <div class="sp-title">13. A gambler began with $50, tripled it, and then lost $120. How much money does the gambler have now?</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="C">
+      <span class="sp-choice">A.&nbsp;$20</span>
+      <span class="sp-choice">B.&nbsp;$25</span>
+      <span class="sp-choice">C.&nbsp;$30</span>
+      <span class="sp-choice">D.&nbsp;$35</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"tripled it, then lost"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{money left}=50(3)-120 \\)</span></div></div>
+        <span class="problem-type-tag">Net Profit and Loss</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\text{Money left}=\\text{starting money}\\times3-\\text{loss} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( 50,\\ \\times3,\\ -120 \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given: started with $50, tripled it, then lost $120.</p>
+        <p class="hint-note">Triple the starting money, then subtract the loss:</p>
+        <div class="formula-block">\\( \\text{Money left}=50(3)-120 \\)</div>
+        <p class="hint-note">Evaluate the product:</p>
+        <div class="formula-block">\\( \\text{Money left}=150-120 \\)</div>
+        <p class="hint-note">Subtract:</p>
+        <div class="formula-block">\\( \\text{Money left}=\\$30 \\)</div>
+        <div class="hint-answer">Answer: C. \\( \\$30 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Net Profit and Loss">
+    <div class="sp-title">14. A car dealer sold two cars at a loss of $50 per car, three cars at a loss of $35 per car, and ten cars at a profit of $200 per car. Determine the net profit on the 15 sales.</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="D">
+      <span class="sp-choice">A.&nbsp;$1395</span>
+      <span class="sp-choice">B.&nbsp;$1595</span>
+      <span class="sp-choice">C.&nbsp;$1695</span>
+      <span class="sp-choice">D.&nbsp;$1795</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"determine the net profit"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{net profit}=\\text{profits}-\\text{losses} \\)</span></div></div>
+        <span class="problem-type-tag">Net Profit and Loss</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\text{Net profit}=\\text{total profit}-\\text{total loss} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( 2\\ \\text{cars},\\ 3\\ \\text{cars},\\ 10\\ \\text{cars} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given: 2 cars at a loss of $50 each, 3 cars at a loss of $35 each, and 10 cars at a profit of $200 each.</p>
+        <p class="hint-note">Profit from the ten cars minus the losses on the other five:</p>
+        <div class="formula-block">\\( \\text{Net profit}=200(10)-50(2)-35(3) \\)</div>
+        <p class="hint-note">Evaluate each product:</p>
+        <div class="formula-block">\\( \\text{Net profit}=2000-100-105 \\)</div>
+        <p class="hint-note">Subtract:</p>
+        <div class="formula-block">\\( \\text{Net profit}=\\$1795 \\)</div>
+        <div class="hint-answer">Answer: D. \\( \\$1795 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Net Profit and Loss">
+    <div class="sp-title">15. A clothing store sold three blouses at a loss of $2 per blouse, four skirts at a loss of $3 per skirt, and six dresses at a profit of $30 per dress. Determine the net profit on the 13 sales.</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="A">
+      <span class="sp-choice">A.&nbsp;$162</span>
+      <span class="sp-choice">B.&nbsp;$164</span>
+      <span class="sp-choice">C.&nbsp;$168</span>
+      <span class="sp-choice">D.&nbsp;$172</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"determine the net profit"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{net profit}=\\text{profits}-\\text{losses} \\)</span></div></div>
+        <span class="problem-type-tag">Net Profit and Loss</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\text{Net profit}=\\text{total profit}-\\text{total loss} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( 3\\ \\text{blouses},\\ 4\\ \\text{skirts},\\ 6\\ \\text{dresses} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given: 3 blouses at a loss of $2 each, 4 skirts at a loss of $3 each, and 6 dresses at a profit of $30 each.</p>
+        <p class="hint-note">Profit from the dresses minus the losses on the blouses and skirts:</p>
+        <div class="formula-block">\\( \\text{Net profit}=30(6)-2(3)-3(4) \\)</div>
+        <p class="hint-note">Evaluate each product:</p>
+        <div class="formula-block">\\( \\text{Net profit}=180-6-12 \\)</div>
+        <p class="hint-note">Subtract:</p>
+        <div class="formula-block">\\( \\text{Net profit}=\\$162 \\)</div>
+        <div class="hint-answer">Answer: A. \\( \\$162 \\)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sample-problem" data-topic="Factoring by Grouping">
+    <div class="sp-title">16. Factor completely \\( 6x^2-4ax-9bx+6ab \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="A">
+      <span class="sp-choice">A.&nbsp;\\( (3x-2a)(2x-3b) \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( (3x-2a)(3b-2x) \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( (2a-3x)(2x-3b) \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( (3x-2a)(3b+2x) \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"factor completely a four-term expression"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{group the terms, then factor out the common binomial} \\)</span></div></div>
+        <span class="problem-type-tag">Factoring by Grouping</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( ax+ay+bx+by=a(x+y)+b(x+y)=(a+b)(x+y) \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( \\text{Group into two pairs and factor each pair} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( 6x^2-4ax-9bx+6ab \\)</div>
+        <p class="hint-note">Group the terms into two pairs (factor \\( -1 \\) out of the second pair):</p>
+        <div class="formula-block">\\( (6x^2-4ax)-(9bx-6ab) \\)</div>
+        <p class="hint-note">Factor the common monomial out of each pair:</p>
+        <div class="formula-block">\\( 2x(3x-2a)-3b(3x-2a) \\)</div>
+        <p class="hint-note">Factor out the common binomial \\( (3x-2a) \\):</p>
+        <div class="formula-block">\\( (3x-2a)(2x-3b) \\)</div>
+        <div class="hint-answer">Answer: A. \\( (3x-2a)(2x-3b) \\)</div>
+      </div>
+    </div>
+  </div>
+`;
+attachStaticTopicFilter("samples-math-1", math1FormulaOutline);
 
 
 
