@@ -2826,6 +2826,12 @@
   <div class="subtitle">No scoring here — click a choice to check it, or reveal the full solution</div>
   <div id="samples-math-1" class="handout-content"></div>
 </div>
+<div id="view-samples-math-2" class="view">
+  <div class="quiz-topbar"><button class="back-link" onclick="showView('view-home')">&larr; Back</button></div>
+  <h1>Math Sample Problems &mdash; Day 2</h1>
+  <div class="subtitle">No scoring here — click a choice to check it, or reveal the full solution</div>
+  <div id="samples-math-2" class="handout-content"></div>
+</div>
 <div id="view-samples-math-9" class="view">
   <div class="quiz-topbar"><button class="back-link" onclick="showView('view-home')">&larr; Back</button></div>
   <h1>Math Sample Problems &mdash; Day 9</h1>
@@ -4293,7 +4299,7 @@ const availableMdProblemSets = [1, 2, 3, 4, 5, 6];
 const availableMathHandouts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const availablePpeHandouts = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 const availableMdHandouts = [1, 2, 3, 4, 5, 6];
-const availableMathSampleProblems = [1, 9, 10, 11, 12];
+const availableMathSampleProblems = [1, 2, 9, 10, 11, 12];
 
 function makeMenuItem(label, available, onclickFn) {
   const btn = document.createElement("button");
@@ -4314,7 +4320,7 @@ const pendingContentPpeHandouts = [9, 10, 11, 12];
 const pendingContentMdTriviaDays = [1, 2, 3, 4, 5, 6];
 const pendingContentMdProblemSets = [1, 2, 3, 4, 5, 6];
 const pendingContentMdHandouts = [1, 2, 3, 4, 5, 6];
-const pendingContentMathSampleProblems = [2, 3, 4, 5, 6, 7, 8];
+const pendingContentMathSampleProblems = [3, 4, 5, 6, 7, 8];
 
 function markButtonPending(btn, isPending) {
   if (isPending) btn.classList.add("menu-item-pending");
@@ -4421,6 +4427,10 @@ const CHANGELOG = [
   { version: "1.3.16.0", date: "2026-10-04", changes: [
     "Math Trivia Day 2 added (15 questions: complex numbers, vectors, and number, rate, work, age and mixture problems), each with the full hint system and \"Practice by formula\" filtering",
     "Math Trivia Day 2 no longer shows blurred with a \"pending upload\" label on the home page or inside the quiz"
+  ] },
+  { version: "1.3.15.1", date: "2026-10-04", changes: [
+    "Math Sample Problems Day 2 is now available: 10 problems on complex numbers (exponential form, multiplication), vectors (cross and dot product) and number problems (sums, consecutive integers, reciprocals), each with hints and a full step-by-step solution",
+    "Math Sample Problems Day 2 has a Practice by formula filter and no longer shows blurred on the home page"
   ] },
   { version: "1.3.15.0", date: "2026-10-04", changes: [
     "Math Handout Day 2 is now available: Complex Numbers, Complex Operations, Vectors, and Problem-Solving in Algebra (number, rate, work, age and mixture problems) with 14 worked sample problems",
@@ -29794,15 +29804,19 @@ renderQuiz("quiz-1", trivia1Data, "Trivia Day 1", "timer-quiz-1", math1FormulaOu
 // math2FormulaOutline follows the Math Handout Day 2 section headings.
 const math2FormulaOutline = [
   { section: "I. Complex Numbers", subsections: [
-    { name: null, items: ["Complex Number Multiplication", "Imaginary Numbers"] },
+    { name: null, items: ["Complex Number Multiplication", "Complex Multiplication", "Imaginary Numbers"] },
+  ] },
+  { section: "II. Complex Operations", subsections: [
+    { name: null, items: ["Exponential Form of a Complex Number"] },
   ] },
   { section: "III. Vectors", subsections: [
-    { name: null, items: ["Vector Magnitude and Resultant", "Dot Product"] },
+    { name: null, items: ["Vector Magnitude and Resultant", "Dot Product", "Dot and Cross Product"] },
   ] },
   { section: "IV. Problem-Solving in Algebra", subsections: [
-    { name: null, items: ["Consecutive Numbers", "Average (Mean)", "Rate Problems", "Work Problems", "Age Problems", "Mixture Problems"] },
+    { name: null, items: ["Number Problems", "Consecutive Numbers", "Consecutive Integers", "Reciprocal Number Problems", "Average (Mean)", "Rate Problems", "Work Problems", "Age Problems", "Mixture Problems"] },
   ] },
 ];
+
 const trivia2Data = [
   { q: ["Find the product of ", { latex: "(2-3i)" }, " and ", { latex: "(1-4i)" }],
     choices: [
@@ -30587,6 +30601,431 @@ document.getElementById("samples-math-1").innerHTML = `
   </div>
 `;
 attachStaticTopicFilter("samples-math-1", math1FormulaOutline);
+
+// ---- Math Sample Problems Day 2 ----
+// math2FormulaOutline is declared above (shared with Trivia Day 2).
+
+
+document.getElementById("samples-math-2").innerHTML = `
+<h2>Sample Problems: Complex Numbers, Vectors &amp; Number Problems</h2>
+
+  <div class="sample-problem" data-topic="Exponential Form of a Complex Number">
+    <div class="sp-title">1. The exponential form of \\( 3+4i \\) is:</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="B">
+      <span class="sp-choice">A.&nbsp;\\( e^{i53.1^\\circ} \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( 5e^{i53.1^\\circ} \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( 5e^{i126.9^\\circ} \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( 7e^{i53.1^\\circ} \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"exponential form of a complex number"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( a+bi=re^{i\\theta} \\)</span></div></div>
+        <span class="problem-type-tag">Exponential Form of a Complex Number</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( a+bi=re^{i\\theta} \\)</div><div class="formula-block">\\( r=\\sqrt{a^2+b^2} \\)</div><div class="formula-block">\\( \\theta=\\tan^{-1}\\dfrac{b}{a} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( r=\\text{modulus (magnitude)} \\)</div><div class="hint-formula">\\( \\theta=\\text{angle of the complex number} \\)</div><div class="hint-formula">\\( a=\\text{real part},\\ b=\\text{imaginary part} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+  <div class="formula-block">\\( a=3 \\)</div>
+  <div class="formula-block">\\( b=4 \\)</div>
+</div>
+        <p class="hint-note">The exponential form is <i>re<sup>i&theta;</sup></i>. First find the modulus:</p>
+        <div class="formula-block">\\( r=\\sqrt{a^2+b^2} \\)</div>
+        <p class="hint-note">Substitute the values of a and b:</p>
+        <div class="formula-block">\\( r=\\sqrt{3^2+4^2} \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( r=5 \\)</div>
+        <p class="hint-note">Find the angle:</p>
+        <div class="formula-block">\\( \\theta=\\tan^{-1}\\dfrac{b}{a} \\)</div>
+        <p class="hint-note">Substitute the values of a and b:</p>
+        <div class="formula-block">\\( \\theta=\\tan^{-1}\\dfrac{4}{3} \\)</div>
+        <p class="hint-note">Evaluate with the calculator (degree mode):</p>
+        <div class="formula-block">\\( \\theta=53.1^\\circ \\)</div>
+        <p class="hint-note">Write the complex number in exponential form:</p>
+        <div class="formula-block">\\( 3+4i=5e^{i53.1^\\circ} \\)</div>
+        <div class="hint-answer">Answer: B. \\( 5e^{i53.1^\\circ} \\)</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="sample-problem" data-topic="Complex Multiplication">
+    <div class="sp-title">2. Find the product of two complex numbers \\( 3+4i \\) and \\( 7-2i \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="D">
+      <span class="sp-choice">A.&nbsp;\\( 10+2i \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( 13+22i \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( 13+34i \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( 29+22i \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"product of two complex numbers"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( (a+bi)(c+di) \\)</span></div></div>
+        <span class="problem-type-tag">Complex Multiplication</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( (a+bi)(c+di)=ac+adi+bci+bdi^2 \\)</div><div class="formula-block">\\( i^2=-1 \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( a+bi=3+4i \\)</div><div class="hint-formula">\\( c+di=7-2i \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+  <div class="formula-block">\\( a+bi=3+4i \\)</div>
+  <div class="formula-block">\\( c+di=7-2i \\)</div>
+</div>
+        <p class="hint-note">Write the product:</p>
+        <div class="formula-block">\\( (3+4i)(7-2i) \\)</div>
+        <p class="hint-note">Multiply each term of the first factor by each term of the second:</p>
+        <div class="formula-block">\\( (3+4i)(7-2i)=21-6i+28i-8i^2 \\)</div>
+        <p class="hint-note">Recall that the imaginary unit squared is:</p>
+        <div class="formula-block">\\( i^2=-1 \\)</div>
+        <p class="hint-note">Replace \\( i^2 \\) with \\( -1 \\):</p>
+        <div class="formula-block">\\( (3+4i)(7-2i)=21-8(-1)+22i \\)</div>
+        <p class="hint-note">Simplify and write in standard form:</p>
+        <div class="formula-block">\\( (3+4i)(7-2i)=29+22i \\)</div>
+        <div class="hint-answer">Answer: D. \\( 29+22i \\)</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="sample-problem" data-topic="Dot and Cross Product">
+    <div class="sp-title">3. Simplify the expression \\( (\\mathbf{M}\\times\\mathbf{N})\\cdot\\mathbf{P} \\), given \\( \\mathbf{M}=3\\mathbf{i}+2\\mathbf{j} \\), \\( \\mathbf{N}=2\\mathbf{i}+3\\mathbf{j}+\\mathbf{k} \\) and \\( \\mathbf{P}=5\\mathbf{i}+2\\mathbf{k} \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="B">
+      <span class="sp-choice">A.&nbsp;\\( 0 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( 20 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( 60\\mathbf{i}+24\\mathbf{k} \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( 180 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"cross product, then dot product"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\mathbf{A}\\times\\mathbf{B}\\ \\text{is a vector};\\ \\mathbf{A}\\cdot\\mathbf{B}\\ \\text{is a scalar} \\)</span></div></div>
+        <span class="problem-type-tag">Dot and Cross Product</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\mathbf{A}\\times\\mathbf{B}=\\begin{vmatrix}\\mathbf{i}&\\mathbf{j}&\\mathbf{k}\\a_x&a_y&a_z\\b_x&b_y&b_z\\end{vmatrix} \\)</div><div class="formula-block">\\( \\mathbf{A}\\cdot\\mathbf{B}=a_xb_x+a_yb_y+a_zb_z \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( \\mathbf{M}=3\\mathbf{i}+2\\mathbf{j}+0\\mathbf{k} \\)</div><div class="hint-formula">\\( \\mathbf{N}=2\\mathbf{i}+3\\mathbf{j}+1\\mathbf{k} \\)</div><div class="hint-formula">\\( \\mathbf{P}=5\\mathbf{i}+0\\mathbf{j}+2\\mathbf{k} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-3">
+  <div class="formula-block">\\( \\mathbf{M}=3\\mathbf{i}+2\\mathbf{j} \\)</div>
+  <div class="formula-block">\\( \\mathbf{N}=2\\mathbf{i}+3\\mathbf{j}+\\mathbf{k} \\)</div>
+  <div class="formula-block">\\( \\mathbf{P}=5\\mathbf{i}+2\\mathbf{k} \\)</div>
+</div>
+        <p class="hint-note">Solve the cross product \\( \\mathbf{M}\\times\\mathbf{N} \\) first. Set up the determinant:</p>
+        <div class="formula-block fb-long">\\( \\mathbf{M}\\times\\mathbf{N}=\\begin{vmatrix}\\mathbf{i}&\\mathbf{j}&\\mathbf{k}\\3&2&0\\2&3&1\\end{vmatrix} \\)</div>
+        <p class="hint-note">Expand along the first row:</p>
+        <div class="formula-block fb-long">\\( \\mathbf{M}\\times\\mathbf{N}=\\mathbf{i}\\left[(2)(1)-(0)(3)\\right]-\\mathbf{j}\\left[(3)(1)-(0)(2)\\right]+\\mathbf{k}\\left[(3)(3)-(2)(2)\\right] \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( \\mathbf{M}\\times\\mathbf{N}=2\\mathbf{i}-3\\mathbf{j}+5\\mathbf{k} \\)</div>
+        <p class="hint-note">Take the dot product with \\( \\mathbf{P} \\) (write \\( \\mathbf{P} \\) with its zero \\( \\mathbf{j} \\) component):</p>
+        <div class="formula-block fb-long">\\( (\\mathbf{M}\\times\\mathbf{N})\\cdot\\mathbf{P}=(2\\mathbf{i}-3\\mathbf{j}+5\\mathbf{k})\\cdot(5\\mathbf{i}+0\\mathbf{j}+2\\mathbf{k}) \\)</div>
+        <p class="hint-note">Multiply the matching components and add:</p>
+        <div class="formula-block">\\( (\\mathbf{M}\\times\\mathbf{N})\\cdot\\mathbf{P}=(2)(5)+(-3)(0)+(5)(2) \\)</div>
+        <p class="hint-note">Simplify:</p>
+        <div class="formula-block">\\( (\\mathbf{M}\\times\\mathbf{N})\\cdot\\mathbf{P}=20 \\)</div>
+        <div class="hint-answer">Answer: B. \\( 20 \\)</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="sample-problem" data-topic="Number Problems">
+    <div class="sp-title">4. Twice the sum of two numbers is 28. The sum of the squares of the two numbers is 100. The product of the two numbers is:</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="A">
+      <span class="sp-choice">A.&nbsp;\\( 48 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( 12 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( 24 \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( 36 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"twice the sum is 28; sum of the squares is 100"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( 2(x+y)=28;\\ x^2+y^2=100 \\)</span></div></div>
+        <span class="problem-type-tag">Number Problems</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( 2(x+y)=28 \\)</div><div class="formula-block">\\( x^2+y^2=100 \\)</div><div class="formula-block">\\( \\text{Product}=xy \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( x=\\text{first number} \\)</div><div class="hint-formula">\\( y=\\text{second number} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+  <div class="formula-block">\\( 2(x+y)=28 \\)</div>
+  <div class="formula-block">\\( x^2+y^2=100 \\)</div>
+</div>
+        <p class="hint-note">Divide both sides of the first equation by 2:</p>
+        <div class="formula-block">\\( x+y=14 \\)</div>
+        <p class="hint-note">Solve for \\( x \\) (Equation 1):</p>
+        <div class="formula-block">\\( x=14-y \\)</div>
+        <p class="hint-note">Substitute Equation 1 into the second equation (Equation 2):</p>
+        <div class="formula-block">\\( (14-y)^2+y^2=100 \\)</div>
+        <p class="hint-note">Expand the square:</p>
+        <div class="formula-block">\\( 196-28y+y^2+y^2=100 \\)</div>
+        <p class="hint-note">Move 100 to the left side and combine like terms:</p>
+        <div class="formula-block">\\( 2y^2-28y+96=0 \\)</div>
+        <p class="hint-note">Divide both sides by 2:</p>
+        <div class="formula-block">\\( y^2-14y+48=0 \\)</div>
+        <p class="hint-note">Factor:</p>
+        <div class="formula-block">\\( (y-8)(y-6)=0 \\)</div>
+        <p class="hint-note">Solve for \\( y \\):</p>
+        <div class="formula-block">\\( y=8\\ \\ \\text{or}\\ \\ y=6 \\)</div>
+        <p class="hint-note">If \\( y=8 \\), then \\( x=14-8=6 \\). If \\( y=6 \\), then \\( x=14-6=8 \\). Either way the numbers are 6 and 8, so the product is:</p>
+        <div class="formula-block">\\( xy=(8)(6)=48 \\)</div>
+        <div class="hint-answer">Answer: A. \\( 48 \\)</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="sample-problem" data-topic="Number Problems">
+    <div class="sp-title">5. The product of 2 and \\( \\dfrac{1}{3} \\) of a number is 15 minus the number. Find the number.</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="C">
+      <span class="sp-choice">A.&nbsp;\\( 3 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( 6 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( 9 \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( 12 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"product of 2 and \\( \\dfrac{1}{3} \\) of a number is 15 minus the number"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( 2\\left(\\dfrac{1}{3}x\\right)=15-x \\)</span></div></div>
+        <span class="problem-type-tag">Number Problems</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( 2\\left(\\dfrac{1}{3}x\\right)=15-x \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( x=\\text{the number} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( 2\\left(\\dfrac{1}{3}x\\right)=15-x \\)</div>
+        <p class="hint-note">Multiply 2 by \\( \\dfrac{1}{3}x \\):</p>
+        <div class="formula-block">\\( \\dfrac{2x}{3}=15-x \\)</div>
+        <p class="hint-note">Multiply both sides by 3 to clear the fraction:</p>
+        <div class="formula-block">\\( 2x=3(15-x) \\)</div>
+        <p class="hint-note">Distribute the 3:</p>
+        <div class="formula-block">\\( 2x=45-3x \\)</div>
+        <p class="hint-note">Add \\( 3x \\) to both sides:</p>
+        <div class="formula-block">\\( 5x=45 \\)</div>
+        <p class="hint-note">Divide both sides by 5:</p>
+        <div class="formula-block">\\( x=9 \\)</div>
+        <div class="hint-answer">Answer: C. \\( 9 \\)</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="sample-problem" data-topic="Consecutive Integers">
+    <div class="sp-title">6. The sum of three consecutive odd integers is 21. What is the first integer?</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="C">
+      <span class="sp-choice">A.&nbsp;\\( 2 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( 4 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( 5 \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( 8 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"three consecutive odd integers"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( x,\\ x+2,\\ x+4 \\)</span></div></div>
+        <span class="problem-type-tag">Consecutive Integers</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( x+(x+2)+(x+4)=\\text{sum} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( x=\\text{1st integer} \\)</div><div class="hint-formula">\\( x+2=\\text{2nd integer} \\)</div><div class="hint-formula">\\( x+4=\\text{3rd integer} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( x+(x+2)+(x+4)=21 \\)</div>
+        <p class="hint-note">Combine like terms:</p>
+        <div class="formula-block">\\( 3x+6=21 \\)</div>
+        <p class="hint-note">Subtract 6 from both sides:</p>
+        <div class="formula-block">\\( 3x=15 \\)</div>
+        <p class="hint-note">Divide both sides by 3:</p>
+        <div class="formula-block">\\( x=5 \\)</div>
+        <div class="hint-answer">Answer: C. \\( 5 \\)</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="sample-problem" data-topic="Number Problems">
+    <div class="sp-title">7. The square of a number increased by 16 is the same as 10 times the number. Find the numbers.</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="B">
+      <span class="sp-choice">A.&nbsp;\\( 4\\ \\&\\ 8 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( 2\\ \\&\\ 8 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( 6\\ \\&\\ 12 \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( 2\\ \\&\\ 4 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"square of a number increased by 16 is the same as 10 times the number"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( x^2+16=10x \\)</span></div></div>
+        <span class="problem-type-tag">Number Problems</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( x^2+16=10x \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( x=\\text{the number} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( x^2+16=10x \\)</div>
+        <p class="hint-note">Move \\( 10x \\) to the left side to get a quadratic equation:</p>
+        <div class="formula-block">\\( x^2-10x+16=0 \\)</div>
+        <p class="hint-note">Factor:</p>
+        <div class="formula-block">\\( (x-2)(x-8)=0 \\)</div>
+        <p class="hint-note">Solve for \\( x \\):</p>
+        <div class="formula-block">\\( x=2\\ \\ \\text{or}\\ \\ x=8 \\)</div>
+        <div class="hint-answer">Answer: B. \\( 2\\ \\&\\ 8 \\)</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="sample-problem" data-topic="Reciprocal Number Problems">
+    <div class="sp-title">8. Find the larger number of two numbers whose sum is 25 and the sum of whose reciprocals is \\( \\dfrac{1}{4} \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="A">
+      <span class="sp-choice">A.&nbsp;\\( 20 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( 18 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( 15 \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( 24 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"sum is 25 and the sum of whose reciprocals is \\( \\dfrac{1}{4} \\)"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( x+y=25;\\ \\dfrac{1}{x}+\\dfrac{1}{y}=\\dfrac{1}{4} \\)</span></div></div>
+        <span class="problem-type-tag">Reciprocal Number Problems</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( x+y=25 \\)</div><div class="formula-block">\\( \\dfrac{1}{x}+\\dfrac{1}{y}=\\dfrac{1}{4} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( x=\\text{smaller number} \\)</div><div class="hint-formula">\\( y=\\text{larger number} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+  <div class="formula-block">\\( x+y=25 \\)</div>
+  <div class="formula-block">\\( \\dfrac{1}{x}+\\dfrac{1}{y}=\\dfrac{1}{4} \\)</div>
+</div>
+        <p class="hint-note">Solve the first equation for \\( x \\) (Equation 1):</p>
+        <div class="formula-block">\\( x=25-y \\)</div>
+        <p class="hint-note">Add the fractions on the left side using the common denominator \\( xy \\):</p>
+        <div class="formula-block">\\( \\dfrac{y+x}{xy}=\\dfrac{1}{4} \\)</div>
+        <p class="hint-note">Cross-multiply (Equation 2):</p>
+        <div class="formula-block">\\( 4y+4x=xy \\)</div>
+        <p class="hint-note">Substitute Equation 1 into Equation 2:</p>
+        <div class="formula-block">\\( 4y+4(25-y)=y(25-y) \\)</div>
+        <p class="hint-note">Distribute:</p>
+        <div class="formula-block">\\( 4y+100-4y=25y-y^2 \\)</div>
+        <p class="hint-note">Move all terms to the left side and combine like terms:</p>
+        <div class="formula-block">\\( y^2-25y+100=0 \\)</div>
+        <p class="hint-note">Factor:</p>
+        <div class="formula-block">\\( (y-20)(y-5)=0 \\)</div>
+        <p class="hint-note">Solve for \\( y \\). If \\( y=20 \\), then \\( x=5 \\); if \\( y=5 \\), then \\( x=20 \\). The larger number is:</p>
+        <div class="formula-block">\\( y=20 \\)</div>
+        <div class="hint-answer">Answer: A. \\( 20 \\)</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="sample-problem" data-topic="Reciprocal Number Problems">
+    <div class="sp-title">9. Find the larger of two positive numbers that differ by 9 and whose reciprocals differ by \\( \\dfrac{1}{10} \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="B">
+      <span class="sp-choice">A.&nbsp;\\( 10 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( 15 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( 13 \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( 9 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"differ by 9 and whose reciprocals differ by \\( \\dfrac{1}{10} \\)"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( x-y=9;\\ \\dfrac{1}{y}-\\dfrac{1}{x}=\\dfrac{1}{10} \\)</span></div></div>
+        <span class="problem-type-tag">Reciprocal Number Problems</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( x-y=9 \\)</div><div class="formula-block">\\( \\dfrac{1}{y}-\\dfrac{1}{x}=\\dfrac{1}{10} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( x=\\text{larger number} \\)</div><div class="hint-formula">\\( y=\\text{smaller number} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-grid-2">
+  <div class="formula-block">\\( x-y=9 \\)</div>
+  <div class="formula-block">\\( \\dfrac{1}{y}-\\dfrac{1}{x}=\\dfrac{1}{10} \\)</div>
+</div>
+        <p class="hint-note">Solve the first equation for \\( x \\) (Equation 1):</p>
+        <div class="formula-block">\\( x=y+9 \\)</div>
+        <p class="hint-note">Substitute Equation 1 into the second equation:</p>
+        <div class="formula-block">\\( \\dfrac{1}{y}-\\dfrac{1}{y+9}=\\dfrac{1}{10} \\)</div>
+        <p class="hint-note">Multiply both sides by \\( 10y(y+9) \\):</p>
+        <div class="formula-block">\\( 10(y+9)-10y=y(y+9) \\)</div>
+        <p class="hint-note">Distribute:</p>
+        <div class="formula-block">\\( 10y+90-10y=y^2+9y \\)</div>
+        <p class="hint-note">Move all terms to the left side and combine like terms:</p>
+        <div class="formula-block">\\( y^2+9y-90=0 \\)</div>
+        <p class="hint-note">Factor:</p>
+        <div class="formula-block">\\( (y+15)(y-6)=0 \\)</div>
+        <p class="hint-note">Both numbers are positive, so reject \\( y=-15 \\):</p>
+        <div class="formula-block">\\( y=6 \\)</div>
+        <p class="hint-note">Solve for the larger number:</p>
+        <div class="formula-block">\\( x=y+9=6+9=15 \\)</div>
+        <div class="hint-answer">Answer: B. \\( 15 \\)</div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="sample-problem" data-topic="Reciprocal Number Problems">
+    <div class="sp-title">10. Find the smaller of two consecutive positive even integers the difference of whose reciprocals is \\( \\dfrac{1}{60} \\).</div>
+    <div class="sp-choices sp-choices-boxed" data-answer="A">
+      <span class="sp-choice">A.&nbsp;\\( 10 \\)</span>
+      <span class="sp-choice">B.&nbsp;\\( 6 \\)</span>
+      <span class="sp-choice">C.&nbsp;\\( 4 \\)</span>
+      <span class="sp-choice">D.&nbsp;\\( 9 \\)</span>
+    </div>
+    <div class="hints-wrap">
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔑 Hint 1: Problem type</button>
+      <div class="hint-panel">
+        <div class="kw-map"><div class="kw-row"><span class="kw-phrase">"consecutive positive even integers, difference of reciprocals is \\( \\dfrac{1}{60} \\)"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( x,\\ x+2;\\ \\dfrac{1}{x}-\\dfrac{1}{x+2}=\\dfrac{1}{60} \\)</span></div></div>
+        <span class="problem-type-tag">Reciprocal Number Problems</span>
+      </div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">📐 Hint 2: Formula</button>
+      <div class="hint-panel"><div class="formula-block">\\( \\dfrac{1}{x}-\\dfrac{1}{x+2}=\\dfrac{1}{60} \\)</div></div>
+      <button type="button" class="hint-btn" onclick="toggleHandoutHint(this)">🔤 Hint 3: Variables</button>
+      <div class="hint-panel"><div class="hint-formula">\\( x=\\text{first (smaller) even integer} \\)</div><div class="hint-formula">\\( x+2=\\text{second even integer} \\)</div></div>
+      <button type="button" class="hint-btn hint-solution" onclick="toggleHandoutHint(this)">✅ Full solution</button>
+      <div class="hint-panel hint-solution">
+        <p class="hint-given">Given:</p>
+        <div class="formula-block">\\( \\dfrac{1}{x}-\\dfrac{1}{x+2}=\\dfrac{1}{60} \\)</div>
+        <p class="hint-note">Multiply both sides by \\( 60x(x+2) \\):</p>
+        <div class="formula-block">\\( 60(x+2)-60x=x(x+2) \\)</div>
+        <p class="hint-note">Distribute:</p>
+        <div class="formula-block">\\( 60x+120-60x=x^2+2x \\)</div>
+        <p class="hint-note">Move all terms to the left side and combine like terms:</p>
+        <div class="formula-block">\\( x^2+2x-120=0 \\)</div>
+        <p class="hint-note">Factor:</p>
+        <div class="formula-block">\\( (x+12)(x-10)=0 \\)</div>
+        <p class="hint-note">The integers are positive, so reject \\( x=-12 \\):</p>
+        <div class="formula-block">\\( x=10 \\)</div>
+        <div class="hint-answer">Answer: A. \\( 10 \\)</div>
+      </div>
+    </div>
+  </div>
+`;
+attachStaticTopicFilter("samples-math-2", math2FormulaOutline);
 
 
 
