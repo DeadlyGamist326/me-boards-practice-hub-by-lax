@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>ME Boards Practice Hub</title>
-<!-- VERSION: 1.3.13.0 — 2026-10-04 (see in-app Changelog on the home page for details) -->
+<!-- VERSION: 1.3.14.0 — 2026-10-04 (see in-app Changelog on the home page for details) -->
 <!--
 ================================================================================
   RULINGS / STYLE GUIDE FOR CLAUDE — READ THIS BEFORE EDITING THIS FILE
@@ -4300,7 +4300,7 @@ function makeMenuItem(label, available, onclickFn) {
 
 // Days that are unlocked but still awaiting real content — shown blurred
 // wherever they appear (featured section or subject browse panel).
-const pendingContentTriviaDays = [1, 2, 3, 4];
+const pendingContentTriviaDays = [2, 3, 4];
 const pendingContentProblemSets = [2, 3, 4];
 const pendingContentPpeTriviaDays = [9, 10, 11, 12];
 const pendingContentPpeProblemSets = [9, 10, 11, 12];
@@ -4413,6 +4413,9 @@ function onSubjectToggleClick(subjectKey) {
 // in the diary's own entries only, and skip (don't renumber around) any
 // version whose only changes are diary-only.
 const CHANGELOG = [
+  { version: "1.3.14.0", date: "2026-10-04", changes: [
+    "Math Trivia Day 1 added (15 questions: factoring, powers of i, quadratics, simultaneous equations, matrices, primes, and average), each with the full hint system and \"Practice by formula\" filtering"
+  ] },
   { version: "1.3.13.0", date: "2026-10-04", changes: [
     "Math Problem Set Day 1 added (31 questions: significant figures, factoring, exponents, equations, matrices, averages and median), each with the full hint system and \"Practice by formula\" filtering"
   ] },
@@ -28335,7 +28338,7 @@ const math1FormulaOutline = [
     { name: null, items: ["Laws of Exponents"] },
   ] },
   { section: "IV. Equations", subsections: [
-    { name: null, items: ["Quadratic Equation", "Linear Equations in Two Unknowns", "Simultaneous Equations (Three Unknowns)", "Simultaneous Equations (Product Form)", "Exponential Equation"] },
+    { name: null, items: ["Quadratic Equation", "Linear Equations in Two Unknowns", "Simultaneous Equations (Three Unknowns)", "Simultaneous Equations (Nonlinear)", "Simultaneous Equations (Product Form)", "Exponential Equation"] },
   ] },
   { section: "V. Matrices", subsections: [
     { name: null, items: ["Matrix Addition and Subtraction", "Matrix Multiplication", "Determinant", "Cofactor and Classical Adjoint", "Inverse of a Matrix"] },
@@ -28344,10 +28347,10 @@ const math1FormulaOutline = [
     { name: null, items: ["Linear Inequality", "Absolute Value Inequality"] },
   ] },
   { section: "VII. Arithmetic and Word Problems", subsections: [
-    { name: null, items: ["Fraction Arithmetic (Mixed Numbers)", "Fractions (Part of a Whole)", "Ratio and Proportion", "Net Profit and Loss", "Average (Mean)", "Median", "Number Word Problems"] },
+    { name: null, items: ["Fraction Arithmetic (Mixed Numbers)", "Fractions (Part of a Whole)", "Ratio and Proportion", "Net Profit and Loss", "Percent and Discount", "Average (Mean)", "Median", "Number Word Problems", "Prime Numbers"] },
   ] },
   { section: "VIII. Complex Numbers and Indeterminate Forms", subsections: [
-    { name: null, items: ["Powers of i", "Indeterminate Forms"] },
+    { name: null, items: ["Powers of i", "Complex Number Equality", "Indeterminate Forms"] },
   ] },
 ];
 
@@ -28792,6 +28795,224 @@ const ps1Data = [
 document.getElementById("quiz-ps-1-subtitle").textContent =
   `${ps1Data.length} questions · click a choice to check your answer`;
 renderQuiz("quiz-ps-1", ps1Data, "Problem Set Day 1", "timer-ps-1", math1FormulaOutline);
+
+// ---- Math Trivia Day 1 quiz data ----
+// Shares math1FormulaOutline with Math Sample Problems and Problem Set Day 1.
+const trivia1Data = [
+  { q: ["Factor as completely as possible: ", { latex: "8z^3+125" }],
+    choices: [
+      [{ latex: "(2z+5)(4z^2-10z-25)" }],
+      [{ latex: "(2z-5)(4z^2-10z+25)" }],
+      [{ latex: "(-2z+5)(4z^2-10z+25)" }],
+      [{ latex: "(2z+5)(4z^2-10z+25)" }]
+    ], answer: 3,
+    topics: ["Common Factoring Identities"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"factor completely, cubes"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( a^3+b^3=(a+b)(a^2-ab+b^2) \\)</span></div></div><span class="problem-type-tag">Common Factoring Identities</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( a^3+b^3=(a+b)(a^2-ab+b^2) \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( 8z^3=(2z)^3,\\ 125=5^3\\Rightarrow a=2z,\\ b=5 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( 8z^3+125 \\)</div><div class="formula-block">\\( a^3+b^3=(a+b)(a^2-ab+b^2) \\)</div><p class="hint-note">Write both terms as perfect cubes:</p><div class="formula-block">\\( 8z^3+125=(2z)^3+5^3 \\)</div><p class="hint-note">Apply the sum of cubes identity with a = 2z and b = 5:</p><div class="formula-block">\\( (2z)^3+5^3=(2z+5)\\left[(2z)^2-(2z)(5)+5^2\\right] \\)</div><p class="hint-note">Simplify inside the bracket:</p><div class="formula-block">\\( (2z+5)\\left[(2z)^2-(2z)(5)+5^2\\right]=(2z+5)(4z^2-10z+25) \\)</div><div class="hint-answer">Answer: D. \\( (2z+5)(4z^2-10z+25) \\)</div>`
+    ] },
+  { q: ["Factor the expression: ", { latex: "6x+3y+2mx+my" }],
+    choices: [
+      [{ latex: "(3+m)(2x-y)" }],
+      [{ latex: "(3+m)(2x+y)" }],
+      [{ latex: "(3-m)(2x+y)" }],
+      [{ latex: "(m-3)(2x-y)" }]
+    ], answer: 1,
+    topics: ["Factoring by Grouping"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"factor a four-term expression"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{group the terms, factor each group} \\)</span></div></div><span class="problem-type-tag">Factoring by Grouping</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( ax+ay+bx+by=a(x+y)+b(x+y)=(a+b)(x+y) \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( (6x+3y)+(2mx+my) \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( 6x+3y+2mx+my \\)</div><p class="hint-note">Group the first two terms and the last two terms:</p><div class="formula-block">\\( (6x+3y)+(2mx+my) \\)</div><p class="hint-note">Factor the common factor out of each group (3 from the first, m from the second):</p><div class="formula-block">\\( 3(2x+y)+m(2x+y) \\)</div><p class="hint-note">Now (2x + y) is common to both terms, so factor it out:</p><div class="formula-block">\\( (3+m)(2x+y) \\)</div><div class="hint-answer">Answer: B. \\( (3+m)(2x+y) \\)</div>`
+    ] },
+  { q: ["What is the value of ", { latex: "i^{34}\\times i^{451}" }, "?"],
+    choices: [
+      [{ latex: "i" }],
+      [{ latex: "1" }],
+      [{ latex: "-1" }],
+      [{ latex: "-i" }]
+    ], answer: 0,
+    topics: ["Powers of i"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"product of powers of i"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( i^m\\times i^n=i^{m+n} \\)</span></div></div><span class="problem-type-tag">Powers of i</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( i^m\\times i^n=i^{m+n} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( i^1=i,\\ i^2=-1,\\ i^3=-i,\\ i^4=1\\quad(\\text{cycle of 4}) \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( i^{34}\\times i^{451} \\)</div><p class="hint-note">Add the exponents (same base):</p><div class="formula-block">\\( i^{34}\\times i^{451}=i^{34+451} \\)</div><div class="formula-block">\\( i^{34+451}=i^{485} \\)</div><p class="hint-note">The powers of i repeat every 4, so divide the exponent by 4 and keep the remainder:</p><div class="formula-block">\\( 485\\div4=121\\ \\text{remainder}\\ 1 \\)</div><div class="formula-block">\\( i^{485}=i^{1}=i \\)</div><div class="hint-answer">Answer: A. \\( i \\)</div>`
+    ] },
+  { q: ["Find c so that the quadratic equation has only one solution: ", { latex: "x^2-4x+c=0" }],
+    choices: [
+      "10",
+      "6",
+      [{ latex: "\\sqrt{20}" }],
+      "4"
+    ], answer: 3,
+    topics: ["Quadratic Equation"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"only one solution"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( b^2-4ac=0 \\)</span></div></div><span class="problem-type-tag">Quadratic Equation</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( b^2-4ac=0 \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( a=1,\\ b=-4,\\ c=? \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( x^2-4x+c=0 \\)</div><p class="hint-note">A quadratic has exactly one solution when its discriminant is zero:</p><div class="formula-block">\\( b^2-4ac=0 \\)</div><p class="hint-note">Substitute a = 1 and b = −4:</p><div class="formula-block">\\( (-4)^2-4(1)(c)=0 \\)</div><div class="formula-block">\\( 16-4c=0 \\)</div><p class="hint-note">Solve for c:</p><div class="formula-block">\\( c=\\dfrac{16}{4} \\)</div><div class="formula-block">\\( c=4 \\)</div><div class="hint-answer">Answer: D. \\( c=4 \\)</div>`
+    ] },
+  { q: ["Solve for x: ", { latex: "x^2-y^2=8" }, " and ", { latex: "x^2+2y=11" }],
+    choices: [
+      "3",
+      "6.3",
+      "5.1",
+      [{ latex: "\\pm7.2" }]
+    ], answer: 0,
+    topics: ["Simultaneous Equations (Nonlinear)"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"two equations, two unknowns"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{eliminate }x^2\\text{ by subtraction} \\)</span></div></div><span class="problem-type-tag">Simultaneous Equations (Nonlinear)</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{subtract the equations to eliminate }x^2 \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( x^2-y^2=8,\\quad x^2+2y=11 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-2"><div class="formula-block">\\( x^2-y^2=8 \\)</div><div class="formula-block">\\( x^2+2y=11 \\)</div></div><p class="hint-note">Subtract the second equation from the first to eliminate x²:</p><div class="formula-block">\\( (x^2-y^2)-(x^2+2y)=8-11 \\)</div><div class="formula-block">\\( -y^2-2y=-3 \\)</div><p class="hint-note">Multiply by −1 and move everything to one side:</p><div class="formula-block">\\( y^2+2y-3=0 \\)</div><p class="hint-note">Factor:</p><div class="formula-block">\\( (y+3)(y-1)=0 \\)</div><div class="formula-block">\\( y=1\\ \\text{or}\\ y=-3 \\)</div><p class="hint-note">Take y = 1 and substitute into the second equation:</p><div class="formula-block">\\( x^2+2(1)=11 \\)</div><div class="formula-block">\\( x^2=9 \\)</div><div class="formula-block">\\( x=\\pm3 \\)</div><p class="hint-note">The only value offered in the choices is 3 (the other root, y = −3, gives x² = 17, which is not in the choices).</p><div class="hint-answer">Answer: A. \\( x=3 \\)</div>`
+    ] },
+  { q: ["Which of the following contains the greatest value?"],
+    choices: [
+      [{ latex: "10^{1000}" }],
+      [{ latex: "100^{502}" }],
+      [{ latex: "1000^{335}" }],
+      [{ latex: "1000^{250}" }]
+    ], answer: 2,
+    topics: ["Laws of Exponents"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"greatest value, different bases"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( Convert every choice to base 10 \\)</span></div></div><span class="problem-type-tag">Laws of Exponents</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( (a^m)^n=a^{mn} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( 100=10^2,\\quad 1000=10^3 \\)</div>`,
+      `<p class="hint-given">Given: choices A to D.</p><div class="formula-block">\\( 10^{1000} \\)</div><p class="hint-note">Choice B: write 100 as a power of 10 and multiply the exponents:</p><div class="formula-block">\\( 100^{502}=(10^2)^{502} \\)</div><div class="formula-block">\\( (10^2)^{502}=10^{1004} \\)</div><p class="hint-note">Choice C: write 1000 as a power of 10:</p><div class="formula-block">\\( 1000^{335}=(10^3)^{335} \\)</div><div class="formula-block">\\( (10^3)^{335}=10^{1005} \\)</div><p class="hint-note">Choice D:</p><div class="formula-block">\\( 1000^{250}=(10^3)^{250}=10^{750} \\)</div><p class="hint-note">With the same base, the greatest exponent is the greatest value: 1005 &gt; 1004 &gt; 1000 &gt; 750.</p><div class="hint-answer">Answer: C. \\( 1000^{335}=10^{1005} \\)</div>`
+    ] },
+  { q: ["Find the product of Matrix A and Matrix B if ", { latex: "A=\\begin{bmatrix}2&4&1\\\\1&3&7\\\\-2&1&-5\\end{bmatrix}" }, " and ", { latex: "B=\\begin{bmatrix}1&-2&-7\\\\-2&5&2\\\\3&0&-4\\end{bmatrix}" }],
+    choices: [
+      [{ latex: "\\begin{bmatrix}-3&8&-10\\\\16&13&-29\\\\-19&0&36\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}-3&16&-10\\\\16&13&-29\\\\-19&9&36\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}-7&16&0\\\\1&13&-29\\\\-19&9&36\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}-1&6&-10\\\\7&13&-29\\\\-19&9&36\\end{bmatrix}" }]
+    ], answer: 1,
+    topics: ["Matrix Multiplication"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"product of two matrices"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( c_{ij}=\\sum a_{ik}b_{kj} \\)</span></div></div><span class="problem-type-tag">Matrix Multiplication</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( c_{ij}=(\\text{row }i\\text{ of }A)\\cdot(\\text{column }j\\text{ of }B) \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( A\\ (3\\times3)\\times B\\ (3\\times3)=AB\\ (3\\times3) \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block fb-long">\\( A=\\begin{bmatrix}2&4&1\\\\1&3&7\\\\-2&1&-5\\end{bmatrix} \\)</div><div class="formula-block fb-long">\\( B=\\begin{bmatrix}1&-2&-7\\\\-2&5&2\\\\3&0&-4\\end{bmatrix} \\)</div><div class="formula-block fb-long">\\( AB=\\begin{bmatrix}c_{11}&c_{12}&c_{13}\\\\c_{21}&c_{22}&c_{23}\\\\c_{31}&c_{32}&c_{33}\\end{bmatrix} \\)</div><p class="hint-note">Each entry is a row of A times a column of B. Row 1 of A:</p><div class="formula-block fb-long">\\( c_{11}=2(1)+4(-2)+1(3)=-3 \\)</div><div class="formula-block fb-long">\\( c_{12}=2(-2)+4(5)+1(0)=16 \\)</div><div class="formula-block fb-long">\\( c_{13}=2(-7)+4(2)+1(-4)=-10 \\)</div><p class="hint-note">Row 2 of A:</p><div class="formula-block fb-long">\\( c_{21}=1(1)+3(-2)+7(3)=16 \\)</div><div class="formula-block fb-long">\\( c_{22}=1(-2)+3(5)+7(0)=13 \\)</div><div class="formula-block fb-long">\\( c_{23}=1(-7)+3(2)+7(-4)=-29 \\)</div><p class="hint-note">Row 3 of A:</p><div class="formula-block fb-long">\\( c_{31}=-2(1)+1(-2)+(-5)(3)=-19 \\)</div><div class="formula-block fb-long">\\( c_{32}=-2(-2)+1(5)+(-5)(0)=9 \\)</div><div class="formula-block fb-long">\\( c_{33}=-2(-7)+1(2)+(-5)(-4)=36 \\)</div><p class="hint-note">Put the nine entries together:</p><div class="formula-block fb-long">\\( AB=\\begin{bmatrix}-3&16&-10\\\\16&13&-29\\\\-19&9&36\\end{bmatrix} \\)</div><div class="hint-answer">Answer: B. \\( AB=\\begin{bmatrix}-3&16&-10\\\\16&13&-29\\\\-19&9&36\\end{bmatrix} \\)</div>`
+    ] },
+  { q: ["You bought four new tires at a recent sale where the fourth tire was half price. You paid $168.70 (excluding tax). What was the regular price of one tire?"],
+    choices: [
+      "$42.20",
+      "$43.20",
+      "$44.20",
+      "$46.20"
+    ], answer: 3,
+    topics: ["Percent and Discount"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"fourth tire was half price"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( 3P+\\dfrac{1}{2}P=\\text{total paid} \\)</span></div></div><span class="problem-type-tag">Percent and Discount</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{total}=3P+0.5P=3.5P \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( P=\\text{regular price of one tire} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( \\text{total paid}=168.70 \\)</div><p class="hint-note">Three tires are full price and the fourth is half price, so the total is 3.5 regular prices:</p><div class="formula-block">\\( 3P+0.5P=3.5P \\)</div><div class="formula-block">\\( 3.5P=168.70 \\)</div><p class="hint-note">Solve for P:</p><div class="formula-block">\\( P=\\dfrac{168.70}{3.5} \\)</div><div class="formula-block">\\( P=48.20 \\)</div><p class="hint-note">Disclosure: with $168.70, the working gives $48.20, which is not among the choices. The answer key says D ($46.20), which fits a total of $161.70 (3.5 × 46.20 = 161.70), so the amount in the problem may be a typo in the source. The key is followed here.</p><div class="hint-answer">Answer: D. $46.20 (per answer key)</div>`
+    ] },
+  { q: ["Given ", { latex: "f(x)=(x+1)^2" }, ". Find ", { latex: "f(2)" }],
+    choices: [
+      [{ latex: "3" }],
+      [{ latex: "5" }],
+      [{ latex: "7" }],
+      [{ latex: "9" }]
+    ], answer: 3,
+    topics: ["Evaluating a Polynomial"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"find f(2)"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{substitute }x=2 \\)</span></div></div><span class="problem-type-tag">Evaluating a Polynomial</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( f(a)=\\text{replace every }x\\text{ with }a \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( x=2 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( f(x)=(x+1)^2 \\)</div><div class="formula-block">\\( x=2 \\)</div><p class="hint-note">Substitute x = 2:</p><div class="formula-block">\\( f(2)=(2+1)^2 \\)</div><div class="formula-block">\\( f(2)=3^2 \\)</div><div class="formula-block">\\( f(2)=9 \\)</div><div class="hint-answer">Answer: D. \\( f(2)=9 \\)</div>`
+    ] },
+  { q: ["Find x and y if ", { latex: "3x+5yi=6-7i" }, "."],
+    choices: [
+      [{ latex: "x=1,\\ y=-\\dfrac{7}{5}" }],
+      [{ latex: "x=2,\\ y=-\\dfrac{7}{5}" }],
+      [{ latex: "x=3,\\ y=-\\dfrac{7}{5}" }],
+      [{ latex: "x=4,\\ y=-\\dfrac{7}{5}" }]
+    ], answer: 1,
+    topics: ["Complex Number Equality"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"equal complex numbers"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{real}=\\text{real},\\ \\text{imaginary}=\\text{imaginary} \\)</span></div></div><span class="problem-type-tag">Complex Number Equality</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( a+bi=c+di\\Rightarrow a=c,\\ b=d \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\text{real: }3x=6,\\quad\\text{imaginary: }5y=-7 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block">\\( 3x+5yi=6-7i \\)</div><p class="hint-note">Two complex numbers are equal only if their real parts are equal and their imaginary parts are equal. Real parts:</p><div class="formula-block">\\( 3x=6 \\)</div><div class="formula-block">\\( x=2 \\)</div><p class="hint-note">Imaginary parts (the coefficients of i):</p><div class="formula-block">\\( 5y=-7 \\)</div><div class="formula-block">\\( y=-\\dfrac{7}{5} \\)</div><div class="hint-answer">Answer: B. \\( x=2,\\ y=-\\dfrac{7}{5} \\)</div>`
+    ] },
+  { q: ["If 2 is one root of ", { latex: "x^2-5x+c=0" }, ", find the other root."],
+    choices: [
+      [{ latex: "1" }],
+      [{ latex: "2" }],
+      [{ latex: "3" }],
+      [{ latex: "4" }]
+    ], answer: 2,
+    topics: ["Quadratic Equation"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"one root given, find the other"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( r_1+r_2=-\\dfrac{b}{a} \\)</span></div></div><span class="problem-type-tag">Quadratic Equation</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( r_1+r_2=-\\dfrac{b}{a} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( a=1,\\ b=-5,\\ r_1=2 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-2"><div class="formula-block">\\( x^2-5x+c=0 \\)</div><div class="formula-block">\\( r_1=2 \\)</div></div><p class="hint-note">Use the sum of the roots:</p><div class="formula-block">\\( r_1+r_2=-\\dfrac{b}{a} \\)</div><p class="hint-note">Substitute a = 1, b = −5 and r₁ = 2:</p><div class="formula-block">\\( 2+r_2=-\\dfrac{-5}{1} \\)</div><div class="formula-block">\\( 2+r_2=5 \\)</div><div class="formula-block">\\( r_2=3 \\)</div><p class="hint-note">Check: c = 6, and x² − 5x + 6 = (x − 2)(x − 3).</p><div class="hint-answer">Answer: C. \\( r_2=3 \\)</div>`
+    ] },
+  { q: ["Which of the following is a prime number?"],
+    choices: [
+      "377",
+      "313",
+      "357",
+      "333"
+    ], answer: 1,
+    topics: ["Prime Numbers"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"which is prime"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{no divisor other than 1 and itself} \\)</span></div></div><span class="problem-type-tag">Prime Numbers</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{test divisors up to }\\sqrt{N} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( \\sqrt{313}\\approx17.7 \\)</div>`,
+      `<p class="hint-given">Given: choices 377, 313, 357 and 333.</p><div class="formula-block">\\( 377=13\\times29 \\)</div><p class="hint-note">377 has factors, so it is not prime. Next, 357:</p><div class="formula-block">\\( 357=3\\times7\\times17 \\)</div><p class="hint-note">Next, 333 (digit sum 9, so divisible by 3):</p><div class="formula-block">\\( 333=3\\times3\\times37 \\)</div><p class="hint-note">Only 313 is left. Check it by dividing by every prime up to its square root (17):</p><div class="formula-block">\\( 313\\div2,\\ 3,\\ 5,\\ 7,\\ 11,\\ 13,\\ 17\\ \\text{leave a remainder each time} \\)</div><p class="hint-note">No prime up to 17 divides 313 evenly, so it is prime.</p><div class="hint-answer">Answer: B. \\( 313 \\)</div>`
+    ] },
+  { q: ["Determine the SUM of the positive-valued solutions to the simultaneous equations: ", { latex: "xy=15\\quad yz=35\\quad zx=21" }],
+    choices: [
+      "15",
+      "13",
+      "17",
+      "19"
+    ], answer: 0,
+    topics: ["Simultaneous Equations (Product Form)"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"simultaneous products"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( (xy)(yz)(zx)=(xyz)^2 \\)</span></div></div><span class="problem-type-tag">Simultaneous Equations (Product Form)</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( (xy)(yz)(zx)=(xyz)^2 \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( xy=15,\\ yz=35,\\ zx=21 \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-3"><div class="formula-block">\\( xy=15 \\)</div><div class="formula-block">\\( yz=35 \\)</div><div class="formula-block">\\( zx=21 \\)</div></div><p class="hint-note">Multiply the three equations together:</p><div class="formula-block">\\( (xy)(yz)(zx)=15(35)(21) \\)</div><div class="formula-block">\\( (xyz)^2=11025 \\)</div><div class="formula-block">\\( xyz=105 \\)</div><p class="hint-note">Divide xyz by each given product to get one variable at a time:</p><div class="formula-block">\\( z=\\dfrac{xyz}{xy}=\\dfrac{105}{15}=7 \\)</div><div class="formula-block">\\( x=\\dfrac{xyz}{yz}=\\dfrac{105}{35}=3 \\)</div><div class="formula-block">\\( y=\\dfrac{xyz}{zx}=\\dfrac{105}{21}=5 \\)</div><p class="hint-note">Add the three values:</p><div class="formula-block">\\( x+y+z=3+5+7=15 \\)</div><div class="hint-answer">Answer: A. \\( x+y+z=15 \\)</div>`
+    ] },
+  { q: ["If ", { latex: "A=\\begin{bmatrix}-3&-1&-2\\\\-2&-1&0\\\\0&2&-1\\end{bmatrix}" }, ". What is the cofactor of the first row, second column element?"],
+    choices: [
+      [{ latex: "\\begin{bmatrix}3&2\\\\0&-1\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}-2&-1\\\\0&2\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}-1&-2\\\\2&-1\\end{bmatrix}" }],
+      [{ latex: "\\begin{bmatrix}-2&0\\\\0&-1\\end{bmatrix}" }]
+    ], answer: 3,
+    topics: ["Cofactor and Classical Adjoint"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"cofactor of row 1, column 2"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( C_{12}=(-1)^{1+2}M_{12} \\)</span></div></div><span class="problem-type-tag">Cofactor and Classical Adjoint</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( C_{ij}=(-1)^{i+j}M_{ij} \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( M_{12}=\\text{determinant of A with row 1 and column 2 deleted} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-block fb-long">\\( A=\\begin{bmatrix}-3&-1&-2\\\\-2&-1&0\\\\0&2&-1\\end{bmatrix} \\)</div><div class="formula-block">\\( C_{ij}=(-1)^{i+j}M_{ij} \\)</div><p class="hint-note">Delete row 1 and column 2 of A. The 2 × 2 matrix that remains is:</p><div class="formula-block">\\( \\begin{bmatrix}-2&0\\\\0&-1\\end{bmatrix} \\)</div><p class="hint-note">Its determinant is the minor M₁₂:</p><div class="formula-block">\\( M_{12}=(-2)(-1)-(0)(0)=2 \\)</div><p class="hint-note">Apply the sign (−1)^(1+2) = −1 to get the cofactor value:</p><div class="formula-block">\\( C_{12}=(-1)^{1+2}(2)=-2 \\)</div><p class="hint-note">The choices list the remaining 2 × 2 matrix, so the matching choice is the one with the deleted-row-and-column submatrix (it produces C₁₂ = −2).</p><div class="hint-answer">Answer: D. \\( \\begin{bmatrix}-2&0\\\\0&-1\\end{bmatrix} \\)</div>`
+    ] },
+  { q: ["Fred had an average of 86 so far in his 3 quizzes. How much should he get in his fourth quiz to raise his average to 89?"],
+    choices: [
+      "90",
+      "92",
+      "96",
+      "98"
+    ], answer: 3,
+    topics: ["Average (Mean)"],
+    hints: [
+      `<div class="kw-map"><div class="kw-row"><span class="kw-phrase">"average of quizzes"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( \\text{average}=\\dfrac{\\text{sum}}{n} \\)</span></div></div><span class="problem-type-tag">Average (Mean)</span>`,
+      `<div class="formula-row"><span class="fr-left">\\(\\text{—}\\)</span><span class="fr-center">\\( \\text{sum}=\\text{average}\\times n \\)</span><span class="fr-right">\\(\\text{—}\\)</span></div>`,
+      `<div class="hint-formula">\\( x=\\text{fourth quiz score} \\)</div>`,
+      `<p class="hint-given">Given:</p><div class="formula-grid-2"><div class="formula-block">\\( n=3,\\ \\text{average}=86 \\)</div><div class="formula-block">\\( \\text{new average}=89\\ (n=4) \\)</div></div><p class="hint-note">Total of the first three quizzes:</p><div class="formula-block">\\( 3(86)=258 \\)</div><p class="hint-note">Total needed after four quizzes for an average of 89:</p><div class="formula-block">\\( 4(89)=356 \\)</div><p class="hint-note">The fourth quiz must make up the difference:</p><div class="formula-block">\\( x=356-258 \\)</div><div class="formula-block">\\( x=98 \\)</div><div class="hint-answer">Answer: D. \\( x=98 \\)</div>`
+    ] },
+];
+document.getElementById("quiz-1-subtitle").textContent =
+  `${trivia1Data.length} questions · click a choice to check your answer`;
+renderQuiz("quiz-1", trivia1Data, "Trivia Day 1", "timer-quiz-1", math1FormulaOutline);
 
 
 document.getElementById("samples-math-1").innerHTML = `
