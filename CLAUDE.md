@@ -41,6 +41,16 @@ convention needs no extra step. Never hand-maintain an `index.html` copy in
 the repo. Only the app file is published (not the diary). Keep the
 `MEBoards_*.html` filename prefix intact or the workflow won't find it.
 
+**Standing instruction — auto-merge to `main` (given by the user on
+2026-10-04):** after finishing and verifying any update (syntax, render and
+audit checks passed, version/changelog/diary updated, pushed to the working
+branch), open a PR and merge it into `main` straight away so the live GitHub
+Pages site updates, without asking each time. This is durable for this repo,
+not one-off. Still stop and ask instead of merging if verification failed,
+if something is unfinished or uncertain, or if the change touches anything
+other than the app/diary/docs. If the working branch was already merged,
+restart it from the latest `main` first (same branch name).
+
 **Dev diary**: `ME_Boards_Practice_Hub_Diary.html` (same folder) is a
 separate, developer-facing log of everything done in each session —
 technical or not — distinct from the in-app, user-facing Changelog.
