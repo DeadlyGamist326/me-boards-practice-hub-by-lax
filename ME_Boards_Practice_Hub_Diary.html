@@ -712,7 +712,7 @@ const entries = {
     ]
   },
   "2026-10-04": {
-    stamp: "v1.3.10.0 – v1.3.32.0",
+    stamp: "v1.3.10.0 – v1.3.33.0",
     title: "First Claude Code web session, GitHub Pages deploy set up, Math Handout Day 1 built",
     body: [
       "Moved work to a Claude Code cloud session on the GitHub repo; had Claude read the project (CLAUDE.md, diary, the in-file RULINGS block, and the file's structure) and confirm the rulings, naming convention, and changelog/diary workflow",
@@ -832,7 +832,9 @@ const entries = {
       "Created view-samples-math-8 (it did not exist) and math8FormulaOutline (I. Ellipse, 8 topics) so the Day 8 Problem Set and Trivia can share and extend it, wired with attachStaticTopicFilter. Long-box rule applied: every box is a single short equation or a 2 to 4 cell grid, nothing needed a full-row override.",
       "Answers: 1 D (17.32), 2 C (6.93), 3 C (1/2), 4 A (2), 5 A (x²/45 + y²/49 = 1), 6 D (4x²/9 + y²/25 = 1), 7 D (9.17 ft), 8 C (-2, 3). All agree with the source steps.",
       "Source issues disclosed: Problem 2 choice B printed '8.193' (read as a typo, rewritten as 8.93) and the solution says 'By instegration' (read as 'By inspection'); Problem 4 had two choices printed as 6, so choice D was rewritten as 8; Problem 5's solution wrote b² = a² ⋅ c² where it means a² − c² (read as a minus: 7² − 2² = 45); Problem 6's solution jumped from x²/9 to 4x²/9 without the dividing-by-9/4 step, which was added; Problem 3 and 4 focal radii wording follows the source (sum of the two focal radii = 2a).",
-      "Removed the home blur for Math Sample Problems Day 8 (pendingContentMathSampleProblems is now empty and availableMathSampleProblems gained 8). Version bump: 1.3.32.0 (minor) because a whole Sample Problems day is now built; file renamed to match (1.3.31.0 was taken by Sample Problems Day 7, merged first)."
+      "Removed the home blur for Math Sample Problems Day 8 (pendingContentMathSampleProblems is now empty and availableMathSampleProblems gained 8). Version bump: 1.3.32.0 (minor) because a whole Sample Problems day is now built; file renamed to match (1.3.31.0 was taken by Sample Problems Day 7, merged first).",
+      "v1.3.33.0: LAX pasted Math Trivia Day 4 (15 questions plus answer key) in chat. Built trivia4Data wired to quiz-4 with the 4-tier hint system, shares math4FormulaOutline (added a Median topic under Statistics and Series). Solved every item independently: all 15 match the key (1.B 2.A 3.C 4.D 5.C 6.A 7.B 8.D 9.A 10.B 11.C 12.C 13.C 14.D 15.A). Disclosed: Q2 uses the population standard deviation (divide by n; sample would give 3.50, not a choice), and Q9 choice A was printed 5,246,786 but C(42,6) = 5,245,786, so the choice was corrected",
+      "Removed the old Trivia Day 4 placeholder loop (it would have blurred and overwritten the quiz) and cleared pendingContentTriviaDays so the home tile is no longer blurred; the data block sits after Trivia Day 3 so math4FormulaOutline is declared first. Version 1.3.33.0 (minor, a Trivia set completed), file renamed, changelog and CLAUDE.md updated"
     ]
   },
 };
