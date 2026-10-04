@@ -1,0 +1,40 @@
+# Publishes the app to GitHub Pages. The app file is renamed on every version
+# bump (MEBoards_ PracticeHub_by LAX_v<w.x.y.z>.html), so this copies the
+# highest-versioned one to index.html at deploy time. Nothing to maintain by hand.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build site (latest app file -> index.html)
+        run: |
+          latest="$(ls -1 MEBoards_*.html | sort -V | tail -n1)"
+          echo "Publishing: $latest"
+          mkdir _site
+          cp "$latest" _site/index.html
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4

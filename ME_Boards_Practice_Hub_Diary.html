@@ -711,6 +711,17 @@ const entries = {
       "Cross-checked every topic used per day against its outline in both directions: no missing and no zero-question items; Math Day 9–12 now all have Practice by formula for Trivia, Problem Set, and Sample Problems"
     ]
   },
+  "2026-10-04": {
+    stamp: "v1.3.10.0 (no version change)",
+    title: "First Claude Code web session, GitHub Pages deploy set up",
+    body: [
+      "Moved work to a Claude Code cloud session on the GitHub repo; had Claude read the project (CLAUDE.md, diary, the in-file RULINGS block, and the file's structure) and confirm the rulings, naming convention, and changelog/diary workflow",
+      "Asked how to put the app online as a link; chose GitHub Pages. Pages needs an index.html, but the app file is renamed on every version bump and has a space in its name, so a hand-kept copy would go stale",
+      "Added .github/workflows/pages.yml: on every push to main it picks the highest-versioned MEBoards_*.html and publishes it as index.html, so the online app always matches the latest file and the naming convention is untouched",
+      "Deploy-only change, nothing in the app itself changed, so no version bump and no changelog entry; the diary and dev log stay out of the published site",
+      "Still to do by hand on GitHub: make the repo public, set Settings → Pages → Source to GitHub Actions, and merge the working branch into main"
+    ]
+  },
 };
 
 const MONTH_NAMES = ["January","February","March","April","May","June","July","August","September","October","November","December"];
