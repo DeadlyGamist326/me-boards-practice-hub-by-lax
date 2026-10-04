@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.35.0.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.36.0.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -778,4 +778,4 @@ Changelog view.
   deferred to a later pass — Problem Set/Trivia 12 and Handout/Sample
   Problems 12 already follow it.
 
-- **Missed Questions Compilation (5th column, v1.3.34.0; Day 5-8 added v1.3.35.0)**: Math Day 1-8 each have `view-missed-N` / `quiz-missed-N` fed by `missedNData` (declared after the Day 4 Trivia `renderQuiz`, sharing `mathNFormulaOutline`). Questions were pasted by LAX from several students' reports, de-duplicated; choices not recorded are `""` (blank). More days: add `missedNData`, a `view-missed-N` block, push N into `availableMathMissed`. Days not in that list render blurred/disabled.
+- **Missed Questions Compilation (5th column, v1.3.34.0; Day 5-8 added v1.3.35.0, Day 9-12 added v1.3.36.0)**: Math Day 1-12 each have `view-missed-N` / `quiz-missed-N` fed by `missedNData` (declared after the Day 4 Trivia `renderQuiz`, sharing `mathNFormulaOutline`). Questions were pasted by LAX from several students' reports, de-duplicated; choices not recorded are `""` (blank). More days: add `missedNData`, a `view-missed-N` block, push N into `availableMathMissed`. Days not in that list render blurred/disabled.
