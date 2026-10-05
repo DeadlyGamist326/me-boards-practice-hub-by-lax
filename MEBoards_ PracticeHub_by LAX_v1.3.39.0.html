@@ -44369,7 +44369,7 @@ for (let i = 1; i <= 6; i++) {
     fb.au.signInWithEmailAndPassword(fb.adminAuth, $("adm-email").value.trim(), $("adm-pass").value).then(function (cred) {
       if (cred.user.uid !== ADMIN_UID) { return fb.au.signOut(fb.adminAuth).then(function () { $("adm-err").textContent = "This account is not an admin."; }); }
       $("adm-pass").value = ""; $("admin-login").hidden = true; becomeAdmin();
-    }).catch(function () { $("adm-err").textContent = "Sign in failed. Check email and password."; });
+    }).catch(function (e) { $("adm-err").textContent = "Sign in failed" + (e && e.code ? " (" + e.code + ")" : "") + ". Check email and password."; });
   });
   $("adm-pass").addEventListener("keydown", function (e) { if (e.key === "Enter") $("adm-go").click(); });
 
