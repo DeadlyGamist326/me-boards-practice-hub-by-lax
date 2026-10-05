@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'HMyGI5u3b5hwvhwWS8GpaalVsYa2';
+    }
+
+    // One document per device. The document id is the device's anonymous
+    // Firebase Auth uid, so a visitor can only ever touch their own document.
+    match /devices/{deviceId} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == deviceId);
+
+      // A visitor may only create their own doc as a fresh trial, stamped with the SERVER time.
+      allow create: if request.auth != null && request.auth.uid == deviceId
+        && request.resource.data.keys().hasOnly(['status', 'name', 'ua', 'firstSeen', 'lastSeen'])
+        && request.resource.data.status == 'trial'
+        && request.resource.data.name == ''
+        && request.resource.data.ua is string && request.resource.data.ua.size() <= 200
+        && request.resource.data.firstSeen == request.time
+        && request.resource.data.lastSeen == request.time;
+
+      // A visitor may only refresh lastSeen/ua, set their name, or ask for approval
+      // (-> 'pending'). They can never approve themselves or change firstSeen.
+      allow update: if isAdmin() || (
+        request.auth != null && request.auth.uid == deviceId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'status', 'ua', 'lastSeen'])
+        && request.resource.data.lastSeen == request.time
+        && request.resource.data.name is string && request.resource.data.name.size() <= 60
+        && request.resource.data.ua is string && request.resource.data.ua.size() <= 200
+        && (request.resource.data.status == resource.data.status
+            || (request.resource.data.status == 'pending' && resource.data.status in ['trial', 'pending', 'revoked']))
+      );
+
+      // No deletes for visitors; the admin does not need them either
+      // (deleting a doc would hand that device a fresh 30-minute trial).
+      allow delete: if false;
+    }
+  }
+}
