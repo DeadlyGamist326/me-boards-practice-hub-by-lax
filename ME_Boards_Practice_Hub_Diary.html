@@ -849,10 +849,14 @@ const entries = {
     ]
   },
   "2026-10-05": {
-    stamp: "v1.3.37.0",
-    title: "Contact-LAX note for the Missed Questions Compilation",
+    stamp: "v1.3.37.0 – v1.3.38.0",
+    title: "Contact-LAX note for Missed Questions; 30-minute trial gate and hidden device tracker",
     body: [
       "v1.3.37.0: LAX (MJ) asked for a note so students can send in missed questions of their own: \"You got missed questions? Contact (LAX) and let him know, so we can add them to the compiled questions\", with (LAX) as a clickable link to http://m.me/mj.d.laxamana/. Added a .missed-contact-note paragraph under the Math Quick Access grid on the home page and under the subtitle of all 12 Missed Questions Compilation views; the link opens in a new tab (target=_blank, rel=noopener noreferrer). Lightly fixed the grammar of the wording and kept the meaning. Version 1.3.37.0 (minor, small user-facing feature on the Missed Questions column)."
+      "v1.3.38.0: LAX (MJ) asked for a hidden admin tracker (tap the LAX logo 10 times, then sign in) plus a 30-minute free trial per device, after which a device must register a name, message LAX and be approved. Decisions from LAX: trial counted from the device's first visit; approval is permanent but has a check/uncheck toggle (unchecking = revoked, no access now or later until re-approved); fail-closed and online-only (offline = locked); the Message LAX button is the existing m.me link, with no platform name shown.",
+      "Backend is Firebase (project me-boards-practice-hub-db): Firestore + Auth, SDK lazy-loaded from gstatic. Each visitor signs in anonymously and gets one devices/<uid> doc (status trial/pending/approved/revoked, name, ua summary, firstSeen/lastSeen from SERVER time). The tracker signs in through a SECOND Firebase app instance (named admin) so signing in as admin never swaps this browser's visitor identity. The admin password is never in the page: LAX signs in with a Firebase Auth account and only that UID is allowed by firebase/firestore.rules.",
+      "Known limits, by design of a static site: a visitor can clear site data or use another browser for a fresh trial; someone who edits the page in dev tools can hide the lock screen (the rules still stop self-approval and protect other devices' data). Browsers expose no real device name, so the tracker shows a device code (DEV-XXXXXX), the name the user typed and a browser/OS summary. Firestore rules must be published by LAX in the Firebase console (copy of them in firebase/firestore.rules) and the GitHub Pages domain should be added under Authentication > Settings > Authorized domains.",
+      "Deliberately no delete button in the tracker: deleting a device document would hand that device a fresh trial; use the Approved checkbox (revoke) instead."
     ]
   },
 };
