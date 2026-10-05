@@ -849,7 +849,7 @@ const entries = {
     ]
   },
   "2026-10-05": {
-    stamp: "v1.3.37.0 – v1.3.38.1",
+    stamp: "v1.3.37.0 – v1.3.38.2",
     title: "Contact-LAX note for Missed Questions; 30-minute trial gate and hidden device tracker",
     body: [
       "v1.3.37.0: LAX (MJ) asked for a note so students can send in missed questions of their own: \"You got missed questions? Contact (LAX) and let him know, so we can add them to the compiled questions\", with (LAX) as a clickable link to http://m.me/mj.d.laxamana/. Added a .missed-contact-note paragraph under the Math Quick Access grid on the home page and under the subtitle of all 12 Missed Questions Compilation views; the link opens in a new tab (target=_blank, rel=noopener noreferrer). Lightly fixed the grammar of the wording and kept the meaning. Version 1.3.37.0 (minor, small user-facing feature on the Missed Questions column)."
@@ -857,6 +857,7 @@ const entries = {
       "Backend is Firebase (project me-boards-practice-hub-db): Firestore + Auth, SDK lazy-loaded from gstatic. Each visitor signs in anonymously and gets one devices/<uid> doc (status trial/pending/approved/revoked, name, ua summary, firstSeen/lastSeen from SERVER time). The tracker signs in through a SECOND Firebase app instance (named admin) so signing in as admin never swaps this browser's visitor identity. The admin password is never in the page: LAX signs in with a Firebase Auth account and only that UID is allowed by firebase/firestore.rules.",
       "Known limits, by design of a static site: a visitor can clear site data or use another browser for a fresh trial; someone who edits the page in dev tools can hide the lock screen (the rules still stop self-approval and protect other devices' data). Browsers expose no real device name, so the tracker shows a device code (DEV-XXXXXX), the name the user typed and a browser/OS summary. Firestore rules must be published by LAX in the Firebase console (copy of them in firebase/firestore.rules) and the GitHub Pages domain should be added under Authentication > Settings > Authorized domains.",
       "v1.3.38.1: LAX kept hitting the offline lock screen on a weak connection and we could not tell a bad signal from a setup problem, so the offline screen now prints the Firebase error code (e.g. auth/..., permission-denied) under Try again.",
+      "v1.3.38.2: LAX reported being stuck on \"Checking access…\" even with working internet (chat worked). Likely cause: Firestore's default streaming transport hanging on some mobile networks, with no timeout on the sign-in/database steps. Fix: initializeFirestore with experimentalAutoDetectLongPolling for both app instances, plus per-step timeouts (loading Firebase 15s, sign-in 15s, database 20s) so the offline screen appears with an Error note naming the failing step.",
       "Deliberately no delete button in the tracker: deleting a device document would hand that device a fresh trial; use the Approved checkbox (revoke) instead."
     ]
   },
