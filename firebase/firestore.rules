@@ -33,8 +33,9 @@ service cloud.firestore {
             || (request.resource.data.status == 'pending' && resource.data.status == 'trial'))
       );
 
-      // No deletes (deleting a doc would hand that account a fresh 30-minute trial).
-      allow delete: if false;
+      // Only the admin may delete an entry. (The deleted person's Firebase Auth user still exists;
+      // if they log in again they start as a new account with a fresh 30-minute trial.)
+      allow delete: if isAdmin();
     }
   }
 }
