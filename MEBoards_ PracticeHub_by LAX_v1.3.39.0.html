@@ -2332,7 +2332,7 @@
 <body class="on-home">
 <!-- ACCESS GATE: visible from first paint so the app is never readable before the check finishes (fail-closed). Logic is in the last <script> of this file. -->
 <div id="access-gate" role="dialog" aria-live="polite">
-  <div class="gate-card" id="gate-card"><h2>Checking access&hellip;</h2><p>Please wait a moment. An internet connection is required.</p></div>
+  <div class="gate-card" id="gate-card"><h2>Checking access&hellip;</h2><p>Please wait a moment.</p></div>
 </div>
 <div id="trial-banner" hidden></div>
 <div id="admin-login" hidden>
@@ -4724,7 +4724,8 @@ const CHANGELOG = [
   { version: "1.3.39.0", date: "2026-10-05", changes: [
     "You now create an account with your name, email and a password (or log in if you already have one) before using the app; a new account gets 30 free minutes, and there is a \"Forgot password?\" link on the login screen",
     "After the 30 minutes, the account waits for LAX's approval; once LAX approves it the app unlocks by itself, and LAX can also switch access off again later",
-    "The 30-minute free trial now belongs to your account instead of the device, so it follows you if you log in on another phone or computer"
+    "The 30-minute free trial now belongs to your account instead of the device, so it follows you if you log in on another phone or computer",
+    "The first login needs internet, but after that the app keeps working with a weak or no connection for approved accounts and accounts still in their free trial (if LAX switches your access off, it takes effect the next time your device is online)"
   ] },
   { version: "1.3.38.3", date: "2026-10-05", changes: [
     "The lock screen no longer says \"Internet connection required\" when the real problem is not your connection; it now says the access check could not finish and shows the error code to send to LAX"
@@ -4738,7 +4739,7 @@ const CHANGELOG = [
   { version: "1.3.38.0", date: "2026-10-05", changes: [
     "The app now includes a 30-minute free trial: each device can use everything free for 30 minutes from its first visit, with a small timer at the bottom of the screen showing the minutes left",
     "When the 30 minutes are up, the app asks for your name and a message to LAX so your device can be approved; once LAX approves it, the app unlocks by itself and stays unlocked",
-    "An internet connection is now required: if you are offline, the app stays locked until you are back online"
+    "The first login needs internet, but after that the app keeps working with a weak or no connection for approved accounts and accounts still in their free trial"
   ] },
   { version: "1.3.37.0", date: "2026-10-05", changes: [
     "Missed Questions Compilation now has a note asking you to message LAX (clickable link to Messenger) if you have missed questions of your own, so they can be added to the compiled questions; it shows under the Math Quick Access list on the home page and at the top of every Missed Questions Compilation day"
@@ -44081,8 +44082,11 @@ for (let i = 1; i <= 6; i++) {
    account gets 30 free minutes (server clock) and then must be approved by
    LAX, who sees every account (name, email, devices used) in the hidden
    tracker and approves/revokes it with a checkbox. Backend: Firebase (Auth +
-   Firestore), SDK loaded lazily from the CDN. FAIL-CLOSED: the app stays
-   covered until the check succeeds and re-locks if the connection drops.
+   Firestore), SDK loaded lazily from the CDN. The first login needs
+   internet; after that the last known status is cached on the device, so an
+   approved or in-trial account keeps working offline (a revoke only takes
+   effect once the device is online again). With no cached status the app stays
+   covered (fail-closed).
    No admin password is in this file: LAX signs in with a Firebase Auth
    account and firebase/firestore.rules only lets that UID read/approve.
    The tracker opens by tapping the LAX logo 10x in a row.
@@ -44106,7 +44110,25 @@ for (let i = 1; i <= 6; i++) {
   var gate = $("access-gate"), card = $("gate-card"), banner = $("trial-banner");
   var fb = null, uid = null, ref = null, offset = 0, lastData = null;
   var unsubSelf = null, unsubAdmin = null, tickTimer = null, touchTimer = null;
-  var isAdmin = false, booting = false, renderedKey = "", authMode = "register", pendingSet = false;
+  var isAdmin = false, booting = false, renderedKey = "", authMode = "register", pendingSet = false, offTimer = null;
+  var CACHE_KEY = "meb_gate_cache";
+
+  // last status seen from the server, so a returning approved/trial user is not locked out by a weak connection
+  function saveCache(d, r) {
+    try {
+      var first = d && d.firstSeen && d.firstSeen.toMillis ? d.firstSeen.toMillis() : null;
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ uid: uid, status: d.status, first: first, offset: offset }));
+    } catch (e) {}
+  }
+  function cacheDecision() {
+    try {
+      var c = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+      if (!c || !c.status) return null;
+      var r = decide({ status: c.status, firstSeen: c.first === null ? null : { toMillis: function () { return c.first; } } }, Date.now() + (c.offset || 0));
+      return r.state === "approved" || r.state === "trial" ? r : null;
+    } catch (e) { return null; }
+  }
+  function clearCache() { try { localStorage.removeItem(CACHE_KEY); } catch (e) {} }
 
   // ---- pure logic (unit-tested) ----
   function decide(data, now) {
@@ -44187,17 +44209,32 @@ for (let i = 1; i <= 6; i++) {
   }
   function logoutBtn() {
     return h("button", { "class": "gate-btn alt", text: "Log out", onclick: function () {
-      stopVisitor(); fb.au.signOut(fb.auth).then(function () { uid = null; lastData = null; renderedKey = ""; boot(); });
+      stopVisitor(); fb.au.signOut(fb.auth).then(function () { clearCache(); uid = null; lastData = null; renderedKey = ""; boot(); });
     } });
   }
 
   // ---- screens ----
-  function showChecking() { screen("checking", "Checking access…", ["Please wait a moment. An internet connection is required."]); lock(true); }
+  function showChecking() { screen("checking", "Checking access…", ["Please wait a moment."]); lock(true); }
+  function offlineMode(r) {
+    // weak/no connection but this device was approved (or still in its trial) the last time it was online: keep the app open
+    stopVisitor(); clearInterval(offTimer);
+    lock(false);
+    function paint() {
+      var c = cacheDecision();
+      if (!c) { clearInterval(offTimer); renderedKey = ""; showOffline("offline mode ended"); return; }
+      if (c.state === "trial") { banner.hidden = false; banner.textContent = "Offline · free trial: " + Math.max(1, Math.ceil(c.msLeft / 60000)) + " min left"; }
+      else banner.hidden = true;
+    }
+    paint();
+    offTimer = setInterval(function () { paint(); if (navigator.onLine && !booting) { clearInterval(offTimer); boot(); } }, 15000);
+  }
   function showOffline(why) {
+    var cr = cacheDecision();
+    if (cr && !isAdmin) { offlineMode(cr); return; }
     stopVisitor();
     var netErr = !why || typeof why === "string" || /network|unavailable|timeout|offline/i.test((why.code || "") + " " + (why.message || ""));
     screen("offline:" + netErr, netErr ? "Internet connection required" : "Could not verify access",
-      [netErr ? "This app only works online. Please check your connection and try again." : "Your connection looks fine, but the access check could not finish. Please tell LAX the error code below."], function (c) {
+      [netErr ? "Please connect to the internet once to log in. After that the app also works with a weak or no connection." : "Your connection looks fine, but the access check could not finish. Please tell LAX the error code below."], function (c) {
       c.appendChild(h("button", { "class": "gate-btn", text: "Try again", onclick: function () { renderedKey = ""; boot(); } }));
       if (why && why.code) c.appendChild(h("p", { "class": "gate-code", text: "Error: " + why.code }));
       else if (why && why.message) c.appendChild(h("p", { "class": "gate-code", text: "Error: " + String(why.message).slice(0, 80) }));
@@ -44250,6 +44287,7 @@ for (let i = 1; i <= 6; i++) {
   }
   function render(d) {
     var r = decide(d, Date.now() + offset);
+    saveCache(d, r);
     if (r.state === "approved") { banner.hidden = true; lock(false); return; }
     if (r.state === "trial") {
       lock(false);
@@ -44332,7 +44370,10 @@ for (let i = 1; i <= 6; i++) {
   function boot() {
     if (booting || isAdmin) return;
     booting = true;
-    showChecking();
+    clearInterval(offTimer);
+    var cr = cacheDecision();
+    if (cr) { lock(false); if (cr.state === "trial") { banner.hidden = false; banner.textContent = "Free trial: " + Math.max(1, Math.ceil(cr.msLeft / 60000)) + " min left"; } else banner.hidden = true; }
+    else showChecking();
     if (!navigator.onLine) { booting = false; showOffline("navigator offline"); return; }
     loadFb().then(function () { return withTimeout(fb.adminAuth.authStateReady(), 10000, "auth start"); }).then(function () {
       if (fb.adminAuth.currentUser && fb.adminAuth.currentUser.uid === ADMIN_UID) {
