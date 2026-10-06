@@ -849,9 +849,10 @@ const entries = {
     ]
   },
   "2026-10-06": {
-    stamp: "v1.3.41.1",
+    stamp: "v1.3.41.1 – v1.3.41.2",
     title: "Missed Questions column header renamed to Exam Missed Questions",
     body: [
+      "v1.3.41.2: LAX asked to record each user's IP and deny a new trial when that IP already used its 30 minutes. The browser looks up its public IP (api.ipify.org, 4 s timeout, fails open) and stores it in the device entry; a new ips/<ip> doc (rules: signed-in get, create only for own uid, admin list/delete) records which account claimed that IP first. A new account from an already-claimed IP is created as pending (rules now allow create with status trial or pending) instead of trial, so LAX can still approve it by hand. Tracker shows IP per device and searches it; deleting an account also frees its IPs. Disclosed limits: client-reported so spoofable/blockable, shared IPs (home wifi, school, mobile CGNAT) cause false positives. REQUIRES re-publishing firebase/firestore.rules; until then the ips lookup fails open and everyone still gets a trial.",
       "v1.3.41.1: LAX asked to rename the 5th column header from Missed Questions to Exam Missed Questions. Changed only the two visible col-headers spans (Quick Access and the Full Course Library panel); the Missed Questions Compilation view titles, menu item labels, quiz labels and internal ids were left as they are. Patch bump, Changelog entry added, file renamed to v1.3.41.1.",
       "Verification: node --check on the script, CSS braces balanced, no mojibake."
     ]
