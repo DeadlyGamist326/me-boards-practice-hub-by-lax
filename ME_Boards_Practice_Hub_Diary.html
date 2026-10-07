@@ -848,6 +848,13 @@ const entries = {
       "v1.3.36.1: LAX asked for the home page title to read \"ME Boards Practice Hub vX.X.X.X\" above \"Choose a day or problem set to begin\". Added a span in the home h1 filled at load from CHANGELOG[0].version (same source as the Changelog view), so it follows every future version bump with no hand edit."
     ]
   },
+  "2026-10-07": {
+    stamp: "v1.3.45.0",
+    title: "Free trial without sign-up",
+    body: [
+      "v1.3.45.0: LAX asked for a way to try the app without registering. The login page now has a \"Try free for 30 minutes (no sign-up)\" button that signs in with Firebase Anonymous auth and creates a normal trial doc (name Guest, empty email), so the 30-minute timer, the tracker and the one-trial-per-IP rule all work unchanged. When the guest trial ends the lock screen says to register and message LAX, with a Register button (signs the guest out and opens the register form); the new email account from the same IP starts pending and LAX approves it. firestore.rules create rule now also accepts email '' for anonymous tokens. REQUIRES: enable Anonymous in Firebase Authentication > Sign-in method and re-publish firestore.rules; until then the button shows 'Trying without an account isn't available right now'. Limits: clearing browser data gives a new anonymous uid, but the IP rule still blocks a second trial from the same IP; guests have no email so LAX can only tell them apart by device/IP/name (Rename helps)."
+    ]
+  },
   "2026-10-06": {
     stamp: "v1.3.41.1 – v1.3.44.1",
     title: "Missed Questions column header renamed to Exam Missed Questions; IP check for trials; Math Day 14 Handout, Sample Problems, Trivia and Problem Set",
