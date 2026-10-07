@@ -30,7 +30,8 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['status', 'name', 'email', 'devices', 'firstSeen', 'lastSeen'])
         && request.resource.data.status in ['trial', 'pending']
         && request.resource.data.name is string && request.resource.data.name.size() <= 60
-        && request.resource.data.email == request.auth.token.email
+        && (request.resource.data.email == request.auth.token.email
+            || (request.auth.token.firebase.sign_in_provider == 'anonymous' && request.resource.data.email == ''))
         && request.resource.data.devices is map && request.resource.data.devices.size() <= 20
         && request.resource.data.firstSeen == request.time
         && request.resource.data.lastSeen == request.time;
