@@ -849,9 +849,10 @@ const entries = {
     ]
   },
   "2026-10-07": {
-    stamp: "v1.3.45.0",
+    stamp: "v1.3.45.0 – v1.3.46.0",
     title: "Free trial without sign-up",
     body: [
+      "v1.3.46.0: LAX asked for a block-access option. Tracker rows get a Block button (and Unblock once blocked): it sets status blocked, which decide() maps to a new \"Access blocked\" lock screen on every device (online), and writes ips/<ip> docs with blocked:true for every IP the account used. A new account or guest from a blocked IP is created with status blocked instead of trial/pending. Unblock returns the account to pending and clears the blocked flag on its IPs; the approve checkbox is disabled while blocked. Rules: ips now allow admin create/update, and user create accepts status blocked (harmless, users cannot lift it). REQUIRES re-publishing firestore.rules. Limits: IP-based, so a new email on another network or VPN gets through; shared IPs (school, home wifi, CGNAT) can block innocent people, which is why Unblock exists.",
       "v1.3.45.0: LAX asked for a way to try the app without registering. The login page now has a \"Try free for 30 minutes (no sign-up)\" button that signs in with Firebase Anonymous auth and creates a normal trial doc (name Guest, empty email), so the 30-minute timer, the tracker and the one-trial-per-IP rule all work unchanged. When the guest trial ends the lock screen says to register and message LAX, with a Register button (signs the guest out and opens the register form); the new email account from the same IP starts pending and LAX approves it. firestore.rules create rule now also accepts email '' for anonymous tokens. REQUIRES: enable Anonymous in Firebase Authentication > Sign-in method and re-publish firestore.rules; until then the button shows 'Trying without an account isn't available right now'. Limits: clearing browser data gives a new anonymous uid, but the IP rule still blocks a second trial from the same IP; guests have no email so LAX can only tell them apart by device/IP/name (Rename helps)."
     ]
   },
