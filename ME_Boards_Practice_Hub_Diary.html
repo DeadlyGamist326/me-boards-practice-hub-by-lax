@@ -848,6 +848,13 @@ const entries = {
       "v1.3.36.1: LAX asked for the home page title to read \"ME Boards Practice Hub vX.X.X.X\" above \"Choose a day or problem set to begin\". Added a span in the home h1 filled at load from CHANGELOG[0].version (same source as the Changelog view), so it follows every future version bump with no hand edit."
     ]
   },
+  "2026-10-09": {
+    stamp: "v1.3.50.3",
+    title: "Fix garbled SOYD in Math Handout / Sample Problems Day 14",
+    body: [
+      "v1.3.50.3: LAX reported the text \"soyd\" in Math Handout Day 14. Root cause: 38 occurrences of \\\\\\\\text{SOYD} (four backslashes in source) in the Day 14 Handout and Sample Problems, which MathJax read as a line break followed by the literal letters text{SOYD}, so it rendered as italic \"textSOYD\". Changed all 38 to \\\\text{SOYD}. No other \\\\\\\\text left in the file; scanned the Day 14 handout text for other typos and found none."
+    ]
+  },
   "2026-10-08": {
     stamp: "v1.3.47.0 – v1.3.50.2",
     title: "Math Handout, Sample Problems, Problem Set and Trivia Day 15 and Day 16 (Engineering Sciences)",
