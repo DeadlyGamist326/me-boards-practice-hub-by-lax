@@ -849,13 +849,15 @@ const entries = {
     ]
   },
   "2026-10-10": {
-    stamp: "v1.3.51.0",
+    stamp: "v1.3.51.0 \u2013 v1.3.52.0",
     title: "Identify the Problem Type: Identify Drill and Keyword Cheat Sheet (Math Day 14 to 16)",
     body: [
       "v1.3.51.0: LAX asked for a feature that trains how to identify a problem type, going deeper than Hint 1. Brainstormed 7 ideas, LAX agreed to the Identify Drill plus the Keyword Cheat Sheet, scoped to Math Day 14 to 16 first.",
       "Both are built lazily from the existing trivia14..16Data and ps14..16Data (topics[0] plus the Hint 1 kw-map), so no question data was duplicated or changed. 207 usable questions (Day 14: 59, Day 15: 75, Day 16: 73).",
       "Drill: shows the question through appendQuestionContent, 4 topic choices (distractors from the same day, look-alike toggle prefers the same outline section), reveals the Hint 1 kw-map after the pick. Missed topics are counted in localStorage (try/catch). Cheat sheet: kw-rows grouped by topic in outline order, with a search box. Both call MathJax.typesetPromise on their own container after building, since they build DOM outside showView.",
-      "Extending to other days: add an entry to IDT_DAYS and the day chips in idtDayChips."
+      "Extending to other days: add an entry to IDT_DAYS and the day chips in idtDayChips.",
+      "v1.3.52.0: LAX was not satisfied with the Keyword Cheat Sheet (not efficient to study) and wanted a trainer for formulas with shared solutions, as a game with options or a formula puzzle. Brainstormed, LAX picked the Formula Builder. Cheat Sheet button hidden on the home card (view and kwsRender kept in the file, just unlinked).",
+      "Formula Builder (fbOpen/fbRun): per question, step 1 pick the formula from 4 (Hint 2 fr-center, decoys from other topics of the same day, look-alike toggle prefers the same outline section); step 2 tap the givens used (Hint 3 hint-formula split on the comma-backslash-space separator, 3 decoy givens from other questions with different symbols); step 3 answer with the real choices, then Hint 4 is revealed. Formula picker filters by topic; 3 perfect questions in a row (no wrong tap at any step) sets mastered, stored in localStorage fbMastery with try/catch. All 207 Day 14-16 questions have a Hint 2 formula and Hint 3 givens, so no data was added.",
     ]
   },
   "2026-10-09": {
