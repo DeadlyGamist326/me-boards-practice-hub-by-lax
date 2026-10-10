@@ -849,7 +849,7 @@ const entries = {
     ]
   },
   "2026-10-10": {
-    stamp: "v1.3.51.0 \u2013 v1.3.52.1",
+    stamp: "v1.3.51.0 \u2013 v1.3.52.2",
     title: "Identify the Problem Type: Identify Drill and Keyword Cheat Sheet (Math Day 14 to 16)",
     body: [
       "v1.3.51.0: LAX asked for a feature that trains how to identify a problem type, going deeper than Hint 1. Brainstormed 7 ideas, LAX agreed to the Identify Drill plus the Keyword Cheat Sheet, scoped to Math Day 14 to 16 first.",
@@ -858,6 +858,7 @@ const entries = {
       "Extending to other days: add an entry to IDT_DAYS and the day chips in idtDayChips.",
       "v1.3.52.0: LAX was not satisfied with the Keyword Cheat Sheet (not efficient to study) and wanted a trainer for formulas with shared solutions, as a game with options or a formula puzzle. Brainstormed, LAX picked the Formula Builder. Cheat Sheet button hidden on the home card (view and kwsRender kept in the file, just unlinked).",
       "v1.3.52.1: LAX asked what happens with questions that use multiple formulas. Checked: 93 of 207 have more than one formula row in Hint 2, and v1.3.52.0 only took the first fr-center, so the rest were never tested. fbPrep now collects every fr-center (deduped) into fb.formulas; one formula keeps the pick-1-of-4 cards, several formulas switch to select-all-that-apply cards (needed + decoys, minimum 4 cards) with an I-check button. Formulas written as one equation chain inside a single fr-center (about 11) still show as one card.",
+      "v1.3.52.2: LAX ruled that the UI must stay in English (only chat replies are Taglish). I had written Identify Drill / Formula Builder / Cheat Sheet labels, buttons, subtitles and messages in Tagalog; translated all of them (24 strings). Rule for future features: on-screen text in English, Taglish only in replies to LAX.",
       "Formula Builder (fbOpen/fbRun): per question, step 1 pick the formula from 4 (Hint 2 fr-center, decoys from other topics of the same day, look-alike toggle prefers the same outline section); step 2 tap the givens used (Hint 3 hint-formula split on the comma-backslash-space separator, 3 decoy givens from other questions with different symbols); step 3 answer with the real choices, then Hint 4 is revealed. Formula picker filters by topic; 3 perfect questions in a row (no wrong tap at any step) sets mastered, stored in localStorage fbMastery with try/catch. All 207 Day 14-16 questions have a Hint 2 formula and Hint 3 givens, so no data was added.",
     ]
   },
