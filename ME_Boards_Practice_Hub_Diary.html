@@ -849,9 +849,10 @@ const entries = {
     ]
   },
   "2026-10-11": {
-    stamp: "v1.3.54.1",
-    title: "Fix MathJax color error in the Formula Builder equation practice",
+    stamp: "v1.3.54.1 \u2013 v1.3.54.2",
+    title: "Fix MathJax color error in the Formula Builder equation practice; floating exponents at the end of fractions",
     body: [
+      "v1.3.54.2: LAX noticed ft/s\u00b2 in Problem Set Day 16 #42 with the exponent inline instead of floating, and asked to check and reapply the ruling. The ruling already said an exponent that ends a numerator/denominator uses the floating { base, exp } overlay, but 72 {frac:[...]} parts across the file still used a plain \u00b2/\u00b3 character at the end (ft/s\u00b2, m/s\u00b2, rad/s\u00b2, ft/sec\u00b2, g/cm\u00b3, x\u00b2 over a number). Converted all of them with a script (base is the whole trailing letter run, e.g. sec), padding unchanged and re-audited (only the example in the ruling comment is flagged). Wrote the rule explicitly into the in-file ruling block section 2.",
       "v1.3.54.1: LAX reported the MathJax error \"You can't use 'macro parameter character #' in math mode\" in the Formula Builder. The only # in the Builder's LaTeX was the hex color in \\color{#d93025} / \\color{#999} / \\color{#1e8e3e} (the highlighted box, the pending box and the filled pieces of the equation practice, v1.3.54.0). \\color is an autoloaded MathJax extension; when it is not loaded the macro is undefined and the # of the color is then read as a macro parameter, which matches the error. I could not reproduce it in headless Chromium with local MathJax 3.2.2 (the extension loaded fine there), so this is the best-supported cause, not a reproduced one. Fix: no \\color at all anymore. The active box is \\boxed{\\text{ ? }}, a pending box is \\Box, filled pieces are plain (the canvas turns green in CSS when done). Checked in headless Chromium with real MathJax: 547 full Formula Builder runs (easy and hard, every problem) showed no MathJax errors and no leftover raw delimiters.",
     ]
   },
