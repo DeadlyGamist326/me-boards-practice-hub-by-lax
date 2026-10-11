@@ -848,6 +848,13 @@ const entries = {
       "v1.3.36.1: LAX asked for the home page title to read \"ME Boards Practice Hub vX.X.X.X\" above \"Choose a day or problem set to begin\". Added a span in the home h1 filled at load from CHANGELOG[0].version (same source as the Changelog view), so it follows every future version bump with no hand edit."
     ]
   },
+  "2026-10-11": {
+    stamp: "v1.3.54.1",
+    title: "Fix MathJax color error in the Formula Builder equation practice",
+    body: [
+      "v1.3.54.1: LAX reported the MathJax error \"You can't use 'macro parameter character #' in math mode\" in the Formula Builder. The only # in the Builder's LaTeX was the hex color in \\color{#d93025} / \\color{#999} / \\color{#1e8e3e} (the highlighted box, the pending box and the filled pieces of the equation practice, v1.3.54.0). \\color is an autoloaded MathJax extension; when it is not loaded the macro is undefined and the # of the color is then read as a macro parameter, which matches the error. I could not reproduce it in headless Chromium with local MathJax 3.2.2 (the extension loaded fine there), so this is the best-supported cause, not a reproduced one. Fix: no \\color at all anymore. The active box is \\boxed{\\text{ ? }}, a pending box is \\Box, filled pieces are plain (the canvas turns green in CSS when done). Checked in headless Chromium with real MathJax: 547 full Formula Builder runs (easy and hard, every problem) showed no MathJax errors and no leftover raw delimiters.",
+    ]
+  },
   "2026-10-10": {
     stamp: "v1.3.51.0 \u2013 v1.3.54.0",
     title: "Identify the Problem Type: Identify Drill and Keyword Cheat Sheet (Math Day 14 to 16)",
