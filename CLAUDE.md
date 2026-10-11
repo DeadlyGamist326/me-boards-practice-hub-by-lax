@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.54.1.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.54.3.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -447,8 +447,8 @@ renders as an actual visual fraction bar via CSS. Key rules:
 - **Padding rule**: when numerator and denominator differ in character
   length, the shorter one needs `\u00A0\u00A0` (non-breaking space) padding
   on each side so the fraction bar width matches the wider side. Compute
-  length by counting characters (a `\uXXXX` escape = 1 character; `{base,
-  exp}` counts as len(base)+len(exp)). This must be re-audited any time a
+  length by counting characters (a `\uXXXX` escape = 1 character; a floating `{base,
+  exp}` counts as len(base) only, the floating exponent has no width). This must be re-audited any time a
   new `{frac:}` is added — it's easy to forget and produces a visibly
   lopsided fraction bar with no error thrown.
 - Numerator/denominator can be a plain string, a `{base, exp}` object
