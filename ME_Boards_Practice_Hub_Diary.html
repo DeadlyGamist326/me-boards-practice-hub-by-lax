@@ -290,6 +290,16 @@
 
 <script>
 const entries = {
+  "2026-10-12": {
+    stamp: "v1.3.55.0",
+    title: "Math Handout Day 17 and Day 18 added",
+    body: [
+      "v1.3.55.0: LAX uploaded the Day 17 and Day 18 Math handouts (and the Sample Problems, Problem Set and Trivia PDFs for both days) and asked to unlock them and apply all current rulings. This version does the two Handouts. Day 17 (Engineering Sciences, Fluid Mechanics) has 6 sections: I Basic Energy Equations, II Venturi Meter, III Buoyancy, IV Beams, V Machine Shop, VI Mechanics (added: the source puts two ME Board Mechanics problems in the problem block with no reference formulas, so a small card of the formulas used was added and flagged). 15 diagrams cropped from the PDF at 220 dpi into base64 JPEGs, 13 sample problems. Day 18 (Machine Design) has 3 sections: I Pressure Vessel, II Spring, III Spur Gear, 11 diagrams, 11 sample problems. The source has no answer key, so all problems were solved from scratch with the granular box chain (given boxes, then note/box alternation, Answer: X. label plain).",
+      "Home page wiring: view-handout-math-17/18 added, availableMathHandouts gets 17 and 18, Quick Access loop runs 12 to 18 (heading Math Day 12 to 18), SUBJECT_CONFIG math days is 18. Day 17/18 Sample Problems, Problem Set and Trivia tiles stay disabled (not in the available lists) until their content ships. The Identify Drill and Formula Builder (Day 14 to 16) were not extended.",
+      "Source issues disclosed on each page: Day 17 Basic Energy #1 (choice C 63.69 in is the depth of the water level inside the container, the top is 53.32 in down), Basic Energy #2 (337.2 computed vs 337.26 printed), the floating-body formula that prints BF = wF Vo, Mechanics #2 (7780 only with g = 9.2 at the orbit radius). Day 18 Pressure Vessel #3 has no choices and is a thick-wall case (t/D = 0.208 by thin-wall), solved with Lame (1.396 in); Spring #1 choice D prints two values (with and without the Wahl factor); Spring #2 takes the 18 coils as the total (16 active).",
+      "Checks: node --check on the last script, CSS braces balanced, jsdom showView on both handouts (13 and 11 sample problems, 16 and 11 concept cards), and a headless Chromium render with a local MathJax 3.2.2 (330 and 294 typeset formulas, 0 errors, 0 raw backslash-paren left)."
+    ]
+  },
   "2026-09-11": {
     stamp: "v1.1.0.0 \u2014 \u201cQuestion Lister\u201d",
     title: "First quiz encoded, first formatting rules",
