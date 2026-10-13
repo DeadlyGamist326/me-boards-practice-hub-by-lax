@@ -291,12 +291,13 @@
 <script>
 const entries = {
   "2026-10-13": {
-    stamp: "v1.3.58.3",
+    stamp: "v1.3.58.3 \u2013 v1.3.58.4",
     title: "Units-on-every-solution ruling and Math answer audit",
     body: [
       "v1.3.58.3: LAX asked that solutions always carry units. Added a UNITS ON EVERY SOLUTION ruling to the in-file style guide (section 3): units on givens, substituted numbers, intermediates and answers; count words, currency and angles count; ratios, probabilities and dimensionless math stay unitless.",
       "Audit: scripted scan of every Math hint-answer line (Trivia 1-18, Problem Set 1-18, Missed 1-12, Sample Problems and Handout sample problems) for bare-number answers whose question has physical or word-problem units; each hit was judged by hand and 77 final answers were fixed (e.g. 117 in/s, 3200\u03c0 cm\u00b2/s, 9.2 years, P703.73, 126 ways). Ratios, coefficients (f, K, e), probabilities and pure-math answers were left unitless on purpose.",
       "Not done: only the final Answer lines were retrofitted. Intermediate given and substitution boxes inside the 4th hint tier and in Handout/Sample Problems working were not re-audited line by line, and the PPE quizzes were not touched; those need a later pass."
+      "v1.3.58.4: LAX also asked that the units ruling cover cancellation and shift-solving. Added a paragraph to the UNITS ON EVERY SOLUTION ruling pointing to rules (a), (c) and (n): cancel every matching unit pair with \\\\cancel{} and shift-solve in the substituted line. Ruling only; existing Math solutions were not re-audited for cancellation.",
     ]
   },
   "2026-10-12": {
