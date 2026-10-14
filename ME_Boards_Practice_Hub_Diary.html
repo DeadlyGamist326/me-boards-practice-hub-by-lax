@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-14": {
-    stamp: "v1.3.58.11 \u2013 v1.3.59.16",
+    stamp: "v1.3.58.11 \u2013 v1.3.59.17",
     title: "Units on substituted lines",
     body: [
+      "v1.3.59.17: Shrink-Fit Ring ruling (LAX): derive eps=delta/D, sigma=eps E, sigma=(delta/D)E, sigma=pD/2t, combined (delta/D)E=pD/2t, then one substituted box and p. Applied to the one original (Problem Set Day 18) and the shrink-ring generator; ruling added to the in-file block.",
       "v1.3.59.16: Formula Builder, Thin-Wall Cylinder (Thickness with Factor of Safety): LAX ruled the equation step must be the one combined equation S_y/FS=PD_i/(2t), not two separate ones. fbPrep/eqTarget take their formulas from the fr-center rows of hint 2, so the two rows (S=S_y/FS and S_t=PD_i/2t) were replaced by one row in the 3 Problem Set originals, in vgCylinder(true) (generated Variants), and by one fb-long block in the 3 Sample Problems formula hints. Checked: eqParse accepts the combined form, and generated Variants now yield exactly one formula. Filename renamed to v1.3.59.16.",
       "v1.3.59.15: Temporary floating Study checklist (LAX asked for it inside the app, not a separate page). Self-contained block just before </body>, delimited by TEMPORARY STUDY CHECKLIST / END comments so it can be deleted whole. Reads math18FormulaOutline and math17FormulaOutline at runtime (Day 18: 50 types, Day 17: 49), 5 rep checkboxes per type, saved in localStorage key scChecklistV1. Right-edge handle (z-index 9000, below the access gate at 100000); opens on mouse hover, tap, or swipe left from the right edge; closes on swipe right, x, or mouse leave. Reset needs a second tap, Hide is until reload. Verified with node --check and a jsdom run (50 rows, rep counting, tab switch). Filename renamed to v1.3.59.15.",
       "v1.3.59.14: Per-type stats in the Mastery map (srTypeStats in srRenderBar): unlocks when all problems of a formula type have seen>0; table of tried/right/accuracy/level per problem, totals, weakest, lapses. Verified in jsdom with 3/5 (locked) then 5/5 (unlocked). Data comes from existing fbSR counters, so prior history is included.",
