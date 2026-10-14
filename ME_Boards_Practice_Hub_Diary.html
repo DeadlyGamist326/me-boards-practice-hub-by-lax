@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-14": {
-    stamp: "v1.3.58.11 \u2013 v1.3.59.13",
+    stamp: "v1.3.58.11 \u2013 v1.3.59.14",
     title: "Units on substituted lines",
     body: [
+      "v1.3.59.14: Per-type stats in the Mastery map (srTypeStats in srRenderBar): unlocks when all problems of a formula type have seen>0; table of tried/right/accuracy/level per problem, totals, weakest, lapses. Verified in jsdom with 3/5 (locked) then 5/5 (unlocked). Data comes from existing fbSR counters, so prior history is included.",
       "v1.3.59.13: Factor of Safety ruling (LAX): base formula S=PD_i/(2t), then S=S_sub/FS, then the combined S_sub/FS=PD_i/(2t), then one substituted box and t. Applied to the vgCylinder generator, Problem Set Day 18 FS originals and the Handout/Sample Problem FS solutions. Lame and Soderberg FS cases left as they are (different formulas). Ruling added to the in-file block.",
       "v1.3.59.12: Translated all Tagalog/Taglish user-facing text to English (rule: in-app content is English only; chat with LAX stays Taglish). Changed: srRecord/srRenderBar/srShowSummary/srEmpty messages and the Mastery map labels (Study/Test/Review mode), the empty-state message for Day 17-18-only modes, the Worked example summary label, and the Math Day 18 Pressure Vessel 2t/4t guide + Real Examples card. Also pluralized \"day(s)\" in due text. Scanned the whole file with a Tagalog stopword heuristic; the only Tagalog left is internal code (NOTE_POOLS keys like mabilis/sakto, never shown). The GENERATED tags, generator wording and gear mnemonic were already English.",
       "v1.3.59.9: Reworked 2t/4t handout card into 3 steps with side-by-side formula grid, added Real Examples card using 7 real Day 18 PS problems (each recomputed and matching its key). No real 4t-cylinder problem exists in the app, so that rule shows the keyword pattern only. Hemispherical bursting PS item skipped (key 4200 psi does not match 4t, 4800).",
