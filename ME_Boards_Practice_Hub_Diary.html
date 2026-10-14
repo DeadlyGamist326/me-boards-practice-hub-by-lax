@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-14": {
-    stamp: "v1.3.58.11 \u2013 v1.3.59.8",
+    stamp: "v1.3.58.11 \u2013 v1.3.59.9",
     title: "Units on substituted lines",
     body: [
+      "v1.3.59.9: Added a mnemonic card (Ba-Clea-f / Ad-D-Tooth / Wo-Ho-O) after the Gear Tooth Proportion Table in Math Handout Day 18 (Spur Gear). 14.5\u00b0 and 20\u00b0 columns, rows sorted by 14.5\u00b0 value in 3 groups, phrases supplied by LAX. Original table untouched.",
       "v1.3.59.8: Study mode worked example now hidden by default (det.open=false in fbRun, summary text updated). Per LAX request.",
       "v1.3.59.7: Pressure-vessel decision guide (2t vs 4t), requested by LAX. New handout card at the top of Handout Math Day 18, plus vesselGuideApply(item): appends a vessel-guide hint-note to the last hint of every Day 18 Trivia / Problem Set item whose topic is a thin-wall cylinder, sphere, filled tank or bursting pressure (15 items), and is also called from vgCylinder and vgMake so generated Variants carry it. The Sample Problems page is static HTML and was not changed (the handout card covers it). Checked by jsdom: 86 variant topics still pass 1500 runs each, smoke clean, guide present on originals and variants.",
       "v1.3.59.6: Batch 5 of generated Variants, the last Day 17-18 batch (22 specs): lin-acc, kin-en, ang-acc, incline, a-normal, ang-disp, max-moment, flywheel-en, cut-speed, punch, two-balls, milling, hacksaw, drop-ham, stop-dist, orbital, vert-circle, oxy-cut, mu-fric, vert-throw, drill-feed, circ-pitch. All 86 variant topics now cover every Day 17-18 formula with fewer than 5 originals, except Pattern Shrinkage Allowance (a table value, nothing to calculate), Number of Coils and Concentric Springs (the printed data do not reproduce the key). Vertical Throw variants ask for the time to the highest point (the original keyed that value although it asked for the return time). Acceleration Normal to the Radius keeps the key formula v times omega. Orbital Velocity 2nd original reproduces within 0.8 percent. Checked by jsdom: every spec reproduces its original answers (within 1.2 percent), 1500 random runs per spec with no duplicate choices, NaN or wrong answer letter, and a smoke run of fbRun for all variant topics.",
