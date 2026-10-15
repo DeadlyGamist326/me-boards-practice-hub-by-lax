@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-15": {
-    stamp: "v1.3.59.19 \u2013 v1.3.59.20",
+    stamp: "v1.3.59.19 \u2013 v1.3.59.21",
     title: "Penstock weld case one-shot",
     body: [
+      "v1.3.59.21: LAX asked to update all Day 17-18 rulings. Audited the in-file ruling block: units, cancellation, substituted-line check, AS-IS, derive-first, formula choices, shrink-fit, factor of safety and thin vs thick were present. Added the missing Penstock with Fillet Weld ruling, removed the stale \"two-case problems may keep a second step\" exemption from derive-first, and added a line stating the group applies together to all Day 17-18 content.",
       "v1.3.59.20: LAX flagged that the formula choices still showed isolated formulas (Shrink-Fit Ring). Hints tier 2 (formula list, which feeds the Select-all choices and Formula Builder pool) and the keyword-map symbol now follow the derivation: defined formulas plus the combined equation. Done for Day 17-18 Trivia, Problem Set, static Handout/Sample panels (rewritten with a sequential classifier that skips substituted/unit boxes) and the generators (vgFormulaList reads each variant's own steps). Not browser-rendered; checked with node syntax, KaTeX on all generated boxes and 150 runs per spec. Single-formula solutions with chained formula=number boxes keep their old list.",
       "v1.3.59.19: Penstock with Fillet Weld (Safe Pressure) was exempted earlier as a two-case comparison, but LAX flagged the weld case as not one-shot. The weld case now derives F=PD/2, A=2(0.707w), tau=F/A, combines to tau=PD/(4(0.707w)), then one substitution. Applied to the Problem Set Day 18 original and the penstock generator spec (formulas list updated too). Plate case unchanged (already one formula plus one substitution)."
     ]
