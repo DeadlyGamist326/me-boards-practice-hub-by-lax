@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.74",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.75",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.75: LAX: after Skip to Choices the screen should jump to the Equation / The problem / Givens part (first read as a bug report, clarified as a request). fbSkipFn now finds the \"N. Equation\" stage title (or .fb-recap in light mode), sets scroll-margin-top from --credit-h and calls scrollIntoView, again on the next frame and after the MathJax typeset so the later layout shift does not move it.",
       "v1.3.59.74: LAX corrected v1.3.59.73: a right answer must not auto-advance. Reverted the 450 ms auto-next; the right choice turns green, the full solution shows (with the line \"Click the green answer again to go to the next question.\"), and the green choice is re-enabled with an onclick that calls scFlash and fbNextQ. Wrong answers unchanged. jsdom: 10/10 right answers stayed on the solution then advanced on the second click, 10/10 wrong ones showed the solution.",
       "v1.3.59.73: LAX: in the Formula Builder a right answer should act like Next. In fbAnswer the choice click now calls reveal(ok, true); for ok it does the counting (fbStore, srRecord, scBump, stats) and after 450 ms calls scFlash and fbNextQ, guarded by fbPos and card.isConnected. A wrong answer is unchanged (solution plus Next, no counter). The no-choices Show full solution path is unchanged. jsdom: 10/10 right advanced with 10 bumps, 10/10 wrong showed the solution with no advance.",
       "v1.3.59.72: Fixed raw delimiter text in Skip to Choices. fbSkipFn wrapped target.f (which already contains the MathJax delimiters from fbPrep) in a second pair; it now sets innerHTML = target.f.",
