@@ -300,9 +300,10 @@ const entries = {
     ]
   },
   "2026-10-14": {
-    stamp: "v1.3.58.11 \u2013 v1.3.59.22",
+    stamp: "v1.3.58.11 \u2013 v1.3.59.23",
     title: "Units on substituted lines",
     body: [
+      "v1.3.59.23: Study checklist counter: window.scBump(day, topic) called from srRecord on good/easy grades (hard/again do not count), capped at 5, in-panel counter label per row, checkboxes stay editable and share the same stored count (scChecklistV1). jsdom-checked incl. cap, manual uncheck, hard/again.",
       "v1.3.59.22: fbGoTo(day, topic) added; clickable names in the floating Study checklist (.sc-name) and the Mastery map (.sr-name, delegated click). Falls back to Free practice when Study/Review has nothing for the type; 8 Day 17/18 outline topics have no FB problems (Force of a Jet, Pitot Tube, Layered Liquids pressure, Pressure Drop in a Pipe, Thin-Wall Sphere Thickness/Stress, Compression Ring Area, Base Circle Radii) so they open the day with a note. jsdom-checked.",
       "v1.3.59.18: LAX ruling \"derive first, one shot after\" applied to all Day 17-18 solutions: 124 hard-coded lines (Trivia 17/18, Problem Set 17/18, Handout 17/18, Sample Problems 17/18) and 44 generator specs (VG_SPECS steps, incl. veh-pull and veh-speed by hand). Each now has Given, derivation boxes, one combined equation, one substituted box, value. Left alone: single-formula solutions, two-case/trial-and-error ones kept derivation-first (spring wire diameter, two balls, penstock). Source/key disagreements kept with their existing notes. Generators verified in node (61,900 KaTeX boxes, orig expectations).",
       "v1.3.59.17: Shrink-Fit Ring ruling (LAX): derive eps=delta/D, sigma=eps E, sigma=(delta/D)E, sigma=pD/2t, combined (delta/D)E=pD/2t, then one substituted box and p. Applied to the one original (Problem Set Day 18) and the shrink-ring generator; ruling added to the in-file block.",
