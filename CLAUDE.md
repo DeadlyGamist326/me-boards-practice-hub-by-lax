@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.70.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.71.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -635,7 +635,7 @@ reference formulas change in `practice-hub.html` (extract → render → build
 ## 8. General verification workflow (do this after every edit)
 
 1. **Syntax check**: extract the last `<script>...</script>` block from the
-   file and run `node --check` on it. (There may be multiple `<script>`
+   file and run `node --check` on it. Do the same for `ME_Boards_Practice_Hub_Diary.html` after every diary edit (its single script; a stray `\\"` in a bullet once broke the whole page and left only an empty calendar). (There may be multiple `<script>`
    tags — the app logic is in the *last* one.)
 2. **CSS brace balance**: quick sanity check,
    `css.count('{') == css.count('}')` between `<style>` and `</style>`.
