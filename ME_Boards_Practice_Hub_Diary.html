@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.66",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.67",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.67: Formula Builder \"Skip to Choices\" (.fb-skip, above Previous/Next top and bottom). fbRun sets window.fbSkipFn: removes the stage elements added after the question, shows formula + givens in a .fb-locked box, sets perfect=false and usedSolution=true (so SR does not grade it perfect; the checklist +1 is not blocked), then calls fbAnswer. The button is disabled once the answer stage starts (fbNavUpdate).",
       "v1.3.59.66: LAX said the generated board-on-two-supports Variants were not one-shot and too long. beam-react (brd mode) steps now take moments about the right support B: R_A(L-2s)=W_b(L/2-s)+W_k(L-s-c), solved directly (4 boxes instead of 14). calc/choices unchanged, verified equal on 3 sets of givens. Other long generated solutions not audited.",
       "v1.3.59.65: Terms Practice entry popup (tmLaunch, reuses .overlay/.prep-box/.ready-btn like the calculator prep) with varied TM_READY / TM_TIPS lines, and a varied tip line (#tm-tip) under the progress line while answering. Standalone HTML regenerated with the same code (its separate home/subtitle tips removed).",
       "v1.3.59.64: Terms Practice MASTERY panel got a \"Start over all\" button (confirm, then tmSave({}) + tmReset + tmChecklist). Also generated a separate standalone Terms-Practice-only HTML (logo, welcome, one button, same tm* code and TERMS_DATA copied from the main file by a build script, kept outside the repo) delivered through the project files, with the same Start over all.",
