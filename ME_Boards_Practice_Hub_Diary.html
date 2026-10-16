@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.63",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.64",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.64: Terms Practice MASTERY panel got a \"Start over all\" button (confirm, then tmSave({}) + tmReset + tmChecklist). Also generated a separate standalone Terms-Practice-only HTML (logo, welcome, one button, same tm* code and TERMS_DATA copied from the main file by a build script, kept outside the repo) delivered through the project files, with the same Start over all.",
       "v1.3.59.63: Handout-related only now defaults to checked on every open (tmHandOnly no longer persisted in localStorage). Terms Practice feedback message replaced by a small circled number (class tm-gap, tooltip has the full text) per LAX; learned terms show a plain \"Learned.\".",
       "v1.3.59.62: Terms Practice \"Handout-related only\" checkbox (LAX: many terms are not what was taught, add a check button for only handout-related). Flag h:1 on a term = covered by the Day 12-17 Handouts. I checked each term's answer against the text of handout-math-12..17 (jsdom textContent): 19 of 63 hit (effective rate/interest, discount, break-even, annuity, deferred annuity, depreciation, salvage value, sinking fund method, capital recovery, dividend, displacement, force, voltage, current, resistance, ampere, Ohm's law, Btu). This is a text-match heuristic; the Handouts are formula-based so many definition terms (bonds, ratios, Kirchhoff, Bernoulli...) are not in them. tmPool() applies the toggle to the list, the topic filter and the mastery panel; choice saved in localStorage tmHandOnly.",
       "v1.3.59.61: Terms Practice: once a question is answered, clicking the correct choice again calls tmNext() (LAX: \"if clicking the right answer again, it will act like a next button\"). Clicking a wrong choice after answering still does nothing.",
