@@ -1,4 +1,4 @@
-# Publishes the app to GitHub Pages. The app file is renamed on every version
+# Publishes the app (and the dev diary as diary.html) to GitHub Pages. The app file is renamed on every version
 # bump (MEBoards_ PracticeHub_by LAX_v<w.x.y.z>.html), so this copies the
 # highest-versioned one to index.html at deploy time. Nothing to maintain by hand.
 name: Deploy to GitHub Pages
@@ -31,6 +31,7 @@ jobs:
           echo "Publishing: $latest"
           mkdir _site
           cp "$latest" _site/index.html
+          cp ME_Boards_Practice_Hub_Diary.html _site/diary.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
