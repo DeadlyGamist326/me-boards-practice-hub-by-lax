@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.67",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.68",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.68: Skip to Choices also appends the .fb-recap \"The problem\" block (same as fbGivens) before the formula/givens box and the choices.",
       "v1.3.59.67: Formula Builder \"Skip to Choices\" (.fb-skip, above Previous/Next top and bottom). fbRun sets window.fbSkipFn: removes the stage elements added after the question, shows formula + givens in a .fb-locked box, sets perfect=false and usedSolution=true (so SR does not grade it perfect; the checklist +1 is not blocked), then calls fbAnswer. The button is disabled once the answer stage starts (fbNavUpdate).",
       "v1.3.59.66: LAX said the generated board-on-two-supports Variants were not one-shot and too long. beam-react (brd mode) steps now take moments about the right support B: R_A(L-2s)=W_b(L/2-s)+W_k(L-s-c), solved directly (4 boxes instead of 14). calc/choices unchanged, verified equal on 3 sets of givens. Other long generated solutions not audited.",
       "v1.3.59.65: Terms Practice entry popup (tmLaunch, reuses .overlay/.prep-box/.ready-btn like the calculator prep) with varied TM_READY / TM_TIPS lines, and a varied tip line (#tm-tip) under the progress line while answering. Standalone HTML regenerated with the same code (its separate home/subtitle tips removed).",
