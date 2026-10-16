@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.68",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.69",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.69: LAX: Skip to Choices must act as if the steps were already passed, not just jump. fbSkipFn now renders each stage finished (formula lock, equation name, equation or derived columns, recap, givens tray with ok chips) then fbAnswer; light mode (review/test) skips the name and givens like the real flow. Checked over 150 skips: no errors, 5 title layouts, derived view appears.",
       "v1.3.59.68: Skip to Choices also appends the .fb-recap \"The problem\" block (same as fbGivens) before the formula/givens box and the choices.",
       "v1.3.59.67: Formula Builder \"Skip to Choices\" (.fb-skip, above Previous/Next top and bottom). fbRun sets window.fbSkipFn: removes the stage elements added after the question, shows formula + givens in a .fb-locked box, sets perfect=false and usedSolution=true (so SR does not grade it perfect; the checklist +1 is not blocked), then calls fbAnswer. The button is disabled once the answer stage starts (fbNavUpdate).",
       "v1.3.59.66: LAX said the generated board-on-two-supports Variants were not one-shot and too long. beam-react (brd mode) steps now take moments about the right support B: R_A(L-2s)=W_b(L/2-s)+W_k(L-s-c), solved directly (4 boxes instead of 14). calc/choices unchanged, verified equal on 3 sets of givens. Other long generated solutions not audited.",
