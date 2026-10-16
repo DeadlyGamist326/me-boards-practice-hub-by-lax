@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.40.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.41.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -743,7 +743,7 @@ Changelog view.
   "(derived)"). `needs` use `b1..` / earlier `d1..` only; every equation must
   parse with `eqParse`. Topics without a clean derivation keep the old step.
 - **Study checklist** (`scChecklistV1`, `REPS = 5`): a right final answer in the
-  builder calls `window.scBump(day, topic)` (+1, max 5, boxes still editable; counts on every checklist day 12-18, not just SR_DAYS; only the no-choices Show full solution button blocks it).
+  builder calls `window.scBump(day, topic)` (+1, max 5, boxes still editable; counts on every checklist day 12-18, not just SR_DAYS; only the no-choices Show full solution button blocks it). Pressing Next after a counted answer calls `window.scFlash()`: the menu opens ~3 s, the new check blinks, then it closes.
   Tabs cover Day 12-18. Topics without builder problems are not listed. Topic names there and in the Mastery map jump to the builder via `fbGoTo`.
 - **Mastery map Stats** unlock per type after all its problems are answered.
 - **`SR_MODES_SHOWN = false`** hides Study/Test/Review/Free buttons (builder
