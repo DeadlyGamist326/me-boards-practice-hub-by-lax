@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.30.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.31.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -736,7 +736,7 @@ Changelog view.
 ## 8c. Formula Builder features (Math Day 12-18) — full detail is in the in-file RULINGS §11-12
 
 - **Derived-formula stage**: `FB_DERIVED[topic] = { b: [...], d: [{eq, needs}] }`
-  (72 topics). After naming the equation, `fbDerivedStage` shows originals
+  (83 topics). After naming the equation, `fbDerivedStage` shows originals
   (left) and derived formulas (right, hidden until built), one Build question
   per derived formula in random order, arrows to switch, and an "Understand
   these first" note from the `needs` chain (earlier derived ones tagged
