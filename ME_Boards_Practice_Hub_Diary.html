@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.36",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.37",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.37: LAX realised the derived stage should not be random: later derived formulas depend on earlier ones. fbDerivedStage now uses order = [0..n-1] instead of idtShuffle; arrows and the skip-to-next-unbuilt logic are unchanged. Ruling text (RULINGS section 12 and CLAUDE.md 8c) updated from random to in order.",
       "v1.3.59.36: LAX asked that the whole problem be shown again before the \"Select the givens used in the problem\" step because the original is too far up. fbGivens now builds a .fb-recap block (label + idtShowQ of the same item) placed before the givens title; the existing idtTypeset(card) call typesets it. No change to grading.",
       "v1.3.59.35: LAX answered that the 12 no-link checklist rows should be removed entirely, not just unlinked. types() and the section item lists now skip topics without Formula Builder problems (hasFb), and a section with none is left out, so tab counts (types and reps) only cover real topics. Ruling section 12 updated.",
       "v1.3.59.34: LAX asked to remove checklist links that go nowhere and to build the checklist for Day 12 to 16. The floating Study checklist now has tabs for Day 12 to 18 (outlines math12..16FormulaOutline added to the map, flex-wrap tabs). Rows whose topic has no Formula Builder problems (checked with fbAllItems, cached lazily) are no longer links; they stay as plain rows with working checkboxes. 0 on Day 12/14/15, 1 on Day 13 (Annuity Due), 3 on Day 16, 4 on Day 17, 4 on Day 18 are the unlinked ones. The list is now built on first open instead of at load, because fbAllItems needs the quiz data. scBump already worked for any day in the outline map, so Formula Builder right answers add +1 for Day 12-16 too.",
