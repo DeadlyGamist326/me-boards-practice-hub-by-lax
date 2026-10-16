@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.33",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.34",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.34: LAX asked to remove checklist links that go nowhere and to build the checklist for Day 12 to 16. The floating Study checklist now has tabs for Day 12 to 18 (outlines math12..16FormulaOutline added to the map, flex-wrap tabs). Rows whose topic has no Formula Builder problems (checked with fbAllItems, cached lazily) are no longer links; they stay as plain rows with working checkboxes. 0 on Day 12/14/15, 1 on Day 13 (Annuity Due), 3 on Day 16, 4 on Day 17, 4 on Day 18 are the unlinked ones. The list is now built on first open instead of at load, because fbAllItems needs the quiz data. scBump already worked for any day in the outline map, so Formula Builder right answers add +1 for Day 12-16 too.",
       "v1.3.59.33: LAX asked for Quick Access to show Day 12 to Day 17 only. Quick Access heading and loop changed from 12-18 to 12-17; the Full Course Library (days: 18) and the Identify the Problem Type card (still Day 12 to 18) were left alone since the ask was about Quick Access only.",
       "v1.3.59.32: LAX asked if the 2 columns exist. The .fb-dcols grid collapsed to 1 column at 480px or less, so on a phone the originals and derived formulas stacked. Now it stays 2 columns (minmax(0,1fr), smaller font and padding on narrow screens).",
       "v1.3.59.31: LAX asked to bring Day 12 to 16 up to the new derived-formula way. 11 more topics added to FB_DERIVED (83 topics, 123 derived formulas): Inflation-Adjusted Value, Nominal and Effective Rate, Ordinary Annuity (Present Worth), Declining Balance and MACRS Depreciation, Equilibrium of Vertical Forces, Moment about a Pivot, Ladder Equilibrium, Pulling a Crate, Moment of a Force, Electrical Power. Left out on purpose: topics whose name is shared across days (Force and Acceleration, Circular Motion, Resultant of Two Forces, Reverse Effective Force, Weight and Mass, the momentum ones), because FB_DERIVED is keyed by topic name, and topics with no clean derivation. The Day 17-18 derive-first solution rewrite and formula-choice rulings were NOT applied to Day 12-16 hints (hundreds of solutions); only the derived-formula Build stage was extended. Ruling count updated to 83.",
