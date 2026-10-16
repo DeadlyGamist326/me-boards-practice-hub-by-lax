@@ -2672,6 +2672,7 @@
   .tm-term { font-size: 20px; font-weight: 700; text-align: center; padding: 16px 10px; margin: 0 0 12px; border: 1px solid var(--line); border-radius: 8px; background: #f7f9fc; }
   .tm-meta { font-size: 12px; color: var(--sub); text-align: center; margin: 0 0 6px; }
   .tm-choices { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .tm-note { margin: 10px 0 0; padding: 8px; border-left: 3px solid var(--accent); background: #f7f9fc; }
   .tm-empty { padding: 18px; border: 1px dashed var(--line); border-radius: 8px; text-align: center; color: var(--sub); font-size: 14px; }
 </style>
 </head>
@@ -5349,7 +5350,7 @@ function onSubjectToggleClick(subjectKey) {
 // version whose only changes are diary-only.
 const CHANGELOG = [
   { version: "1.3.59.55", date: "2026-10-16", changes: [
-    "New: Terms Practice, in the Identify the Problem Type card on the home page next to Identify Drill and Formula Builder. You read a term and pick its correct meaning, with Previous and Next, a score line, and the same Day chips and Practice by topic filter as the Formula Builder. The terms themselves are coming in the next update."
+    "New: Terms Practice, in the Identify the Problem Type card on the home page next to Identify Drill and Formula Builder. You read a term and pick its correct meaning, with Previous and Next, a score line, and the same Day chips and Practice by topic filter as the Formula Builder. 60 terms for Day 12 to 17 (economics, statics and dynamics, energy, heat, electricity, fluids and beams) are in; you can see a short explanation after you answer."
   ] },
   { version: "1.3.59.54", date: "2026-10-16", changes: [
     "Formula Builder: every Day 16 formula with fewer than 5 problems now has generated Variants (different wording and new random, realistic givens every time), so each has 5 problems. Covers Moment of a Force, the momentum and collision types (inelastic, elastic, coupling, loading a moving car, bullet in a block, ballistic pendulum, impulse, average impulsive force, restitution), Work, Kinetic Energy, Work-Energy, Work Against Friction, Rotational Kinetic Energy, Free Falling Body, Resultant of Two Forces, Centrifugal Force, Reverse Effective Force, Gravitational Acceleration, Weight and Mass, Friction on a Horizontal Plane, Specific Heat, Thermal Expansion, Thermal Efficiency, and the electricity types (Current, Power, Power Factor, Series Resistance, Series-Parallel Resistance, Capacitance in Series)."
@@ -34680,9 +34681,70 @@ function fbOpen() {
   modeEl.onchange = () => { fbMode = modeEl.value; try { localStorage.setItem("fbMode", fbMode); } catch (e) { /* ignore */ } };
 }
 // ---- Terms Practice (Math Day 12-18) ----
-// TERMS_DATA is the one place terms live: { day: 12..18, topic: "<a topic name from that day's formula outline>", term: "...", def: "..." }.
-// Topics should match the outline topic names so the "Practice by topic" filter lines up with the other practice tools.
-const TERMS_DATA = [];
+// TERMS_DATA is the one place terms live: { day: 12..18, topic: "<topic group name>", term: "...", def: "...", note: "<optional explanation>" }.
+// The "Practice by topic" filter is built from the days and topic groups found here, so adding a term needs no other change.
+const TERMS_DATA = [
+  {"day":12,"topic":"Interest, Discount and Rates","term":"Effective rate","def":"The interest rate that gives the actual rate of interest on the principal for one year.","note":"The effective interest rate represents the actual yearly compounding interest yield."},
+  {"day":12,"topic":"Interest, Discount and Rates","term":"Effective interest","def":"The actual interest earned by a given principal.","note":"The effective interest rate represents exact yearly gains from compound mechanics."},
+  {"day":12,"topic":"Interest, Discount and Rates","term":"Discount","def":"The difference between what a negotiable paper is worth in the future and its present worth.","note":"Discount is the difference between future value and present value of a financial note."},
+  {"day":12,"topic":"Break-Even Analysis","term":"Break-even point","def":"The output or sales at which income just equals operating cost (below it, income is insufficient to cover cost).","note":"The break-even point is where total costs equal total revenues, leaving no net profit or loss."},
+  {"day":12,"topic":"Financial Ratios","term":"Acid test ratio (quick ratio)","def":"The ratio of current assets, exclusive of inventory, to the total current liabilities.","note":"The acid test ratio (or quick ratio) is the ratio of quick current assets (excluding inventory) to total current liabilities."},
+  {"day":12,"topic":"Financial Ratios","term":"Asset turnover","def":"The ratio of annual sales to the average of the assets used in producing those sales.","note":"Asset turnover measures corporate operational efficiency by comparing sales to total average assets."},
+  {"day":12,"topic":"Financial Ratios","term":"Dividend yield","def":"The index that gives the rate earned per share based on the current price per share.","note":"Dividend Yield is the ratio of dividend distributions relative to current share price."},
+  {"day":13,"topic":"Annuities","term":"Annuity","def":"A series of equal payments occurring at equal periods of time.","note":"An annuity is a sequence of equal payments made at uniform intervals over time."},
+  {"day":13,"topic":"Annuities","term":"Deferred annuity","def":"A series of equal payments at equal intervals where the first payment is made several periods after the beginning of the payment term.","note":"A deferred annuity represents payments that do not commence until a specific period of time has elapsed."},
+  {"day":13,"topic":"Annuities","term":"Amortization","def":"Any method of repaying a debt, principal and interest included, usually by a series of equal payments.","note":"Amortization is the structured process of gradually paying off a debt over time via equal payments."},
+  {"day":14,"topic":"Depreciation and Capital Recovery","term":"Depreciation","def":"The artificial expense that spreads the purchase price of an asset over a number of years.","note":"Depreciation is the accounting process of allocating asset costs over their active useful life."},
+  {"day":14,"topic":"Depreciation and Capital Recovery","term":"Depletion","def":"The lessening of the value of an asset due to a decrease in the quantity available (coal, oil, timber).","note":"Depletion is the cost allocation for natural resources extracted over time."},
+  {"day":14,"topic":"Depreciation and Capital Recovery","term":"Salvage value","def":"An estimate of the asset's net market value at the end of its estimated life.","note":"Salvage value is the estimated book value of an asset after its useful life has expired."},
+  {"day":14,"topic":"Depreciation and Capital Recovery","term":"Depreciation recovery","def":"The present worth of all the depreciation over the economic life of an item.","note":"Depreciation recovery computes the current financial present value equivalence of all scheduled depreciation allowances."},
+  {"day":14,"topic":"Depreciation and Capital Recovery","term":"Sinking fund method","def":"The depreciation method in which a fixed sum of money is regularly deposited at compound interest so the replacement cost is available at the end of the life.","note":"The Sinking Fund Method secures replacement capital via periodic compounding deposits."},
+  {"day":14,"topic":"Depreciation and Capital Recovery","term":"Capital recovery","def":"The replacement of the original cost of an investment.","note":"Capital recovery represents returning the original equity asset outlay over time."},
+  {"day":14,"topic":"Depreciation and Capital Recovery","term":"Write-off period","def":"The length of time in which the original cost of capital has been recovered.","note":"The write-off period denotes active scheduled asset amortization matching capital costs."},
+  {"day":14,"topic":"Depreciation and Capital Recovery","term":"Appraisal","def":"The process of determining the value of a certain property for a specific reason.","note":"An appraisal is an expert assessment or valuation of property, real estate, or assets."},
+  {"day":14,"topic":"Depreciation and Capital Recovery","term":"Market value","def":"The amount a willing buyer pays a willing seller for a property when neither is under compulsion.","note":"Market value is the estimated fair transaction price under open market conditions."},
+  {"day":14,"topic":"Bonds and Capital","term":"Registered bond","def":"A bond where the owner's name is recorded by the corporation and the interest is paid to the owner without the owner having to ask for it.","note":"A registered bond has the owner's details registered on corporate books, distributing interest payments automatically."},
+  {"day":14,"topic":"Bonds and Capital","term":"Debenture bond","def":"A bond without any security behind it except the issuing corporation's promise to pay.","note":"Debenture bonds represent unsecured corporate debt obligations backed only by creditworthiness."},
+  {"day":14,"topic":"Bonds and Capital","term":"Equipment obligation bond","def":"A bond whose guaranty is railroad equipment.","note":"Equipment obligation bonds are secured using logistics/rolling stock machinery."},
+  {"day":14,"topic":"Bonds and Capital","term":"Dividend","def":"The part of a company's profit that the board of directors decides to distribute to ordinary shareholders.","note":"Dividends are the portion of corporate earnings paid out directly to shareholders."},
+  {"day":14,"topic":"Bonds and Capital","term":"Authorized capital","def":"The grand total of the assets, or operational capability, of a corporation.","note":"Authorized capital sets the absolute capitalization limits of stock structures."},
+  {"day":14,"topic":"Bonds and Capital","term":"Capital gain","def":"An increase in the value of a capital asset.","note":"Capital gain is the increase in value of a capital asset (investment or real estate) that gives it a higher worth than purchase price."},
+  {"day":14,"topic":"Bonds and Capital","term":"Initial working capital","def":"The amount needed at the beginning of operations that lets the enterprise start functioning before it receives any income from sales.","note":"Initial working capital is the critical upfront seed capital needed to initiate basic operations."},
+  {"day":14,"topic":"Bonds and Capital","term":"Development cost","def":"The sum of all the cost incurred by the originators of a project up to the time the promoters accept the project.","note":"Development cost represents all expenses up to the point of structural transfer/acceptance."},
+  {"day":14,"topic":"General Engineering Economy","term":"Differential cost","def":"The cost that arises from a change in operations or policy; the ratio of a small increment of cost to a small increment of output.","note":"Differential cost (or incremental cost) represents the variation in overall costs resulting from choosing one alternative over another."},
+  {"day":14,"topic":"General Engineering Economy","term":"Marginal cost","def":"The additional cost of producing one more unit of a product.","note":"Marginal cost represents the economic delta cost when output expands by one unit."},
+  {"day":14,"topic":"General Engineering Economy","term":"Safety stock","def":"The quantity kept in addition to the economic order quantity to anticipate sudden changes in demand and delays of the ordered quantity.","note":"Safety stock buffers operations against unexpected delays or spike demand events."},
+  {"day":14,"topic":"General Engineering Economy","term":"Escalatory clause","def":"The provision in a contract that allows possible adjustment of material cost and labor cost.","note":"An escalatory clause allows for adjustments in contract price due to changes in market conditions/inflation."},
+  {"day":14,"topic":"General Engineering Economy","term":"Feather bidding","def":"A situation where payment is made for work not done (also more workers are used than needed).","note":"This labor practice is called featherbedding (misprinted as feather bidding)."},
+  {"day":14,"topic":"General Engineering Economy","term":"Collective bargaining","def":"The negotiation of wage rates, conditions of employment and the like by representatives of the labor force and management.","note":"Collective bargaining is the official process of negotiation between representatives of employees and employers."},
+  {"day":14,"topic":"General Engineering Economy","term":"Necessity products and services","def":"Products or services required to support human life and activities, bought in about the same quantity even when the price varies considerably.","note":"Necessity products and services are inelastic commodities required to sustain human survival regardless of cost variations."},
+  {"day":14,"topic":"General Engineering Economy","term":"Consumer goods and services","def":"Products or services directly used by people to satisfy their wants.","note":"Consumer goods are purchased directly by consumers to fulfill basic wants/needs."},
+  {"day":14,"topic":"General Engineering Economy","term":"Producer goods and services","def":"Products or services that are used to produce other goods and services.","note":"Producer goods (capital assets) are raw materials or tools utilized to manufacture final products."},
+  {"day":14,"topic":"General Engineering Economy","term":"Monopsony","def":"A market where there is only one buyer of an item for which there are no good substitutes.","note":"A monopsony is a market structure dominated by a single buyer who holds significant procurement control."},
+  {"day":15,"topic":"Statics and Dynamics","term":"Displacement","def":"A change in position, specified by a length and a direction.","note":"Displacement is defined as a vector quantity representing the change in position with both magnitude and direction."},
+  {"day":15,"topic":"Statics and Dynamics","term":"Force","def":"Any influence capable of producing a change in the motion of an object; also the rate of change of momentum with respect to time.","note":"Force is defined as a push or pull that can accelerate a mass according to Newton's Laws."},
+  {"day":15,"topic":"Statics and Dynamics","term":"Newton's second law of motion","def":"A net force on a body produces acceleration in the direction of the resultant force, directly proportional to that force and inversely proportional to the mass of the body.","note":"This statement is the direct verbal formulation of Newton's Second Law of Motion: F = ma."},
+  {"day":15,"topic":"Statics and Dynamics","term":"Catenary","def":"The curve formed by a homogeneous, flexible cord held at both ends and allowed to sag freely under its own weight.","note":"A hanging uniform flexible cable sagging under gravity naturally assumes a catenary shape."},
+  {"day":16,"topic":"Energy, Heat and Gases","term":"Dyne","def":"The net force that gives a 1 g mass an acceleration of 1 cm/s\u00b2.","note":"One dyne is the force required to accelerate 1\\text{ g} mass at 1\\text{ cm/s}^2."},
+  {"day":16,"topic":"Energy, Heat and Gases","term":"British thermal unit (Btu)","def":"The heat required to raise the temperature of 1 lb of water by 1 \u00b0F.","note":"The British Thermal Unit (BTU) is defined by this thermal criteria."},
+  {"day":16,"topic":"Energy, Heat and Gases","term":"Boyle's law","def":"For a confined gas at constant temperature, the product of pressure and volume is constant.","note":"Boyle's Law states P_1V_1 = P_2V_2 at constant thermal levels."},
+  {"day":16,"topic":"Energy, Heat and Gases","term":"Dew point","def":"The temperature to which air must be cooled to produce saturation.","note":"The Dew Point is the temperature at which condensation begins."},
+  {"day":16,"topic":"Energy, Heat and Gases","term":"Absolute zero","def":"The temperature at which molecular motion stops: \u2212273 \u00b0C.","note":"Absolute zero is exactly -273.15^{\\circ}\\text{C} (rounded to -273^{\\circ}\\text{C})."},
+  {"day":16,"topic":"Electricity","term":"Voltage","def":"The energy required to move 1 coulomb of charge through an element.","note":"Voltage (or potential difference) is defined as the work done or energy required to move a unit charge of 1 Coulomb."},
+  {"day":16,"topic":"Electricity","term":"Current","def":"The rate of charge flow.","note":"Current represents the flow rate of electric charge (I = \\frac{dQ}{dt})."},
+  {"day":16,"topic":"Electricity","term":"Ampere","def":"The unit of current equal to 1 coulomb per second.","note":"One ampere is defined as one Coulomb of charge passing through a cross-section per second."},
+  {"day":16,"topic":"Electricity","term":"Resistance","def":"The ability of an element to resist the flow of current.","note":"Resistance quantifies an element's opposition to passing electric currents."},
+  {"day":16,"topic":"Electricity","term":"Conductance","def":"The reciprocal of resistance.","note":"Conductance (G = 1/R) represents ease of electric charge flow."},
+  {"day":16,"topic":"Electricity","term":"Siemens","def":"The SI unit of conductance.","note":"Siemens (S) is the SI unit of electric conductance, replacing the legacy term mho."},
+  {"day":16,"topic":"Electricity","term":"Ohm's law","def":"The voltage across a resistor is directly proportional to the current flowing through it.","note":"Ohm's Law states V = IR directly."},
+  {"day":16,"topic":"Electricity","term":"Kirchhoff's current law","def":"The algebraic sum of the currents entering a node (or a closed boundary) is zero.","note":"Kirchhoff's Current Law (KCL) is a statement of conservation of electric charge at circuit junctions."},
+  {"day":16,"topic":"Electricity","term":"Kirchhoff's voltage law","def":"The algebraic sum of all the voltages around a closed path (loop) is zero.","note":"Kirchhoff's Voltage Law (KVL) dictates conservation of energy around closed loop circuits."},
+  {"day":16,"topic":"Electricity","term":"Tesla","def":"The unit of magnetic induction.","note":"Tesla (T) is the standard international unit of magnetic induction (or magnetic flux density)."},
+  {"day":17,"topic":"Fluids and Beams","term":"Archimedes' principle","def":"The loss of weight of a body submerged in a fluid equals the weight of the fluid displaced.","note":"By Archimedes' Principle, the buoyant force on a submerged body equals the weight of fluid displaced."},
+  {"day":17,"topic":"Fluids and Beams","term":"Bernoulli's energy theorem","def":"Along a streamline in an ideal fluid in steady flow, the sum of the pressure, the potential energy and the kinetic energy per unit volume is constant.","note":"Bernoulli's Energy Theorem dictates energy conservation in ideal steady fluids."},
+  {"day":17,"topic":"Fluids and Beams","term":"Surface tension","def":"The main cause of a leaking faucet coming out in separate drops.","note":"Surface tension acts to minimize surface area, turning flow streams into droplets."},
+  {"day":17,"topic":"Fluids and Beams","term":"Bernoulli-Euler law","def":"The curvature of the central fiber of a homogeneous bar is proportional to the bending moment.","note":"The Euler-Bernoulli beam theory establishes that beam curvature is proportional to the internal bending moment."},
+];
 let tmDay = "all", tmSel = { keys: null, label: "All topics" }, tmQueue = [], tmHist = [], tmPos = -1, tmScore = { right: 0, total: 0 }, tmAnswered = false;
 function tmItems() {
   return TERMS_DATA.filter(x => (tmDay === "all" || x.day === tmDay) && (!tmSel.keys || tmSel.keys.indexOf(x.day + "|" + x.topic) >= 0));
@@ -34732,12 +34794,13 @@ function tmBuildFilter() {
   };
   row("topic-filter-row topic-filter-all", "All topics", null);
   const known = {};
-  fbOutlineFor(tmDay).forEach(sec => {
-    row("topic-filter-row topic-filter-section", sec.section, [].concat.apply([], sec.subs.map(x => x.items)));
-    sec.subs.forEach(sub => {
-      if (sub.name) row("topic-filter-row topic-filter-subsection", sub.name, sub.items);
-      sub.items.forEach(k => { known[k] = 1; row("topic-filter-row topic-filter-item", k.slice(k.indexOf("|") + 1), [k]); });
-    });
+  const days = tmDay === "all" ? Object.keys(IDT_DAYS).map(Number) : [tmDay];
+  days.forEach(d => {
+    const topics = [];
+    TERMS_DATA.forEach(x => { if (x.day === d && topics.indexOf(x.topic) < 0) topics.push(x.topic); });
+    if (!topics.length) return;
+    row("topic-filter-row topic-filter-section", "Day " + d, topics.map(t => d + "|" + t));
+    topics.forEach(t => { known[d + "|" + t] = 1; row("topic-filter-row topic-filter-item", t, [d + "|" + t]); });
   });
   if (tmSel.keys && !known[tmSel.keys[0]]) tmSel = { keys: null, label: "All topics" };
   btn.textContent = tmSel.label + " (" + (tmSel.keys ? countFor(tmSel.keys) : pool.length) + ") \u25be";
@@ -34812,6 +34875,12 @@ function tmShow(it) {
         Array.from(box.children).forEach(c => { if (c.textContent === it.def) c.classList.add("ok"); });
       }
       stat.textContent = "Score: " + tmScore.right + " / " + tmScore.total;
+      if (it.note) {
+        const n = document.createElement("div");
+        n.className = "fb-hint tm-note";
+        n.textContent = it.note;
+        st.appendChild(n);
+      }
     };
     box.appendChild(b);
   });
