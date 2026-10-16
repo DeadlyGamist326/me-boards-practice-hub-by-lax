@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.27",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.29",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.29: LAX asked to apply the derived-formula stage to the existing topics. FB_DERIVED grew from 16 to 72 topics (108 derived formulas) covering Day 12 interest/annuity/depreciation, Day 15-16 mechanics, electricity and heat, Day 17 fluids and Day 18 springs/gears/vessels. Each entry has authored base formulas (b) and derived formulas (d) with needs chains. Verified in jsdom: every equation parses by eqParse, every key is a real topic, needs only point backwards, and the stage runs for all 72. Skipped topics where the formulas are unrelated or the derivation is not a clean substitution (Force and Acceleration, Projectile Motion, Banking Curves, Net Present Worth). Another session shipped v1.3.59.28 in parallel, so this is .29.",
       "v1.3.59.27: Formula Builder derived-equation stage (LAX request). New FB_DERIVED map (topic -> original formulas b + derived formulas d with needs) for 16 multi-formula topics (shrink-fit ring, helical spring stress, both beams, density from weights, friction pressure drop, tank with liquid, flywheel, cantilever, circular pitch, tooth thickness/proportions, drop hammer, orbital velocity, gear dynamic load, shaft speed). fbEquation now runs fbDerivedStage for those topics: two columns (originals left, derived right, hidden until built), one Build question per derived formula in random order, ◀ ▶ to switch, and an 'Understand these first' list built from the dependency chain (earlier derived ones tagged '(derived)'). Mistakes count through the normal grading. Topics without an entry keep the old complete/build step.",
       "v1.3.59.26: LAX wanted Problem Set Day 18 #10 (thick-wall, find P_i from tangential stress 8423.58 kPa) to keep the original equation. The hint had dropped the external-pressure term; it now shows S_ti with the -2P_o r_o^2 term, substitutes P_o = 0, adds the note \"Shift and solve using a calculator.\", then the answer. Checked the other S_ti/S_to solutions: only this one used the shortened form. Not rendered in a browser; syntax check only."
     ]
