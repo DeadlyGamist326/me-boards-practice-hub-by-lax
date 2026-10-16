@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.44",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.45",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.45: LAX reported Day 12 Problem Set #40 (Bank Discount) ran the derived stage although the problem only needs d = (F - P)/F, and the solution seemed to vanish. Cause: fbEquation used FB_DERIVED[it.topic] for every problem of the topic, and the derived stage replaces the normal Build/Complete step, so the problem's own equation was never built. New fbDerivedFor(it, target) returns the spec only when the problem's target equation equals one of the spec's derived equations (ignoring parentheses, spaces, left/right). Measured before the change: of the problems whose topic has a spec, 192 target an original formula, 45 a derived one, 147 something else. Could not reproduce a disappearing solution reveal in jsdom (the reveal showed all 4 solution boxes), so the lost solution is read as the replaced Build step.",
       "v1.3.59.43: LAX asked for the same confetti as the quiz results whenever a type reaches or is at 5 checks and the answer is right and Next is pressed. scFlash calls the existing launchConfetti(220) 350 ms after opening the menu when pending.stay is set (same condition as keeping the menu open).",
       "v1.3.59.42: LAX asked that the checklist menu stay open once a topic hits 5 checks (first time, or beyond). scBump now sets pending.stay when the new count reaches REPS, and also records a pending entry (idx REPS-1, stay) when the topic is already full instead of returning silently; scFlash skips the auto-close when stay is true.",
       "v1.3.59.41: LAX asked that the checklist briefly show the new check after pressing Next. scBump now records pending = {day, topic, idx}; the new window.scFlash (called from the Next button in fbAnswer reveal before fbNextQ) switches to that day, opens the topic section, builds, opens the panel, scrolls the row to the centre, adds .sc-blink (green pulse, 5 cycles) to the new checkbox and closes the panel after 3 s. Skipped when the handle is hidden or nothing was counted.",
