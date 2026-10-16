@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.69.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.70.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -38,7 +38,7 @@ ppeDay1Data," which is long since stale — hints are now on every quiz).
 push to `main`. It picks the highest-versioned `MEBoards_*.html` (via
 `sort -V`) and publishes it as `index.html`, so the rename-on-version-bump
 convention needs no extra step. Never hand-maintain an `index.html` copy in
-the repo. Only the app file is published (not the diary). Keep the
+the repo. The app file is published as `index.html` and, since v1.3.59.70 (LAX chose to publish it), the diary as `diary.html` (the admin Device Tracker links to it). Keep the
 `MEBoards_*.html` filename prefix intact or the workflow won't find it.
 
 **Standing instruction — auto-merge to `main` (given by the user on
