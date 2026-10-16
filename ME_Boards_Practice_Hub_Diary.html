@@ -300,9 +300,10 @@ const entries = {
     ]
   },
   "2026-10-14": {
-    stamp: "v1.3.58.11 \u2013 v1.3.59.24",
+    stamp: "v1.3.58.11 \u2013 v1.3.59.25",
     title: "Units on substituted lines",
     body: [
+      "v1.3.59.25: Bug: checklist +1 hooked on srRecord good/easy grades, so any formula miss (Again) or 2+ slips (Hard) before a correct final answer blocked it. Fix: bump from fbRun reveal() when ok && !usedSolution && srInScope, removed hook from srRecord. Reproduced with a jsdom driver that plays the whole flow (formula miss then correct answer: 0/5 before, 1/5 after).",
       "v1.3.59.24: Hid the SR mode buttons (SR_MODES_SHOWN=false forces fbSrMode=free and hides #fb-sr-modes) per LAX so checklist auto +1 is not affected by Study/Review/Test flows. Flip SR_MODES_SHOWN to true to restore. Verified in jsdom: stored study mode ignored, buttons hidden, srRecord good -> checklist 1/5.",
       "v1.3.59.23: Study checklist counter: window.scBump(day, topic) called from srRecord on good/easy grades (hard/again do not count), capped at 5, in-panel counter label per row, checkboxes stay editable and share the same stored count (scChecklistV1). jsdom-checked incl. cap, manual uncheck, hard/again.",
       "v1.3.59.22: fbGoTo(day, topic) added; clickable names in the floating Study checklist (.sc-name) and the Mastery map (.sr-name, delegated click). Falls back to Free practice when Study/Review has nothing for the type; 8 Day 17/18 outline topics have no FB problems (Force of a Jet, Pitot Tube, Layered Liquids pressure, Pressure Drop in a Pipe, Thin-Wall Sphere Thickness/Stress, Compression Ring Area, Base Circle Radii) so they open the day with a note. jsdom-checked.",
