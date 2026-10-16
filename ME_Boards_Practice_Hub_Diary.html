@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.73",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.74",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.74: LAX corrected v1.3.59.73: a right answer must not auto-advance. Reverted the 450 ms auto-next; the right choice turns green, the full solution shows (with the line \"Click the green answer again to go to the next question.\"), and the green choice is re-enabled with an onclick that calls scFlash and fbNextQ. Wrong answers unchanged. jsdom: 10/10 right answers stayed on the solution then advanced on the second click, 10/10 wrong ones showed the solution.",
       "v1.3.59.73: LAX: in the Formula Builder a right answer should act like Next. In fbAnswer the choice click now calls reveal(ok, true); for ok it does the counting (fbStore, srRecord, scBump, stats) and after 450 ms calls scFlash and fbNextQ, guarded by fbPos and card.isConnected. A wrong answer is unchanged (solution plus Next, no counter). The no-choices Show full solution path is unchanged. jsdom: 10/10 right advanced with 10 bumps, 10/10 wrong showed the solution with no advance.",
       "v1.3.59.72: Fixed raw delimiter text in Skip to Choices. fbSkipFn wrapped target.f (which already contains the MathJax delimiters from fbPrep) in a second pair; it now sets innerHTML = target.f.",
       "v1.3.59.71: Diary-only fix (no changelog entry). Once the diary was published LAX saw only the heading and an empty SEPTEMBER 2026 calendar: the diary script had a syntax error, so nothing rendered. Cause: the v1.3.59.49 bullet (and one more) had a doubled backslash before the quotes (\\\\\" instead of \\\"), which ended the string early. Replaced both, and checked that the script parses and the calendar opens on October 2026 with 15 logged days. Lesson: run node --check on the diary script after every diary edit, not only on the app.",
