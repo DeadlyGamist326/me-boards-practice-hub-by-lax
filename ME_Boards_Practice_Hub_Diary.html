@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.40",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.41",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.41: LAX asked that the checklist briefly show the new check after pressing Next. scBump now records pending = {day, topic, idx}; the new window.scFlash (called from the Next button in fbAnswer reveal before fbNextQ) switches to that day, opens the topic section, builds, opens the panel, scrolls the row to the centre, adds .sc-blink (green pulse, 5 cycles) to the new checkbox and closes the panel after 3 s. Skipped when the handle is hidden or nothing was counted.",
       "v1.3.59.40: LAX reported the checklist counter did not add after a right final answer. Root cause: the scBump call in fbAnswer reveal() was guarded by srInScope(it), and SR_DAYS is only [17, 18], so Day 12-16 never counted. Removed that guard (scBump already ignores days/topics not on the checklist). Also the guard used usedSolution, which a Show answer click on a derived/equation build step sets; replaced with a new solShown flag set only by the no-choices Show full solution button. Spaced-repetition grading still uses usedSolution.",
       "v1.3.59.39: LAX asked that the final derived equation stick once a derived build is answered or shown. fbDerivedStage no longer auto-advances to the next unbuilt question after done(); it keeps the finished canvas and sets the label to a checkmark with a hint to press the right arrow. The last question still calls onDone as before.",
       "v1.3.59.38: Problem Set Day 12 #37 had F = 25000(1 + 0.14 x 4) wrongly shown as P39,600. Correct value is P39,000: choice B changed to P39,000 and the 4th hint now ends in = P39,000. Checked the rest of the file: no Formula Builder or other variant carries the wrong figure.",
