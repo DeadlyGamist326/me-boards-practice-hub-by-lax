@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.38",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.39",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.39: LAX asked that the final derived equation stick once a derived build is answered or shown. fbDerivedStage no longer auto-advances to the next unbuilt question after done(); it keeps the finished canvas and sets the label to a checkmark with a hint to press the right arrow. The last question still calls onDone as before.",
       "v1.3.59.38: Problem Set Day 12 #37 had F = 25000(1 + 0.14 x 4) wrongly shown as P39,600. Correct value is P39,000: choice B changed to P39,000 and the 4th hint now ends in = P39,000. Checked the rest of the file: no Formula Builder or other variant carries the wrong figure.",
       "v1.3.59.37: LAX realised the derived stage should not be random: later derived formulas depend on earlier ones. fbDerivedStage now uses order = [0..n-1] instead of idtShuffle; arrows and the skip-to-next-unbuilt logic are unchanged. Ruling text (RULINGS section 12 and CLAUDE.md 8c) updated from random to in order.",
       "v1.3.59.36: LAX asked that the whole problem be shown again before the \"Select the givens used in the problem\" step because the original is too far up. fbGivens now builds a .fb-recap block (label + idtShowQ of the same item) placed before the givens title; the existing idtTypeset(card) call typesets it. No change to grading.",
