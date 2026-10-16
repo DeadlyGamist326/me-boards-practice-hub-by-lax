@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-16": {
-    stamp: "v1.3.59.26 \u2013 v1.3.59.60",
+    stamp: "v1.3.59.26 \u2013 v1.3.59.61",
     title: "Day 18 PS #10 original equation",
     body: [
+      "v1.3.59.61: Terms Practice: once a question is answered, clicking the correct choice again calls tmNext() (LAX: \"if clicking the right answer again, it will act like a next button\"). Clicking a wrong choice after answering still does nothing.",
       "v1.3.59.60: Terms Practice keyword highlight (LAX: \"mag highlight ng mga keywords para madali matandaan per question\"). Each TERMS_DATA item has kw: [...] (phrases hand-picked from the question text, all 63 verified to appear in q); tmHighlight() wraps them in <mark class=tm-kw>. Add kw when adding a term.",
       "v1.3.59.59: Terms Practice mastery checklist on the left (LAX: \"terms checklist sa kaliwang side, mastery meter lang for each topic, percentage for day 12 to 17\"). New #tm-handle / #tm-panel inside view-terms (so it only exists while that view is open), tmChecklist() redraws on every answer. Mastery % = average of each term step (0 to 4 = learned) / 4, per topic, per Day and overall; tapping a topic filters the practice to it. Separate from the right-edge Study checklist of the Formula Builder.",
       "v1.3.59.58: Terms Practice made strategic (LAX: spaced repetition, wrong comes back around the 5th card, right goes further and further). tm* queue rewritten: wrong => step 0 and reinsert after 5 cards; right => step+1 and reinsert after 10/20/40 cards (TM_GAPS); step 4 = learned, removed. Skipping with Next counts as unanswered (back after 5). Choices shuffled each time. Progress per question stored in localStorage tmProgressV1 (key day|question), Previous button removed because the queue is not linear. Gaps are in cards, not time, so they work in one sitting. For a small queue (one focused topic) the gaps scale down: share of cards left 25/50/75/100%, capped at 5/10/20/40 and always at least one card further than the step before (tmGap), so with 60 cards it is 5/10/20/40 and with 8 cards about 2/4/6/8.",
