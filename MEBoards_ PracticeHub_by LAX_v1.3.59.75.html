@@ -31535,15 +31535,30 @@ renderQuiz("quiz-ps-18", ps18Data, "Problem Set Day 18", "timer-ps-18", math18Fo
 // ---- Identify the Problem Type (Math Day 14-16): Drill + Keyword Cheat Sheet ----
 // Built lazily from the existing Trivia/Problem Set data (topics + Hint 1 kw-map), so nothing is duplicated.
 [trivia18Data, ps18Data].forEach(arr => arr.forEach(vesselGuideApply));
-const IDT_DAYS = {
-  12: { trivia: trivia12Data, ps: ps12Data, outline: math12FormulaOutline },
-  13: { trivia: trivia13Data, ps: ps13Data, outline: math13FormulaOutline },
-  14: { trivia: trivia14Data, ps: ps14Data, outline: math14FormulaOutline },
-  15: { trivia: trivia15Data, ps: ps15Data, outline: math15FormulaOutline },
-  16: { trivia: trivia16Data, ps: ps16Data, outline: math16FormulaOutline },
-  17: { trivia: trivia17Data, ps: ps17Data, outline: math17FormulaOutline },
-  18: { trivia: trivia18Data, ps: ps18Data, outline: math18FormulaOutline },
-};
+const IDT_DAYS = {};
+// Math Day 1-11 data is declared further down the file, so each day reads its arrays lazily (getters) instead of by value.
+[
+  [1, () => trivia1Data, () => ps1Data, () => math1FormulaOutline],
+  [2, () => trivia2Data, () => ps2Data, () => math2FormulaOutline],
+  [3, () => trivia3Data, () => ps3Data, () => math3FormulaOutline],
+  [4, () => trivia4Data, () => ps4Data, () => math4FormulaOutline],
+  [5, () => day5Data, () => ps5Data, () => math5FormulaOutline],
+  [6, () => day6Data, () => ps6Data, () => math6FormulaOutline],
+  [7, () => day7Data, () => ps7Data, () => math7FormulaOutline],
+  [8, () => day8Data, () => ps8Data, () => math8FormulaOutline],
+  [9, () => trivia9Data, () => ps9Data, () => math9FormulaOutline],
+  [10, () => trivia10Data, () => ps10Data, () => math10FormulaOutline],
+  [11, () => trivia11Data, () => ps11Data, () => math11FormulaOutline],
+  [12, () => trivia12Data, () => ps12Data, () => math12FormulaOutline],
+  [13, () => trivia13Data, () => ps13Data, () => math13FormulaOutline],
+  [14, () => trivia14Data, () => ps14Data, () => math14FormulaOutline],
+  [15, () => trivia15Data, () => ps15Data, () => math15FormulaOutline],
+  [16, () => trivia16Data, () => ps16Data, () => math16FormulaOutline],
+  [17, () => trivia17Data, () => ps17Data, () => math17FormulaOutline],
+  [18, () => trivia18Data, () => ps18Data, () => math18FormulaOutline],
+].forEach(([d, tr, ps, ol]) => {
+  Object.defineProperty(IDT_DAYS, d, { enumerable: true, get: () => ({ trivia: tr(), ps: ps(), outline: ol() }) });
+});
 // Sample Problems are static HTML, so they are snapshotted once at load (before MathJax typesets them) and then treated like
 // the Trivia / Problem Set questions: {title, img, choices, answer, topics, hints[4]}.
 const idtSamples = {};
@@ -31616,7 +31631,7 @@ function idtDayChips(boxId, selected, onPick) {
     const b = document.createElement("button");
     b.type = "button";
     b.className = "idt-chip" + (v === selected ? " on" : "");
-    b.textContent = v === "all" ? "Day 12–18" : "Day " + v;
+    b.textContent = v === "all" ? "All days" : "Day " + v;
     b.onclick = () => onPick(v);
     box.appendChild(b);
   });
