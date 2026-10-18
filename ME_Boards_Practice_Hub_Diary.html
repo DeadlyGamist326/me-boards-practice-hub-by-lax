@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-18": {
-    stamp: "v1.3.59.76",
-    title: "PPE Day 9 opened, Quick Access moved to PPE",
+    stamp: "v1.3.59.76 – v1.3.59.77",
+    title: "PPE Day 9 opened, Quick Access moved to PPE; IP recorded for old accounts",
     body: [
+      "v1.3.59.77: LAX asked that accounts made before the IP rule also have an IP. touch() already wrote the IP into the device entry on every session, so old accounts get it on their next visit; it now also claims ips/<ip> once per session for existing accounts (ipAlreadyUsed result ignored, status untouched), so they count toward the one-trial-per-IP rule and Block. Old accounts that never open the app again stay without an IP. No rules change.",
       "v1.3.59.76: LAX uploaded the PPE Day 9 Handout and Sample Problems PDFs and asked to move on to PPE. Checked first: PPE Day 9 handout, Problem Set and Trivia were still blank placeholders (markPendingEmpty), so nothing was already in the app.",
       "Quick Access on the home page now lists PPE Day 9 to 12 (was Math Day 12 to 17; the featured-math-grid code now builds the PPE grid with the same 5 columns, Exam Missed Questions stays disabled and blurred for PPE). Math stays in the Full Course Library.",
       "PPE Day 9 Handout built from the PDF: I. Pumps, II. Air Compressor, III. Fans and Blowers, one concept-card per formula group, 11 source diagrams cropped from the PDF and embedded as base64 PNG. Long formulas take a full row (fb-long). Cleaned small source slips: the stray bracket after oil in the rotary pump line, and added a note that eta_v = 1 - slip means slip as a decimal fraction of V_D (the PDF prints it without that note).",
