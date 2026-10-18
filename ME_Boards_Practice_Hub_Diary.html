@@ -290,6 +290,19 @@
 
 <script>
 const entries = {
+  "2026-10-18": {
+    stamp: "v1.3.59.76",
+    title: "PPE Day 9 opened, Quick Access moved to PPE",
+    body: [
+      "v1.3.59.76: LAX uploaded the PPE Day 9 Handout and Sample Problems PDFs and asked to move on to PPE. Checked first: PPE Day 9 handout, Problem Set and Trivia were still blank placeholders (markPendingEmpty), so nothing was already in the app.",
+      "Quick Access on the home page now lists PPE Day 9 to 12 (was Math Day 12 to 17; the featured-math-grid code now builds the PPE grid with the same 5 columns, Exam Missed Questions stays disabled and blurred for PPE). Math stays in the Full Course Library.",
+      "PPE Day 9 Handout built from the PDF: I. Pumps, II. Air Compressor, III. Fans and Blowers, one concept-card per formula group, 11 source diagrams cropped from the PDF and embedded as base64 PNG. Long formulas take a full row (fb-long). Cleaned small source slips: the stray bracket after oil in the rotary pump line, and added a note that eta_v = 1 - slip means slip as a decimal fraction of V_D (the PDF prints it without that note).",
+      "New PPE Sample Problems page type (view-samples-ppe-N, same layout and click-to-check as the Math one, Full Course Library ppe.sampleProblems now wired). Day 9 has the 7 pump problems from the PDF with all steps preserved, 3 diagrams embedded; Day 10 to 12 are blurred placeholders.",
+      "PPE Problem Set Day 9: the 11 practice problems printed at the end of the handout (5 pumps, 3 air compressor, 3 fans), new handout9FormulaOutline for the filter. The PDF has no answer key and problem 1 has no choices, so everything was solved from scratch and problem 1 got generated choices (distractors: pump efficiency only, motor efficiency only, both multiplied).",
+      "Source mismatches disclosed in the hints: PS2 computes 9.11 kW, nearest printed choice 9.27 kW (D); PS4 computes 3.78 in, nearest printed choice 3.71 in (C); PS7 computes 365.93 kPa vs printed 365.88 kPa (A). PS6 and PS8 assume k = n = 1.4 and a single-acting cylinder because the problem does not state them. Sample problem 3 gives 184.61 mm (choice A 185 mm).",
+      "PPE Day 9 Trivia has no source yet and stays blurred. Checks run: node --check on the app script, CSS braces balanced, jsdom render (20 Quick Access buttons, 26 handout cards, 7 sample problems, 11 questions with 4 choices each), no mojibake, delimiter counts balanced, no bare slash units in the new LaTeX."
+    ]
+  },
   "2026-10-16": {
     stamp: "v1.3.59.26 \u2013 v1.3.59.75",
     title: "Day 18 PS #10 original equation",
