@@ -2580,6 +2580,12 @@
   #adm-search { width: 100%; font-size: 15px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px; }
   .adm-row { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
   .adm-name { font-weight: bold; font-size: 15px; flex: 1 1 140px; word-break: break-word; }
+  .adm-chips { display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 5px 0; align-items: center; }
+  .adm-pill { display: inline-flex; align-items: baseline; gap: 6px; background: rgba(120,130,150,.14); border: 1px solid rgba(120,130,150,.28); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--ink); }
+  .adm-pill small { font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: var(--sub); }
+  .adm-pill.dev { background: rgba(30,90,200,.12); border-color: rgba(30,90,200,.35); font-weight: 700; }
+  .adm-pill.note { background: rgba(200,140,0,.14); border-color: rgba(200,140,0,.4); }
+  .adm-pill.live { background: #e3f3e6; border-color: #2e7d32; color: #1b5e20; font-weight: 700; }
   .adm-cal { flex: 1 1 100%; border-top: 1px dashed var(--line); padding-top: 8px; font-size: 12px; }
   .adm-cal-head { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
   .adm-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; max-width: 460px; }
@@ -65628,11 +65634,27 @@ for (let i = 1; i <= 6; i++) {
   function fmtHist(h) {
     return (h || []).slice().reverse().map(function (e) { return fmt(e["in"]) + " → " + fmt(e.out); }).join("; ");
   }
+  // one rounded chip per field so the tracker lines are easy to scan
+  function chipRow(parent, chips) {
+    var row = h("div", { "class": "adm-chips" });
+    chips.forEach(function (c) {
+      row.appendChild(h("span", { "class": "adm-pill " + (c[2] || "") }, h("small", { text: c[0] + " " }), document.createTextNode(c[1])));
+    });
+    parent.appendChild(row);
+  }
   function deviceList(x) {
     var dv = x.devices || {};
     return Object.keys(dv).sort(function (a, b) { return ms(dv[b].at) - ms(dv[a].at); }).map(function (k) {
       var note = x.deviceNotes && x.deviceNotes[k] ? x.deviceNotes[k] : "";
-      return { key: k, note: note, hist: fmtHist(dv[k].hist), text: "Device " + k.toUpperCase() + (note ? " “" + note + "”" : "") + ": " + (dv[k].ua || "?") + " · " + (Date.now() + offset - ms(dv[k].at) < 75000 ? "ONLINE now, in since " + fmt(dv[k]["in"]) : "in " + fmt(dv[k]["in"]) + " · quit ~" + fmt(dv[k].at)) + (dv[k].ip ? " · IP " + dv[k].ip : "") };
+      var live = Date.now() + offset - ms(dv[k].at) < 75000;
+      var chips = [["Device", k.toUpperCase(), "dev"]];
+      if (note) chips.push(["Name", note, "note"]);
+      chips.push(["Browser", dv[k].ua || "?", ""]);
+      if (live) chips.push(["Status", "ONLINE now", "live"]);
+      chips.push(["In", fmt(dv[k]["in"]), ""]);
+      if (!live) chips.push(["Quit", "~" + fmt(dv[k].at), ""]);
+      if (dv[k].ip) chips.push(["IP", dv[k].ip, ""]);
+      return { key: k, note: note, hist: fmtHist(dv[k].hist), chips: chips };
     });
   }
   // ---- visit calendar (admin): month grid of the days an account was online, click a day for every in -> out ----
@@ -65722,7 +65744,7 @@ for (let i = 1; i <= 6; i++) {
   }
   function deleteDevice(x, d) {
     // removes only this device's entry from the account; the account itself (and its trial/approval) is untouched
-    if (!confirm("Delete " + d.text.split(" (last")[0] + " from " + (x.name || x.email || "this account") + "?\nIt will be listed again the next time that browser opens the app while logged in.")) return;
+    if (!confirm("Delete " + "Device " + d.key.toUpperCase() + " from " + (x.name || x.email || "this account") + "?\nIt will be listed again the next time that browser opens the app while logged in.")) return;
     var u = {}; u["devices." + d.key] = fb.fs.deleteField(); u["deviceNotes." + d.key] = fb.fs.deleteField();
     fb.fs.updateDoc(fb.fs.doc(fb.adminDb, "users", x.id), u).catch(function () { alert("Could not delete."); });
   }
@@ -65752,10 +65774,9 @@ for (let i = 1; i <= 6; i++) {
         setStatus(x.id, cb.checked ? "approved" : "revoked").catch(function () { cb.checked = !cb.checked; alert("Could not update."); });
       });
       var meta = h("span", { "class": "adm-meta" });
-      meta.appendChild(document.createTextNode((x.email || "(no email)") + " · " + code(x.id) + " · registered " + fmt(x.firstSeen) + " · last seen " + fmt(x.lastSeen)));
+      chipRow(meta, [["Email", x.email || "(no email)", ""], ["ID", code(x.id), ""], ["Registered", fmt(x.firstSeen), ""], ["Last seen", fmt(x.lastSeen), ""]]);
       deviceList(x).forEach(function (d) {
-        meta.appendChild(h("br"));
-        meta.appendChild(document.createTextNode(d.text + " "));
+        chipRow(meta, d.chips);
         if (d.hist) { meta.appendChild(h("br")); meta.appendChild(h("small", { text: "Earlier visits: " + d.hist })); }
         meta.appendChild(h("button", { "class": "adm-ren", text: "Rename", onclick: function () { renameDevice(x, d); } }));
         meta.appendChild(h("button", { "class": "adm-del", text: "Delete device", onclick: function () { deleteDevice(x, d); } }));
