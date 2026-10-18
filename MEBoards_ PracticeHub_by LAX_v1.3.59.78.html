@@ -2580,12 +2580,23 @@
   #adm-search { width: 100%; font-size: 15px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 8px; margin-bottom: 12px; }
   .adm-row { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
   .adm-name { font-weight: bold; font-size: 15px; flex: 1 1 140px; word-break: break-word; }
-  .adm-chips { display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 5px 0; align-items: center; }
-  .adm-pill { display: inline-flex; align-items: baseline; gap: 6px; background: rgba(120,130,150,.14); border: 1px solid rgba(120,130,150,.28); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--ink); }
-  .adm-pill small { font-size: 10px; text-transform: uppercase; letter-spacing: .4px; color: var(--sub); }
-  .adm-pill.dev { background: rgba(30,90,200,.12); border-color: rgba(30,90,200,.35); font-weight: 700; }
-  .adm-pill.note { background: rgba(200,140,0,.14); border-color: rgba(200,140,0,.4); }
-  .adm-pill.live { background: #e3f3e6; border-color: #2e7d32; color: #1b5e20; font-weight: 700; }
+  .adm-chips { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 6px 0; }
+  @media (max-width: 640px) { .adm-chips { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .adm-pill { display: flex; flex-direction: column; gap: 1px; border: 1px solid var(--pc-b, rgba(120,130,150,.35)); background: var(--pc-bg, rgba(120,130,150,.14)); border-left: 4px solid var(--pc-b, rgba(120,130,150,.6)); border-radius: 10px; padding: 4px 10px; font-size: 12px; color: var(--ink); overflow-wrap: anywhere; min-width: 0; }
+  .adm-pill small { font-size: 10px; text-transform: uppercase; letter-spacing: .5px; color: var(--sub); }
+  .adm-pill.c-email { --pc-b: #1e6fd9; --pc-bg: rgba(30,111,217,.12); }
+  .adm-pill.c-id { --pc-b: #8e44ad; --pc-bg: rgba(142,68,173,.13); }
+  .adm-pill.c-reg { --pc-b: #00897b; --pc-bg: rgba(0,137,123,.13); }
+  .adm-pill.c-seen { --pc-b: #ef6c00; --pc-bg: rgba(239,108,0,.13); }
+  .adm-pill.c-dev { --pc-b: #3949ab; --pc-bg: rgba(57,73,171,.14); font-weight: 700; }
+  .adm-pill.c-name { --pc-b: #c79100; --pc-bg: rgba(255,193,7,.18); }
+  .adm-pill.c-browser { --pc-b: #546e7a; --pc-bg: rgba(84,110,122,.14); }
+  .adm-pill.c-ip { --pc-b: #d81b60; --pc-bg: rgba(216,27,96,.12); }
+  .adm-pill.c-in { --pc-b: #2e7d32; --pc-bg: rgba(46,125,50,.14); }
+  .adm-pill.c-quit { --pc-b: #c62828; --pc-bg: rgba(198,40,40,.12); }
+  .adm-pill.c-dur { --pc-b: #0097a7; --pc-bg: rgba(0,151,167,.13); }
+  .adm-pill.c-live { --pc-b: #2e7d32; --pc-bg: #cdeccf; color: #1b5e20; font-weight: 700; }
+  .adm-pill.c-off { --pc-b: #78909c; --pc-bg: rgba(120,144,156,.14); }
   .adm-cal { flex: 1 1 100%; border-top: 1px dashed var(--line); padding-top: 8px; font-size: 12px; }
   .adm-cal-head { display: flex; gap: 8px; align-items: center; margin-bottom: 6px; }
   .adm-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; max-width: 460px; }
@@ -65647,13 +65658,10 @@ for (let i = 1; i <= 6; i++) {
     return Object.keys(dv).sort(function (a, b) { return ms(dv[b].at) - ms(dv[a].at); }).map(function (k) {
       var note = x.deviceNotes && x.deviceNotes[k] ? x.deviceNotes[k] : "";
       var live = Date.now() + offset - ms(dv[k].at) < 75000;
-      var chips = [["Device", k.toUpperCase(), "dev"]];
-      if (note) chips.push(["Name", note, "note"]);
-      chips.push(["Browser", dv[k].ua || "?", ""]);
-      if (live) chips.push(["Status", "ONLINE now", "live"]);
-      chips.push(["In", fmt(dv[k]["in"]), ""]);
-      if (!live) chips.push(["Quit", "~" + fmt(dv[k].at), ""]);
-      if (dv[k].ip) chips.push(["IP", dv[k].ip, ""]);
+      var inMs = ms(dv[k]["in"]), atMs = ms(dv[k].at);
+      // two rows of exactly 4: identity, then times
+      var chips = [["Device", k.toUpperCase(), "c-dev"], ["Name", note || "—", "c-name"], ["Browser", dv[k].ua || "?", "c-browser"], ["IP", dv[k].ip || "—", "c-ip"],
+        ["In", fmt(dv[k]["in"]), "c-in"], ["Quit", live ? "—" : "~" + fmt(dv[k].at), "c-quit"], ["Duration", inMs && atMs ? dur(inMs, atMs) : "—", "c-dur"], ["Status", live ? "ONLINE now" : "Offline", live ? "c-live" : "c-off"]];
       return { key: k, note: note, hist: fmtHist(dv[k].hist), chips: chips };
     });
   }
@@ -65774,7 +65782,7 @@ for (let i = 1; i <= 6; i++) {
         setStatus(x.id, cb.checked ? "approved" : "revoked").catch(function () { cb.checked = !cb.checked; alert("Could not update."); });
       });
       var meta = h("span", { "class": "adm-meta" });
-      chipRow(meta, [["Email", x.email || "(no email)", ""], ["ID", code(x.id), ""], ["Registered", fmt(x.firstSeen), ""], ["Last seen", fmt(x.lastSeen), ""]]);
+      chipRow(meta, [["Email", x.email || "(no email)", "c-email"], ["ID", code(x.id), "c-id"], ["Registered", fmt(x.firstSeen), "c-reg"], ["Last seen", fmt(x.lastSeen), "c-seen"]]);
       deviceList(x).forEach(function (d) {
         chipRow(meta, d.chips);
         if (d.hist) { meta.appendChild(h("br")); meta.appendChild(h("small", { text: "Earlier visits: " + d.hist })); }
