@@ -290,6 +290,13 @@
 
 <script>
 const entries = {
+  "2026-10-18": {
+    stamp: "v1.3.59.76",
+    title: "Device Tracker enter/quit times",
+    body: [
+      "v1.3.59.76: LAX asked to see device login times (pasok and quit) in the admin Device Tracker, as clock times not counts. Each devices[DEV] entry now stores \"in\" (server timestamp of the visit start, kept across the 30 s heartbeats) next to \"at\" (last heartbeat = quit time, accurate to about 30 s because browsers cannot reliably signal close). A new visit pushes the previous in/out into \"hist\" (last 10). Tracker shows ONLINE now when the heartbeat is under 75 s old, otherwise in/quit times, plus an Earlier visits line. No Firestore rule change needed (devices map contents are unrestricted). Existing devices show their in time after their next visit."
+    ]
+  },
   "2026-10-16": {
     stamp: "v1.3.59.26 \u2013 v1.3.59.75",
     title: "Day 18 PS #10 original equation",
