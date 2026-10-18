@@ -52,6 +52,17 @@ service cloud.firestore {
       // Only the admin may delete an entry. (The deleted person's Firebase Auth user still exists;
       // if they log in again they start as a new account with a fresh 30-minute trial.)
       allow delete: if isAdmin();
+
+      // Visit log shown in the admin calendar: one doc per day (id YYYY-MM-DD), field v = map of visits.
+      // The visitor writes only their own log; the admin reads and deletes it.
+      match /log/{day} {
+        allow read: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+        allow create, update: if request.auth != null && request.auth.uid == userId
+          && day.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+          && request.resource.data.keys().hasOnly(['v'])
+          && request.resource.data.v is map && request.resource.data.v.size() <= 100;
+        allow delete: if isAdmin();
+      }
     }
   }
 }
