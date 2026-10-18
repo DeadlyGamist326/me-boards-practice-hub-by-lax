@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.81.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.82.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -726,7 +726,7 @@ the in-app Changelog for the resulting version numbers, currently running
 through `1.3.7.1`. Follow it going forward rather than defaulting to
 patch-only bumps for everything.
 
-**Admin-only changes are never changelog-worthy either (LAX, 2026-10-18).** Anything only the admin sees (Device Tracker, Calendar, Block, Rename/Delete, IP/in-out logging, rules files) goes in the diary only, never in the in-app Changelog. Normal users must not read dev updates; be strict.
+**Admin-only changes get no detail in the Changelog (LAX, 2026-10-18).** Anything only the admin sees (Device Tracker, Calendar, Block, Rename/Delete, IP/in-out logging, Firebase, rules files) is described in the diary only. Normal users must not read dev updates. But skipped version numbers show up as obvious gaps (LAX noticed), so each such version gets exactly one generic entry: `"Behind-the-scenes improvements and fixes."`, nothing more.
 
 **Diary-only changes are never changelog-worthy.** A fix or feature to
 `ME_Boards_Practice_Hub_Diary.html` itself (the dev diary tool) is invisible
