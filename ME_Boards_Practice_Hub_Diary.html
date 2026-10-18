@@ -291,7 +291,7 @@
 <script>
 const entries = {
   "2026-10-18": {
-    stamp: "v1.3.59.76 – v1.3.59.77",
+    stamp: "v1.3.59.76 – v1.3.59.78",
     title: "PPE Day 9 opened, Quick Access moved to PPE; IP recorded for old accounts",
     body: [
       "v1.3.59.77: LAX asked that accounts made before the IP rule also have an IP. touch() already wrote the IP into the device entry on every session, so old accounts get it on their next visit; it now also claims ips/<ip> once per session for existing accounts (ipAlreadyUsed result ignored, status untouched), so they count toward the one-trial-per-IP rule and Block. Old accounts that never open the app again stay without an IP. No rules change.",
@@ -301,7 +301,10 @@ const entries = {
       "New PPE Sample Problems page type (view-samples-ppe-N, same layout and click-to-check as the Math one, Full Course Library ppe.sampleProblems now wired). Day 9 has the 7 pump problems from the PDF with all steps preserved, 3 diagrams embedded; Day 10 to 12 are blurred placeholders.",
       "PPE Problem Set Day 9: the 11 practice problems printed at the end of the handout (5 pumps, 3 air compressor, 3 fans), new handout9FormulaOutline for the filter. The PDF has no answer key and problem 1 has no choices, so everything was solved from scratch and problem 1 got generated choices (distractors: pump efficiency only, motor efficiency only, both multiplied).",
       "Source mismatches disclosed in the hints: PS2 computes 9.11 kW, nearest printed choice 9.27 kW (D); PS4 computes 3.78 in, nearest printed choice 3.71 in (C); PS7 computes 365.93 kPa vs printed 365.88 kPa (A). PS6 and PS8 assume k = n = 1.4 and a single-acting cylinder because the problem does not state them. Sample problem 3 gives 184.61 mm (choice A 185 mm).",
-      "PPE Day 9 Trivia has no source yet and stays blurred. Checks run: node --check on the app script, CSS braces balanced, jsdom render (20 Quick Access buttons, 26 handout cards, 7 sample problems, 11 questions with 4 choices each), no mojibake, delimiter counts balanced, no bare slash units in the new LaTeX."
+      "PPE Day 9 Trivia has no source yet and stays blurred. Checks run: node --check on the app script, CSS braces balanced, jsdom render (20 Quick Access buttons, 26 handout cards, 7 sample problems, 11 questions with 4 choices each), no mojibake, delimiter counts balanced, no bare slash units in the new LaTeX.",
+      "v1.3.59.78: PPE Day 10 done the same way as Day 9. The Handout PDF gave the formulas (I-VIII: vapor compression cycle, performance, chilling load, motor and compressor, reversed Carnot and heat pump, refrigeration compressors, superheating/subcooling/cascade, product load) with 10 diagrams embedded as base64. Its 8 end-of-handout problems became the 8 Day 10 Sample Problems.",
+      "The file LAX named Sample Problems PPE Day 10 is really Problem Set #10 (37 questions, no key, no solutions), so all 37 were solved from scratch and built as the Day 10 Problem Set with handout10FormulaOutline (21 topics) for the Practice by formula filter. Source mismatches (answer not among the printed choices, rewritten choices) are disclosed in the fnote of each affected hint.",
+      "PPE Day 12 removed (LAX: there is no PPE Day 12): Quick Access is now PPE Day 9 to 11, SUBJECT_CONFIG.ppe.days is 11, 12 was dropped from the availablePpe*/pendingContentPpe* lists, and the view-samples-ppe-12 page was deleted. MathJax cannot load in the sandbox, so the new pages were checked by node --check, jsdom render counts and delimiter/unit-fraction audits, not visually."
     ]
   },
   "2026-10-16": {
