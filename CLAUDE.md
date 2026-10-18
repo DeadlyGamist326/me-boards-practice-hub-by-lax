@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.75.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.76.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -52,6 +52,8 @@ other than the app/diary/docs. If the working branch was already merged,
 restart it from the latest `main` first (same branch name).
 
 **Variants ruling (LAX, 2026-10-16):** every Formula Builder problem type on Day 12 onward needs 5 problems (originals plus generated Variants: new wording, new random realistic givens, calculated answer/choices/solution); 1 original means 4 Variants. Day 17 is fully done (v1.3.59.49) and Day 18 is done (exceptions: Number of Coils, Concentric Springs) and Day 12 is done (v1.3.59.49, incl. Make-or-Buy Analysis) and Day 13 is done (v1.3.59.50) and Day 14 is done (v1.3.59.52) and Day 15 is done (v1.3.59.53) and Day 16 is done (v1.3.59.54), so Day 12-18 are all done apart from the listed exceptions. Next order (LAX, 2026-10-16): first cycle = all originals, then all Variants; later cycles shuffle everything together (`fbFirst` in `fbNextQ`). Details in the in-file ruling block.
+
+**PPE Day 9 (v1.3.59.76):** Handout, Sample Problems (new `view-samples-ppe-N` pages, `availablePpeSampleProblems`) and Problem Set are built; Trivia 9 and all of Day 10-12 are still blurred placeholders. Home Quick Access now shows PPE Day 9 to 12 (it was Math Day 12 to 17).
 
 **Dev diary**: `ME_Boards_Practice_Hub_Diary.html` (same folder) is a
 separate, developer-facing log of everything done in each session —
