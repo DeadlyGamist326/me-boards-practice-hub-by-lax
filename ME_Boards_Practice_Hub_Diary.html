@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-18": {
-    stamp: "v1.3.59.76 – v1.3.59.78",
+    stamp: "v1.3.59.76 – v1.3.59.79",
     title: "PPE Day 9 opened, Quick Access moved to PPE; IP recorded for old accounts",
     body: [
+      "v1.3.59.79: Device Tracker now shows enter and quit times. Another thread built this as PR 194 as v1.3.59.76, but it conflicted with main (already at .78), so it was ported by hand onto main and renumbered. Each devices[DEV] entry stores \"in\" (server timestamp of the visit start, kept across 30 s heartbeats) next to \"at\" (last heartbeat, shown as the quit time, accurate to about 30 s). A new visit pushes the previous in/out into \"hist\" (last 10). Tracker shows ONLINE now when the heartbeat is under 75 s old, plus an Earlier visits line. No Firestore rule change.",
       "v1.3.59.77: LAX asked that accounts made before the IP rule also have an IP. touch() already wrote the IP into the device entry on every session, so old accounts get it on their next visit; it now also claims ips/<ip> once per session for existing accounts (ipAlreadyUsed result ignored, status untouched), so they count toward the one-trial-per-IP rule and Block. Old accounts that never open the app again stay without an IP. No rules change.",
       "v1.3.59.76: LAX uploaded the PPE Day 9 Handout and Sample Problems PDFs and asked to move on to PPE. Checked first: PPE Day 9 handout, Problem Set and Trivia were still blank placeholders (markPendingEmpty), so nothing was already in the app.",
       "Quick Access on the home page now lists PPE Day 9 to 12 (was Math Day 12 to 17; the featured-math-grid code now builds the PPE grid with the same 5 columns, Exam Missed Questions stays disabled and blurred for PPE). Math stays in the Full Course Library.",
