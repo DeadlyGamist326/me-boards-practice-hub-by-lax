@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.83.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.84.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -56,6 +56,8 @@ restart it from the latest `main` first (same branch name).
 **PPE Day 9-11 (v1.3.59.76-80):** Handout, Sample Problems (new `view-samples-ppe-N` pages, `availablePpeSampleProblems`) and Problem Set are built for Day 9, 10 and 11; Trivia 9-11 are still blurred placeholders. Rule (LAX, strict, also in the in-file RULINGS section 13): the uploaded FILE NAME alone decides placement. "Handouts PPE Day N" goes to the Handout page, including the problems printed at the end of that PDF (Handout 9, 10, 11 end with a Problems section). "Sample Problems PPE Day N" fills the Sample Problems page (Day 10: 37, Day 11: 33 items). Problem Set and Trivia stay blank/locked until a file with that name arrives. Problem Set 9 (61), 10 (49) and 11 (33) were built in v1.3.59.82 from the uploaded "Problem Set PPE Day N" PDFs (own `ps9/10/11FormulaOutline`; key letters follow the PDF, mismatching computed values are disclosed in the solution); Trivia 9-11 are still locked placeholders. PPE solutions (Sample Problems and Handout problems) must show the Handout's ORIGINAL equation first, with the unknown left as a bare symbol, and the substituted line and the answer each in their own box (v1.3.59.79 audit). PPE Sample Problems 9-11 have the Practice by formula filter (`handout9/10/11FormulaOutline` + `attachStaticTopicFilter("samples-ppe-N", ...)`; new problems need a `data-topic`). Never invent content, never relocate it because of what is inside a file; if the name and contents disagree, use the name and tell LAX.
 
 **PPE units (v1.3.59.83):** every PPE Day 9-11 full solution (Sample Problems, Handout end problems, Problem Set) carries units on every quantity, cancel marks, and an as-is substituted line (defined formula with known values+units); do not write number-only substituted lines (RULINGS section 3).
+
+**Gamma (v1.3.59.84, LAX):** specific weight is written γ (not w) and shows as LAX's hand-drawn gamma picture (`GAM_PNG`, `gammaize()`, `.gam`) while copying as the real γ; use `\\gamma` in hint/handout LaTeX or a plain γ in text and it is swapped automatically.
 
 **Formula Builder PPE (v1.3.59.81):** PPE Day 9 Sample Problems are in the Formula Builder (`FB_PPE` map, `fbPpeItems`, "PPE Day 9" chip). Add Day 10/11 by adding them to `FB_PPE` with their outline.
 
