@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-20": {
-    stamp: "v1.3.59.93 – v1.3.60.4",
+    stamp: "v1.3.59.93 – v1.3.60.5",
     title: "Calculator: Shift Solve and the always-on floating calculator",
     body: [
+      "v1.3.60.5: LAX: placeholder boxes (op ph) keep the same faint colour (--line) but are drawn as a 1-dot outer border only (5x6 dots, interior empty) instead of a filled 5x6 block.",
       "v1.3.60.4: LAX: the title in the floating calculator bar (.calc-win-bar span) now reads Canon F-789SGA-TBK instead of Calculator. The button tooltip/aria labels are unchanged.",
       "v1.3.60.3: LAX reported the dot grid looked uneven at some browser zoom levels (fine when zoomed in). Cause: the canvas drew 10 px dots then CSS-scaled it to a fractional size per dot. Now pickScale() sets S = whole device pixels per dot (round of css width x devicePixelRatio, stepped down if it would overflow by more than 4%), the canvas backing size is DW*S x DH*S and its CSS size is exactly backing/dpr, ghost dots are drawn at integer offsets, the canvas is centred, and a window resize re-renders. Tested at DPR 0.8-2.",
       "v1.3.60.2: LAX: the log base box must sink 2 rows below the normal glyph, mirroring the exponent which rises 2 rows above it. Item type b now places its small content at axis+4 (small glyph bottom = normal bottom + 2), measured as up = max(0, seq.up - 4), dn = seq.dn + 4.",
