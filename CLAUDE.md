@@ -6,12 +6,14 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.59.99.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.60.0.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
 the current version). Older notes/comments in this project may still say
 `practice-hub.html` — that name is stale, use the actual current filename.
+
+**Version rollover ruling (LAX, 2026-10-20):** the patch number stops at 99. After x.y.z.99 the next version is x.y.(z+1).0 (so v1.3.59.99 was followed by v1.3.60.0), not x.y.z.100.
 
 **Always view the actual file before editing.** This document describes
 patterns and rules, not exact current line numbers or content — those will
