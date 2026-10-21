@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-21": {
-    stamp: "v1.3.60.7 – v1.3.61.0",
+    stamp: "v1.3.60.7 – v1.3.61.1",
     title: "Calculator: keys after a result",
     body: [
+      "v1.3.61.1: LAX: CALC query layout. The A? label is no longer part of expr: calcQ draws [letter,?] glyphs on the first row (y=1) and layoutAll starts acc at 10 while calcQ is set, so the typed value sits on its own row below. Removed the locked-prefix logic (expr is just the typed value, cursor starts at 0).",
       "v1.3.61.0: LAX: CALC key (MAP calc[0] = CALC). press('CALC') collects the unique VARS letters in the equation in order of appearance; none = err note and nothing else. Otherwise calcQ {letters,i,orig} shows [letter,'?'] with a locked prefix (cursor stays at 2+, DEL/Left cannot enter it), = evaluates the typed part with evalNum and stores vars[letter], then asks the next; after the last it restores the original equation and presses = (so only that equation reaches history, the A? queries are never saved). AC/CALC/Solve cancel and restore, Up/Down ignored, a bad value shows an error and stays on the same letter.",
       "v1.3.60.8: LAX: arrows after a result. The equation is already in history (= and Solve push it), so Up/Down just recall (Up now also clears the stale result). Left after a result puts the cursor at the end of the equation, Right at the start, result cleared so it is plain typing. Only the first key after a result does this (afterResult).",
       "v1.3.60.7: LAX chose, per key and per layer (Normal, Shift, Alpha) with an interactive key map, what the first key after = or Shift Solve does. press() now has afterResult (set by a successful = or Solve): the next key first clears like AC (the equation is already in history, Up recalls it), then AFTER_KEY keys type just their output (digits, ., i, a b/c, sqrt, log, ln, (-), sin/cos/tan, Abs, (, 10^, inverse trig, pi, colon, log base, letters A-F, Y, M, e) and AFTER_ANS keys type Ans first (x^-1, angle, x^, x2, ), times, divide, plus, minus, nth root, x3, %, nPr, nCr). Ans types Ans once. DEL, AC, STO, = and arrows are unchanged. The flag is cleared on every key press, so only the first key after a result is affected."
