@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-21": {
-    stamp: "v1.3.60.7 – v1.3.61.1",
+    stamp: "v1.3.60.7 – v1.3.61.2",
     title: "Calculator: keys after a result",
     body: [
+      "v1.3.61.2: LAX did not like the long error text after =. It is now \"Cannot calculate this.\", or noFuncMsg() names the first uncomputed key in the equation (i, colon, M, comma, question mark, angle sign, nCr/nPr/R from BLOCK_NAMES; % is skipped because it calculates) as \"[key] has no function yet.\"",
       "v1.3.61.1: LAX: CALC query layout. The A? label is no longer part of expr: calcQ draws [letter,?] glyphs on the first row (y=1) and layoutAll starts acc at 10 while calcQ is set, so the typed value sits on its own row below. Removed the locked-prefix logic (expr is just the typed value, cursor starts at 0).",
       "v1.3.61.0: LAX: CALC key (MAP calc[0] = CALC). press('CALC') collects the unique VARS letters in the equation in order of appearance; none = err note and nothing else. Otherwise calcQ {letters,i,orig} shows [letter,'?'] with a locked prefix (cursor stays at 2+, DEL/Left cannot enter it), = evaluates the typed part with evalNum and stores vars[letter], then asks the next; after the last it restores the original equation and presses = (so only that equation reaches history, the A? queries are never saved). AC/CALC/Solve cancel and restore, Up/Down ignored, a bad value shows an error and stays on the same letter.",
       "v1.3.60.8: LAX: arrows after a result. The equation is already in history (= and Solve push it), so Up/Down just recall (Up now also clears the stale result). Left after a result puts the cursor at the end of the equation, Right at the start, result cleared so it is plain typing. Only the first key after a result does this (afterResult).",
