@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-22": {
-    stamp: "v1.3.62.0 – v1.3.62.1",
+    stamp: "v1.3.62.0 – v1.3.62.2",
     title: "Calculator fraction key takes the left term",
     body: [
+      "v1.3.62.2: LAX said the dock squeezed the solutions (view padding-right) and should snap to the border of the problems column, not the screen edge. Removed the padding; dock is now position:fixed with left = right edge of the first .sample-problem + 12px, shown only when at least 324px is free to its right, otherwise the inline displays stay. Solution layout never moves.",
       "v1.3.62.1: floating calculator display dock (LAX: \"floating one, snapped to the right outside edge, number one first\"). New IIFE before gammaize(): .calc-dock is fixed at the right edge and shows a canvas copy of the .calc-side of the .calc-pair nearest the screen middle, for Problem 1 of #samples-ppe-10 only (pairs get class fl). Wide screens only (1100px+): the view gets padding-right and the inline .calc-side is hidden; narrow screens keep the inline displays. Updates on scroll, resize, clicks and showView; double-click still sends the equation to the calculator. Other problems are not converted yet.",
       "v1.3.62.0: new calculator FRACTION key mechanic (LAX). press(FRAC) now calls smartFrac(): fracLeft() scans left inside the current container (stops at FS/XS/RS/NS/AS/BS openers, FM/NM, an opening bracket or a + - × ÷ neg = , : angle nPr nCr separator; jumps over whole groups and over bracket groups, taking a preceding sin/cos/tan/ln/log with it, and log base); fracRight() takes the term to the next operator or the whole bracket group. Left term becomes the numerator and the cursor sits at the start of the denominator; no left term gives an empty numerator with the cursor in it, and a right term still goes to the denominator. Selection wrap is unchanged. Tested in Playwright (fr.js / fr2.js / fr3.js). The % sign has no small glyph, so it still shows the not-allowed-in-fraction message.",
     ]
