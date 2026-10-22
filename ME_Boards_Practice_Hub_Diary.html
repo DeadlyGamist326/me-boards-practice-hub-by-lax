@@ -290,6 +290,13 @@
 
 <script>
 const entries = {
+  "2026-10-22": {
+    stamp: "v1.3.62.0",
+    title: "Calculator fraction key takes the left term",
+    body: [
+      "v1.3.62.0: new calculator FRACTION key mechanic (LAX). press(FRAC) now calls smartFrac(): fracLeft() scans left inside the current container (stops at FS/XS/RS/NS/AS/BS openers, FM/NM, an opening bracket or a + - × ÷ neg = , : angle nPr nCr separator; jumps over whole groups and over bracket groups, taking a preceding sin/cos/tan/ln/log with it, and log base); fracRight() takes the term to the next operator or the whole bracket group. Left term becomes the numerator and the cursor sits at the start of the denominator; no left term gives an empty numerator with the cursor in it, and a right term still goes to the denominator. Selection wrap is unchanged. Tested in Playwright (fr.js / fr2.js / fr3.js). The % sign has no small glyph, so it still shows the not-allowed-in-fraction message.",
+    ]
+  },
   "2026-10-21": {
     stamp: "v1.3.60.7 – v1.3.61.6",
     title: "Calculator: keys after a result",
