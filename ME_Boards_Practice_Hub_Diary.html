@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-22": {
-    stamp: "v1.3.62.0 – v1.3.62.4",
+    stamp: "v1.3.62.0 – v1.3.62.5",
     title: "Calculator fraction key takes the left term",
     body: [
+      "v1.3.62.5: LAX: do the rail for all of PPE Day 10 Sample Problems. update() now loops every .sample-problem in #samples-ppe-10 (106 .calc-pair items), column edge taken from the first visible problem, items kept below the previous one. Check at 1500px: 106 items shown with canvases, 99 within 2px of their step, 7 pushed 10-40px down by neighbours, no overlaps. Other days (9, 11) still have only inline displays.",
       "v1.3.62.4: LAX noticed the step displays (.calc-lcd) still looked distorted: only the floating calculator had the integer-pixel fix. calcLcdEngine drew with a fixed 6 px dot and the CSS stretched the canvas to width:100%. Now calcLcdFit() picks a whole-device-pixel dot size from the available width and devicePixelRatio (rounds, steps down if over 4%), sets the CSS size to backing/dpr, and redraws on resize and on a ResizeObserver of the parent (hidden panels are drawn when first shown). The box is width:fit-content so it ends where the dots end. The Problem 1 rail now clones the real .calc-lcd and draws it itself (item 320px, needs 340px of free room). Checked at dpr 1, 1.25, 1.5, 2: backing width = dots x whole dot size and CSS width x dpr = backing width.",
       "v1.3.62.3: LAX: the dock followed the problem; each display must sit level with its own step. Replaced the single fixed dock with .calc-rail (absolute, body child): one .calc-rail-item per .calc-pair of Problem 1, canvas copies of .calc-side, left = column right edge + 12px, top = step middle minus half the item height (kept below the previous item). Recomputed on resize, clicks and a ResizeObserver on #samples-ppe-10; hidden when under 324px of free room (inline displays show). Test: item and step midpoints within 1px at 1400px wide, also after scrolling.",
       "v1.3.62.2: LAX said the dock squeezed the solutions (view padding-right) and should snap to the border of the problems column, not the screen edge. Removed the padding; dock is now position:fixed with left = right edge of the first .sample-problem + 12px, shown only when at least 324px is free to its right, otherwise the inline displays stay. Solution layout never moves.",
