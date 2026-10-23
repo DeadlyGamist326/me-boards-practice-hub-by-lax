@@ -291,7 +291,7 @@
 <script>
 const entries = {
   "2026-10-23": {
-    stamp: "v1.3.63.1 – v1.3.64.6",
+    stamp: "v1.3.63.1 – v1.3.64.7",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
       "Diary-only fix (no app version, no changelog): the whole diary was blank (no entries, empty calendar). Cause: the v1.3.59.89 bullet contained a literal closing script tag in its text, which ended the diary script early in the browser (node --check on the extracted block still passed, so it was missed). Reworded it with HTML entities, and did the same for other bullets holding raw angle-bracket tags such as head, h2, mark, uid and ip placeholders, which were being swallowed as real HTML. Checked in Chromium on desktop and 390 px: no page errors, 21 dated cells, entry panel renders.",
