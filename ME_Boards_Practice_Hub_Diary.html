@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-23": {
-    stamp: "v1.3.63.1 – v1.3.64.8",
+    stamp: "v1.3.63.1 – v1.3.64.9",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
+      "v1.3.64.9: rpm folded into the last calculation (RULINGS 15) in PPE Problem Set Day 10 #22 (bore, 360 rpm), the 350 rpm volumetric-efficiency problem and the 320 rpm twin cylinder power problem, and in the Handout twin cylinder compressor problem (300 rpm). The separate N step and its stored letter are gone, so the later letters shifted (320 rpm problem: eta_v now A, V1 now B). A scan of all PPE for other stand-alone rev/min to rev/s steps found none left.",
       "v1.3.64.8: MD Handout Day 1 built from LAX's 'Handouts MD Day 1' PDF (base and 10 figures cropped from the PDF pages) completed with the more complete PPT text LAX pasted; symbols follow the pasted text (S_a, S_s, S_f, F_p, A_s, y, k, FS), Taglish notes rewritten in English, long equations on a full row. Disclosures: the pasted general punching formula F_p = (1/3)(P_hole)kt is kept as written (it gives 83.8dt for a circle, not 80dt); the pasted titanium alloy mu = 0.99 was left out as it looks like a typo; S_min is called static stress as in the paste. The 9 problems printed at the end of the PDF are not added yet (they belong in the Handout under their sections, with full solutions). Sample Problems, Problem Set and Trivia MD 1 stay blank.",
       "v1.3.64.7: LAX pointed out the new Trivia 9-11 calculator displays were inline. Added Trivia 9, 10, 11 to the RAILS list so they sit on the right rail like the Problem Set and Sample Problems; in-file RULINGS section 14 wording now says the displays go on the rail (inline only without room).",
       "Diary-only fix (no app version, no changelog): the whole diary was blank (no entries, empty calendar). Cause: the v1.3.59.89 bullet contained a literal closing script tag in its text, which ended the diary script early in the browser (node --check on the extracted block still passed, so it was missed). Reworded it with HTML entities, and did the same for other bullets holding raw angle-bracket tags such as head, h2, mark, uid and ip placeholders, which were being swallowed as real HTML. Checked in Chromium on desktop and 390 px: no page errors, 21 dated cells, entry panel renders.",
