@@ -1462,6 +1462,7 @@ function layoutAll(t){
       pos = { l: Math.round(a.l + dx), t: Math.round(a.t + dy) };
     }
     function savePos() { try { localStorage.setItem(POS_KEY, JSON.stringify(pos)); } catch (e) {} }
+    function setTitle() { const el = win && win.querySelector('.calc-win-title'); if (el) el.textContent = skin ? 'Canon F-789SGA-White' : 'Canon F-789SGA-TBK'; }
     let seq = 0, waitId = 0, waitTimer = 0;
     const SKIN_KEY = 'calcSkinV1'; let skin = 0; try { skin = +localStorage.getItem(SKIN_KEY) ? 1 : 0; } catch (e) {}
     function post(m) { m.id = ++seq; frame.contentWindow.postMessage(m, '*'); return m.id; }
@@ -1483,14 +1484,15 @@ function layoutAll(t){
     }
     function build() {
       win = document.createElement('div'); win.className = 'calc-win';
-      win.innerHTML = '<div class="calc-win-bar"><span>Canon F-789SGA-TBK</span><span class="calc-win-btns"><button type="button" class="calc-win-skin" aria-label="Change calculator" title="Change calculator">↺</button><button type="button" class="calc-win-min" aria-label="Minimize calculator" title="Minimize">−</button></span></div><iframe title="Calculator"></iframe>';
+      win.innerHTML = '<div class="calc-win-bar"><span class="calc-win-title">Canon F-789SGA-TBK</span><span class="calc-win-btns"><button type="button" class="calc-win-skin" aria-label="Change calculator" title="Change calculator">↺</button><button type="button" class="calc-win-min" aria-label="Minimize calculator" title="Minimize">−</button></span></div><iframe title="Calculator"></iframe>';
       frame = win.querySelector('iframe');
       frame.addEventListener('load', function () { ready = true; if (skin) post({ calcSkin: skin }); const c = sendCfg(); let id = c; if (pending !== null) { id = send(pending); pending = null; } if (waitId) waitId = id; });
       frame.srcdoc = document.getElementById('calc-float-src').textContent.replace(/<\\\/script/g, '</script');
       let drag = null;
       const bar = win.querySelector('.calc-win-bar');
+      setTitle();
       win.querySelector('.calc-win-min').onclick = hide;
-      win.querySelector('.calc-win-skin').onclick = function () { skin = skin ? 0 : 1; try { localStorage.setItem(SKIN_KEY, String(skin)); } catch (e) {} post({ calcSkin: skin }); };
+      win.querySelector('.calc-win-skin').onclick = function () { skin = skin ? 0 : 1; setTitle(); try { localStorage.setItem(SKIN_KEY, String(skin)); } catch (e) {} post({ calcSkin: skin }); };
       /* two drag handles: the title bar, and the transparent gap between display and keypad (inside the iframe, reported by message).
          The bar must stay on screen; the gap handle lets the display run past the top edge. */
       function dragStart(x, y, gap) { const a = anchor(); drag = { x: x, y: y, l: a.l, t: a.t, gap: gap }; }
@@ -6011,7 +6013,7 @@ function onSubjectToggleClick(subjectKey) {
 // version whose only changes are diary-only.
 const CHANGELOG = [
   { version: "1.3.63.14", date: "2026-10-23", changes: [
-    "Calculator: a new \u21ba button next to the minimize button switches between the dark calculator and a light (silver) one. The keys are in the same places and work the same; it remembers your choice."
+    "Calculator: a new \u21ba button next to the minimize button switches between the dark calculator and a light (silver) one. The keys are in the same places and work the same; it remembers your choice. The light one is titled Canon F-789SGA-White."
   ] },
   { version: "1.3.63.13", date: "2026-10-23", changes: [
     "Calculator: the MODE menu shows a \u25c0 next to the mode you are in (1:COMP\u25c0 in Mode 1)."
