@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-23": {
-    stamp: "v1.3.63.1 – v1.3.64.4",
+    stamp: "v1.3.63.1 – v1.3.64.5",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
+      "v1.3.64.5: refrigeration diagram re-exported from LAX's updated Grid Sketchpad JSON (added P and h axes lines and labels); same pipeline, blur and hover glow unchanged.",
       "v1.3.64.4: first Grid Sketchpad diagram placed in the app: PPE Day 10 Sample Problems #3, Hint 3, inline SVG exported from LAX's Grid Sketchpad JSON using the tool's own toSvg (real R-134a phdome curve, exact positions of cycle lines, arrows and labels), data slots filled with the problem's values (T/h of points 1-4, RE given, m and Wc unknown). Throwaway script, positions never hand-redrawn. Not-needed values (T1, T3, h3) get .ph-un (blur 1.6px, opacity .5); delegated mouseover/mouseout on [data-ph] givens and .ph-v diagram values adds .ph-on plus a radial-gradient ellipse (.ph-glow, built from getBBox) behind the value.",
       "v1.3.64.3: hint bubble close button (.calc-hint-x) is now an absolutely positioned 20 px white circle (top/right -9px) on the bubble's upper-right corner, × centred with flex.",
       "v1.3.64.2 (no version bump, hidden LAX shortcut so no changelog entry): 5 taps (gap under 1.5 s) on any .lax-img click every Full solution button of the active view (.hint-btn.hint-solution plus the last .hint-btn of each .hints-wrap) that is not already open. Separate from the 10-tap admin entry, which still works. Quiz solutions opened before answering lock the question as wrong, as a manual click does.",
