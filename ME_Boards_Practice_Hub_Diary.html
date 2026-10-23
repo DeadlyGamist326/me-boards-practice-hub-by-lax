@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-23": {
-    stamp: "v1.3.63.1 – v1.3.64.6",
+    stamp: "v1.3.63.1 – v1.3.64.7",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
+      "v1.3.64.7: LAX pointed out the new Trivia 9-11 calculator displays were inline. Added Trivia 9, 10, 11 to the RAILS list so they sit on the right rail like the Problem Set and Sample Problems; in-file RULINGS section 14 wording now says the displays go on the rail (inline only without room).",
       "Diary-only fix (no app version, no changelog): the whole diary was blank (no entries, empty calendar). Cause: the v1.3.59.89 bullet contained a literal closing script tag in its text, which ended the diary script early in the browser (node --check on the extracted block still passed, so it was missed). Reworded it with HTML entities, and did the same for other bullets holding raw angle-bracket tags such as head, h2, mark, uid and ip placeholders, which were being swallowed as real HTML. Checked in Chromium on desktop and 390 px: no page errors, 21 dated cells, entry panel renders.",
       "v1.3.64.6: PPE Trivia Day 9, 10, 11 built from LAX's 'Trivia PPE 9/10/11' PDFs (3-column layout, read with pdftotext, pairing and answer keys checked, 15 items each). Throwaway generator solved every item from scratch (calculator displays with stored letters, conversions inside formulas, RE in TR); all 45 keys reproduced as the nearest choice. Disclosed in the answer line: 9.4 (432.28 vs 432.31), 9.5 (161.82 vs 161.95), 9.8 (13.98 vs 13.97, key follows affinity laws P~h^1.5), 9.10 (125.89 vs 125.11), 9.13 (9.60 vs 9.42), 9.14 (0.911 vs 0.915), 10.6, 10.8, 10.11, 11.1, 11.8, 11.12. Source typos noted in hints: 11.3 wording, 11.8 Psat unit, 11.14 Psat at 34 C should be 25 C. 10.12 key ignores the 35% loss. handout11FormulaOutline got 4 new topics (Humidity Ratio, Enthalpy, Barometer Reading, Coil Face Area). pendingContentPpeTriviaDays is now empty; Trivia 9-11 no longer use markPendingEmpty.",
       "v1.3.64.5: refrigeration diagram re-exported from LAX's updated Grid Sketchpad JSON (added P and h axes lines and labels); same pipeline, blur and hover glow unchanged.",
