@@ -291,11 +291,12 @@
 <script>
 const entries = {
   "2026-10-23": {
-    stamp: "v1.3.63.1 – v1.3.63.10",
+    stamp: "v1.3.63.1 – v1.3.63.11",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
       "Dev-only: LAX saved the next batch of menu glyphs: small \u2220 \u03b8 j l, plus 18 normal 5x9 letters (H I N O T a t V c text-i n Q ... r o d G x). Added to both font tables (small via GS, normal via G, text i as \ue031). The raw JSON copy is kept in the project files at calculator-font/menu-glyphs.json.",
       "Dev-only (no version bump, nothing uses them yet): LAX's menu-word sheet gave 41 new small 5x6 glyphs (O P L S T Q N V R \u03a0 \u2211 a x n r ... o d G t h s g c m b / p \u25c0 \u25b6 u w I v y U k ?, plus text e and text i). Added to both GS tables with Object.assign; text e is \ue030 and text i is \ue031 so they do not clash with euler e and imaginary i. Menu words checked: no character of the requested list is missing.",
+      "v1.3.63.11: LAX: MODE menu order fixed, 6:TABLE and 7:MATX (the matrix menu is key 7, matching her MODE-7 name; the earlier question about 6/7 is settled).",
       "v1.3.63.10: LAX: i and the angle bar (\u2220) only type in Mode 2 (CPLX); guard in press() on calcMode !== 2, silent otherwise.",
       "v1.3.63.9: LAX sent the menu screens (saved at /mnt/project-files/calculator-font/menus.json). Floating calculator: MODE, Shift + MODE and Apps keys now open menus (MENUS table, menu/calcMode state, renderMenu/menuKey/menuPick in the float source). Small 5x6 words, 36-dot-high screen, items across then down, 1 or 2 columns, optional header, numbering restarts at 1 per screen, Up/Down change screen (arrow markers top/bottom right), number picks, AC/MODE/Apps close. MODE 3/5/6/8 (STAT/EQN/MATX/VCTR) open the sub-menus LAX names MODE-3/5/7/8, so the matrix menu is reached with key 6 (the list says 6:MATX, 7:TABLE) - to confirm with LAX. Apps picks the menu by calcMode (1/3/7/8). Picking an item only switches mode and says it has no function yet. Keyboard Up/Down arrows now press UP/DOWN.",
       "v1.3.63.8: LAX: the small 10 in scientific notation was one row too tall; its cell now draws it 4 rows tall (10111 10101 10101 10111) on the baseline, minus row still at row 3.",
