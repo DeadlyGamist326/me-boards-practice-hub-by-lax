@@ -691,6 +691,8 @@
   filter — don't assume Sample Problems can just reuse the PPE pattern.
 
   ── 5. FILE-EDITING WORKFLOW ──────────────────────────────────────────────
+  - (STALE, ignore this bullet and the next: the old /home/claude/docgen sandbox. Edit the
+    repo file in place; the filename carries the version.)
   - Working copy lives at /home/claude/docgen/practice-hub.html during a
     session; the deliverable copy is /mnt/user-data/outputs/practice-hub.html.
     Edit the docgen copy, then `cp` it to outputs before every present_files.
@@ -740,7 +742,7 @@
     home view.
 
   ── 7. PER-QUESTION 3-LEVEL HINT SYSTEM ───────────────────────────────────
-  Currently implemented ONLY on ppeDay1Data (PPE Trivia Day 1). To add it to
+  (STALE: hints are now on every quiz.) Currently implemented ONLY on ppeDay1Data (PPE Trivia Day 1). To add it to
   ANY other quiz's data array, no JS/CSS changes are needed — the rendering
   is already generic in renderQuiz(). Just add a `hints` array to that
   question's object literal:
@@ -1125,8 +1127,8 @@
     quiz hint panels draw their displays themselves (calcLcd after the panel is filled).
   - The generator that wrote these steps was throwaway: it parsed each boxed LaTeX line, solved
     the unknowns, followed the stored letters and was checked against the Day 10 Sample Problems
-    (106 steps) and against every printed result. Still to do: Handout end problems of PPE
-    Day 9-11 (CLAUDE.md "To do").
+    (106 steps) and against every printed result. Handout end problems of PPE Day 9-11 are
+    done too (v1.3.63.20-22).
   - Every PPE Sample Problems day also needs: a Practice by formula filter (data-topic on each
     .sample-problem, handoutNFormulaOutline, attachStaticTopicFilter) and a place in the Formula
     Builder (FB_PPE map; Hint 1 of each problem needs the kw-map rows). Done for Day 9, 10 and 11.
@@ -1170,6 +1172,46 @@
   - PPE_DAY18_STATUS: Day 1-8 done (v1.3.63.24-30 and v1.3.64.0: Trivia, Problem Set, Handout; Problem Set 6 #5, 7 #5, 8 #10 and 8 #12 left as is); the Day 1-8 retrofit is complete.
   - Left separate on purpose (equivalent units that do not cancel on paper, e.g. kJ/s and kW, or a
     source oddity): see the diary entry of 2026-10-23.
+  ── 17. CURRENT RULINGS, ONE-PAGE CHECKLIST (LAX, consolidated 2026-10-23) ───────────
+  Read this FIRST for any new Problem Set, Sample Problems or Trivia. Where an older section
+  above disagrees with this list, this list wins (the latest ruling is the only one kept).
+  A. WHERE content goes: the uploaded FILE NAME decides (section 13). Never invent content.
+  B. LANGUAGE: all app content (handouts, solutions, notes, UI text, tags, generated problems)
+     is English only, never Tagalog/Taglish. Chat replies to LAX are Taglish.
+  C. SOLUTION SHAPE (sections 3, 4, 14, 16): Given label then one box per given equation; the
+     Handout's ORIGINAL equation first with the unknown a bare symbol; then an as-is
+     substituted line with units on every quantity and cancel marks; the answer in its own box;
+     note -> box alternation, one algebraic step per box. Long equation = one full row.
+  D. CONVERSIONS (section 15, latest): never a separate step and never a stored value. The factor
+     (needed unit over the unit that cancels) sits INSIDE the formula where the value is used,
+     one term per factor. This includes FINAL-answer conversions (kW to hp, etc.) and rpm
+     (N in rpm to rps/min is folded into the last calculation, e.g. ...x360x(1/60), no
+     separate N step). No extra Ans -> STO for a conversion.
+  E. NEVER SOLVE FOR A FRACTION OF A VARIABLE (Q/2): find the variable itself (Q) and apply the
+     /2 inside the formula that uses it.
+  F. TONS OF REFRIGERATION: RE is the quantity, TR is only its unit (section 15).
+  G. CALCULATOR DISPLAYS (section 14, 15): on every calculating step; MULTIPLY by conversion
+     factors, never divide; givens typed as given; value of 8 characters or less is retyped,
+     longer is stored A, B, C... (reuse a letter only when its old value is dead); needs for
+     hr/min/day conversion are typed as the conversion (8x3600); temperature DIFFERENCE is
+     subtracted from the degC/degF numbers with the unit kept as K/R, absolute temperatures are
+     typed (45+273), (36+459.67); unknown = X with Shift + Solve; percent ends x100; ln/log steps
+     get no display. A printed result that disagrees with real arithmetic is NOT forced: show
+     the real value, keep the key letter in the answer line with a short disclosure, tell LAX.
+     Displays sit on the right rail on Sample Problems, Problem Set and Trivia pages.
+  H. FILTERS (universal per Day): every Day has ONE full "Practice by formula" outline shared by
+     Handout, Sample Problems, Problem Set, Trivia and Formula Builder. A topic with no problem
+     on that page is DIMMED (topic-filter-zero), never hidden. New problems need a topic
+     (topics: in quizzes, data-topic on .sample-problem) and the outline must be extended, not
+     duplicated. Every PPE Sample Problems day also goes into FB_PPE with Hint 1 kw-map rows.
+  I. SYMBOLS: use the Handout's own symbols (gamma for specific weight, RE not TR, etc.); never
+     newly invented ones. Standing fractions for every fraction and "/" unit (section 1).
+  J. VERSIONING: patch per change, minor when a chapter closes, patch stops at .99 (section 8b
+     of CLAUDE.md). The in-app changelog lists only student-visible changes and has no gaps;
+     admin, tracker, device, IP, Firebase, rules, hidden shortcuts and other dev-only work
+     goes in the diary only. After verification: PR and merge to main (CLAUDE.md standing rule).
+  K. AFTER WRITING CONTENT: run the section 1a self-audit, node --check, jsdom render check,
+     and compare question counts before/after.
 ================================================================================
 -->
 <script>
