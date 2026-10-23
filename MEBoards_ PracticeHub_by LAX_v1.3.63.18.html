@@ -6017,7 +6017,7 @@ function onSubjectToggleClick(subjectKey) {
 // version whose only changes are diary-only.
 const CHANGELOG = [
   { version: "1.3.63.18", date: "2026-10-23", changes: [
-    "Formula Builder: the Practice by formula list now shows every formula of the Day, the same as Sample Problems, Problem Set and Trivia. A formula with no problems on that Day is dimmed instead of hidden."
+    "Practice by formula is now the same list for the whole Day in Sample Problems, Problem Set and Formula Builder (PPE Day 9 to 11): every formula of the Day is listed, and a formula with no problems in that page is dimmed instead of hidden."
   ] },
   { version: "1.3.63.17", date: "2026-10-23", changes: [
     "Calculator displays beside the solutions: every display is now scaled to the same width (a long one is scaled down, a short one scaled up) instead of leaving empty space."
@@ -17598,7 +17598,16 @@ document.getElementById("handout-ppe-9").innerHTML = `
 
 const handout9FormulaOutline = [
   { section: "I. Pumps", subsections: [
-    { name: null, items: ["Specific Speed of a Centrifugal Pump", "Total Suction Head", "Impeller Diameter (Peripheral Speed)", "Pump Work from Pressure Readings", "Water Power and Pump Efficiency", "Combined Pump-Motor Efficiency", "Boiler Feed Pump (Enthalpy Rise)"] },
+    { name: null, items: ["Specific Speed of a Centrifugal Pump", "Total Suction Head", "Impeller Diameter (Peripheral Speed)", "Pump Work from Pressure Readings", "Water Power and Pump Efficiency", "Combined Pump-Motor Efficiency", "Boiler Feed Pump (Enthalpy Rise)", "Total Head of the Pump", "Water Jet Power", "Affinity Laws (Same Pump)", "Reciprocating Pump Displacement and Slip", "Pump Energy Cost", "Similar Pumps", "Multi-Stage Pumps", "Submersible Pump", "Maximum Suction Lift", "Pump Power with Pipe Friction"] },
+  ] },
+  { section: "II. Air Compressor", subsections: [
+    { name: null, items: ["Air Compressor — Capacity from Discharge Volume", "Air Compressor — Polytropic Power", "Air Compressor — Mass of Air from Motor Power", "Air Compressor — Volume of Air at Suction", "Air Compressor — Power Saved by Staging", "Air Compressor — Free Air Capacity", "Air Compressor — Mean Effective Pressure", "Air Compressor — Piston Displacement", "Air Compressor — Two-Stage Intercooler Pressure", "Air Compressor — Cylinder Diameter from Piston Speed", "Air Compressor — Intercooler Heat Rejected", "Air Compressor — Heat Loss", "Air Compressor — Power with Clearance", "Air Compressor — Work from Initial Volume", "Air Compressor — Three-Stage Intercooler Pressure"] },
+  ] },
+  { section: "III. Fans and Blowers", subsections: [
+    { name: null, items: ["Fan — Air Horsepower", "Fan — Motor Size from Air Power", "Fan Laws — Variable Density", "Fan — Total Head", "Fan — Capacity from Motor Power", "Fan — Air Velocity from Total Head", "Fan Laws — Variable Speed and Density", "Fan — Power from Static Pressure"] },
+  ] },
+  { section: "IV. Heat Transfer Applications", subsections: [
+    { name: null, items: ["Log Mean Temperature Difference", "Radiation — Black Body Filament"] },
   ] },
 ];
 document.getElementById("samples-ppe-9").innerHTML = `
@@ -17928,7 +17937,10 @@ const handout10FormulaOutline = [
     { name: null, items: ["Refrigeration — COP and Work", "Refrigeration — Tons from Energy Consumption", "Refrigeration — EER", "Refrigeration — Volume Flow and Tons", "Refrigerator — Energy Use and Cost"] },
   ] },
   { section: "III. Chilling and Cooling Load", subsections: [
-    { name: null, items: ["Refrigeration — Chilled Water Load"] },
+    { name: null, items: ["Refrigeration — Chilled Water Load", "Refrigeration — Cooling Water in Condenser"] },
+  ] },
+  { section: "IV. Motor and Compressor Performance", subsections: [
+    { name: null, items: ["Refrigeration — Motor Size from COP", "Refrigeration — Actual COP with Efficiencies"] },
   ] },
   { section: "V. Reversed Carnot Cycle and Heat Pump", subsections: [
     { name: null, items: ["Heat Pump — COP and Work", "Reversed Carnot — Claim Check", "Carnot Refrigerator — Heat Removal", "Reversed Carnot — COP and Temperature Ratio"] },
@@ -17937,10 +17949,13 @@ const handout10FormulaOutline = [
     { name: null, items: ["Refrigeration Compressor — Bore Size", "Refrigeration Compressor — Volumetric Efficiency", "Refrigeration Compressor — Power from Displacement"] },
   ] },
   { section: "VII. Superheating, Subcooling and Cascade System", subsections: [
-    { name: null, items: ["Refrigeration — Degree Superheat", "Cascade — Condenser Pressure", "Refrigeration — Heat Gain in Piping"] },
+    { name: null, items: ["Refrigeration — Degree Superheat", "Cascade — Condenser Pressure", "Refrigeration — Heat Gain in Piping", "Cascade — COP"] },
   ] },
   { section: "VIII. Product Load Calculations", subsections: [
-    { name: null, items: ["Product Load — Cooling and Freezing"] },
+    { name: null, items: ["Product Load — Cooling and Freezing", "Product Load — Ice Plant Motor Power"] },
+  ] },
+  { section: "IX. Psychrometrics", subsections: [
+    { name: null, items: ["Psychrometrics — Enthalpy from Chart", "Psychrometrics — Dew Point", "Psychrometrics — Humidity Ratio from Chart", "Psychrometrics — Humidity Ratio", "Psychrometrics — Vapor Pressure", "Psychrometrics — Enthalpy of Air-Vapor Mixture"] },
   ] },
 ];
 document.getElementById("samples-ppe-10").innerHTML = `
@@ -29634,20 +29649,7 @@ document.getElementById("quiz-ppe-ps-8-subtitle").textContent =
 renderQuiz("quiz-ppe-ps-8", ppePs8Data, "PPE Problem Set Day 8", "timer-ppe-ps-8", handout8FormulaOutline);
 
 // ---- PPE Problem Set Day 9 quiz data (pending upload) ----
-const ps9FormulaOutline = [
-  { section: "I. Pumps", subsections: [
-    { name: null, items: ["Water Power and Pump Efficiency", "Total Head of the Pump", "Water Jet Power", "Affinity Laws (Same Pump)", "Reciprocating Pump Displacement and Slip", "Specific Speed of a Centrifugal Pump", "Boiler Feed Pump (Enthalpy Rise)", "Pump Energy Cost", "Pump Work from Pressure Readings", "Similar Pumps", "Multi-Stage Pumps", "Submersible Pump", "Maximum Suction Lift", "Impeller Diameter (Peripheral Speed)", "Pump Power with Pipe Friction"] },
-  ] },
-  { section: "II. Air Compressor", subsections: [
-    { name: null, items: ["Air Compressor — Capacity from Discharge Volume", "Air Compressor — Polytropic Power", "Air Compressor — Mass of Air from Motor Power", "Air Compressor — Volume of Air at Suction", "Air Compressor — Power Saved by Staging", "Air Compressor — Free Air Capacity", "Air Compressor — Mean Effective Pressure", "Air Compressor — Piston Displacement", "Air Compressor — Two-Stage Intercooler Pressure", "Air Compressor — Cylinder Diameter from Piston Speed", "Air Compressor — Intercooler Heat Rejected", "Air Compressor — Heat Loss", "Air Compressor — Power with Clearance", "Air Compressor — Work from Initial Volume", "Air Compressor — Three-Stage Intercooler Pressure"] },
-  ] },
-  { section: "III. Fans and Blowers", subsections: [
-    { name: null, items: ["Fan — Air Horsepower", "Fan — Motor Size from Air Power", "Fan Laws — Variable Density", "Fan — Total Head", "Fan — Capacity from Motor Power", "Fan — Air Velocity from Total Head", "Fan Laws — Variable Speed and Density", "Fan — Power from Static Pressure"] },
-  ] },
-  { section: "IV. Heat Transfer Applications", subsections: [
-    { name: null, items: ["Log Mean Temperature Difference", "Radiation — Black Body Filament"] },
-  ] },
-];
+const ps9FormulaOutline = handout9FormulaOutline; // universal: same filter list as the Handout / Sample Problems / Formula Builder of this Day
 const ppePs9Data = [
   { q: ["A pump delivers 1000 gallons per minute of water at a head of 100 ft. Find the water power needed."],
     choices: [["12.34 hp"], ["34.12 hp"], ["23.23 hp"], ["25.28 hp"]], answer: 3,
@@ -31837,35 +31839,7 @@ document.getElementById("quiz-ppe-ps-9-subtitle").textContent =
 renderQuiz("quiz-ppe-ps-9", ppePs9Data, "PPE Problem Set Day 9", "timer-ppe-ps-9", ps9FormulaOutline);
 
 // ---- PPE Problem Set Day 10 quiz data (pending upload) ----
-const ps10FormulaOutline = [
-  { section: "I. The Vapor Compression Cycle", subsections: [
-    { name: null, items: ["Refrigeration — Compressor Work from Enthalpies", "Refrigeration — Heat Rejected in Condenser", "Refrigeration — Quality After Expansion"] },
-  ] },
-  { section: "II. Performance of Refrigeration System", subsections: [
-    { name: null, items: ["Refrigeration — COP and Work", "Refrigerator — Energy Use and Cost", "Refrigeration — EER", "Refrigeration — Volume Flow and Tons", "Refrigeration — Tons from Energy Consumption"] },
-  ] },
-  { section: "III. Chilling and Cooling Load", subsections: [
-    { name: null, items: ["Refrigeration — Chilled Water Load", "Refrigeration — Cooling Water in Condenser"] },
-  ] },
-  { section: "IV. Motor and Compressor Performance", subsections: [
-    { name: null, items: ["Refrigeration — Motor Size from COP", "Refrigeration — Actual COP with Efficiencies"] },
-  ] },
-  { section: "V. Reversed Carnot Cycle and Heat Pump", subsections: [
-    { name: null, items: ["Heat Pump — COP and Work", "Reversed Carnot — Claim Check", "Carnot Refrigerator — Heat Removal", "Reversed Carnot — COP and Temperature Ratio"] },
-  ] },
-  { section: "VI. Refrigeration Compressors", subsections: [
-    { name: null, items: ["Refrigeration Compressor — Bore Size", "Refrigeration Compressor — Volumetric Efficiency", "Refrigeration Compressor — Power from Displacement"] },
-  ] },
-  { section: "VII. Superheating, Subcooling and Cascade System", subsections: [
-    { name: null, items: ["Refrigeration — Degree Superheat", "Cascade — Condenser Pressure", "Refrigeration — Heat Gain in Piping", "Cascade — COP"] },
-  ] },
-  { section: "VIII. Product Load Calculations", subsections: [
-    { name: null, items: ["Product Load — Cooling and Freezing", "Product Load — Ice Plant Motor Power"] },
-  ] },
-  { section: "IX. Psychrometrics", subsections: [
-    { name: null, items: ["Psychrometrics — Enthalpy from Chart", "Psychrometrics — Dew Point", "Psychrometrics — Humidity Ratio from Chart", "Psychrometrics — Humidity Ratio", "Psychrometrics — Vapor Pressure", "Psychrometrics — Enthalpy of Air-Vapor Mixture"] },
-  ] },
-];
+const ps10FormulaOutline = handout10FormulaOutline; // universal: same filter list as the Handout / Sample Problems / Formula Builder of this Day
 const ppePs10Data = [
   { q: ["A refrigeration system is used to cooled water in the evaporator a 8 ", { frac: ["kg", "s"] }, " of water from 30°C to 2°C. Find the tons of refrigeration is required."],
     choices: [["266.75 TR"], ["137.45 TR"], ["120.34 TR"], ["130.84 TR"]], answer: 0,
@@ -33533,26 +33507,7 @@ document.getElementById("quiz-ppe-ps-10-subtitle").textContent =
 renderQuiz("quiz-ppe-ps-10", ppePs10Data, "PPE Problem Set Day 10", "timer-ppe-ps-10", ps10FormulaOutline);
 
 // ---- PPE Problem Set Day 11 quiz data (pending upload) ----
-const ps11FormulaOutline = [
-  { section: "I. Air-Conditioning", subsections: [
-    { name: null, items: ["Air Conditioner — Refrigeration Capacity", "Air Conditioner — Volume of Air", "Air Mixing — Temperature", "Air Mixing — Humidity Ratio", "Air Mixing — Enthalpy", "Air Properties — Wet Bulb Depression", "Air Properties — Mass of Water Vapor", "Air Properties — Dew Point", "Bypass Factor of Coil", "Air Properties — Specific Volume"] },
-  ] },
-  { section: "II. Cooling Tower", subsections: [
-    { name: null, items: ["Cooling Tower — Efficiency", "Cooling Tower — Pump Capacity", "Cooling Tower — Temperature Range", "Cooling Tower — Engine Jacket Water", "Cooling Tower — Air Volume for Condenser", "Cooling Tower — Make-up Water", "Cooling Tower — Air Leaving Temperature"] },
-  ] },
-  { section: "III. Air-Conditioning Load Calculations", subsections: [
-    { name: null, items: ["Air-Conditioning Load — Sensible Heat Factor", "Air-Conditioning Load — Fan Capacity", "Air-Conditioning Load — Room Temperature", "Air-Conditioning Load — Tons of Refrigeration", "Air-Conditioning Load — Supply Air", "Air-Conditioning Load — Number of Window Units"] },
-  ] },
-  { section: "IV. Dryer", subsections: [
-    { name: null, items: ["Dryer — Moisture Removed (Wet Feed and Product)", "Dryer — Moisture Removed (Dry Basis)"] },
-  ] },
-  { section: "V. Duct Flow", subsections: [
-    { name: null, items: ["Air Duct — Pressure Drop", "Air Duct — Velocity from Pressure"] },
-  ] },
-  { section: "VI. Air-Conditioning Power Input", subsections: [
-    { name: null, items: ["Air Conditioner — Minimum Power Input"] },
-  ] },
-];
+const ps11FormulaOutline = handout11FormulaOutline; // universal: same filter list as the Handout / Sample Problems / Formula Builder of this Day
 const ppePs11Data = [
   { q: ["Air in an air-conditioner enters at 65% RH with w = 0.025 and leaves at 25°C dry bulb and 16°C wet bulb. If mass of air is 10 ", { frac: ["kg", "s"] }, ", find the refrigeration capacity in tons of refrigeration. At 65% RH, w = 0.025: h = 85 ", { frac: ["kJ", "kg"] }, ", v = 0.803 ", { frac: [["\u00A0\u00A0", { base: "m", exp: "3" }, "\u00A0\u00A0"], "kg"] }, ". At 25°C db, 16°C wb: h = 43 ", { frac: ["kJ", "kg"] }, "."],
     choices: [["134.34 TR"], ["119.45 TR"], ["102.45 TR"], ["98.34 TR"]], answer: 1,
