@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-23": {
-    stamp: "v1.3.63.1 – v1.3.64.13",
+    stamp: "v1.3.63.1 – v1.3.64.14",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
+      "v1.3.64.14: LAX asked for a problem count per type per Day in the Study checklist plus a Sort. Each row shows a count badge (.sc-n) = problems tagged with that type in the Day\u0027s Trivia + Problem Set data (topics[0], read by name via indirect eval: triviaNData/psNData, ppeDayNData/ppePsNData) plus .sample-problem[data-topic] in samples-math-N / samples-ppe-N; MD has none yet so shows 0. New Sort button (state.sort, saved) switches to a flat list of the types sorted by count descending (ties keep outline order), same checks and Formula Builder links, no sections.",
       "v1.3.64.13: LAX clarified the PPE/MD checklist must list the specific problem types, not Days. The checklist now uses outlines keyed Math 12-18, \"P1\"-\"P11\" (handoutNFormulaOutline) and \"M1\" (built at load from the MD Handout Day 1 h2 and cc-title headings, numbers stripped). Same 5-check rows as Math, ticked by hand (no Formula Builder bump, no fbGoTo link). Day tabs run lowest to highest (Math 12-18, PPE 1-11, PPE opens on Day 9); MD has Day 1 only. Replaces the plain per-Day check rows of v1.3.64.12 (state.chk removed).",
       "v1.3.64.12: LAX asked for a more compact Study checklist navigation (Math, PPE, MD). Added a subject tab row (#sc-subj) above the day tabs. Math keeps the Day 12-18 checklist unchanged; PPE lists Day 1-11 and MD lists Day 1 as plain one-checkbox rows with a Days-checked counter and progress bar (state.chk in scChecklistV1, no rep counting yet; Reset clears the current subject). scFlash switches back to the Math tab. Changelog entry added.",
       "v1.3.64.11: LAX chose option C for the K to degC step: PPE Problem Set 9 (black body radiation, T = 3,110.26 K) and Problem Set 10 (heat pump, T_L = 250.4 K) lost the separate Convert to degC note and result box; the calculator box now reads T = 3,110.26 K - 273 K = 2,837 degC (and T_L = 250.4 K - 273 K = -22.60 degC), display unchanged. LAX also said Math Day 16-18 keep the old separate-convert style for now; it will be updated later (PPE and MD 1 are the current focus).",
