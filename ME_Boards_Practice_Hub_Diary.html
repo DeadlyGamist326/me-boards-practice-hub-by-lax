@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-23": {
-    stamp: "v1.3.63.1 – v1.3.63.2",
+    stamp: "v1.3.63.1 – v1.3.63.3",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
+      "v1.3.63.3: LAX: the minus of a negative exponent is 4 dots at row 3, columns 2-5 (1-based) of its small 5x6 cell, above the 10 (glyph 00000 00000 01111 00000 00000 00000 instead of the short minus).",
       "v1.3.63.2: LAX: scientific notation in the calculator answer row used the e form, which is wrong. calcLcdEngine.draw now splits a result like 1.2e-7 into the mantissa, a full-size \u00d7 and 10 on the baseline (G glyphs), and the exponent in small GS glyphs (5x6) drawn at resTop+1, the top row of the answer grid, with the short minus \ue003 for a negative exponent. Same draw is used by the floating calculator and the step displays.",
       "v1.3.63.1: LAX noticed the solution stayed in a 2-column look after the displays moved to the rail. .calc-pair stayed a flex row with the box sized only in .handout-content; now the flex rule applies everywhere and body.calc-dock-on .calc-pair.fl is display:block with normal step margins, so the box is full width whenever .calc-side is hidden."
     ]
