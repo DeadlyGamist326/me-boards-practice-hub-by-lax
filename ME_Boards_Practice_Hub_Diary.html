@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-23": {
-    stamp: "v1.3.63.1 – v1.3.64.2",
+    stamp: "v1.3.63.1 – v1.3.64.3",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
+      "v1.3.64.3: hint bubble close button (.calc-hint-x) is now an absolutely positioned 20 px white circle (top/right -9px) on the bubble's upper-right corner, × centred with flex.",
       "v1.3.64.2 (no version bump, hidden LAX shortcut so no changelog entry): 5 taps (gap under 1.5 s) on any .lax-img click every Full solution button of the active view (.hint-btn.hint-solution plus the last .hint-btn of each .hints-wrap) that is not already open. Separate from the 10-tap admin entry, which still works. Quiz solutions opened before answering lock the question as wrong, as a manual click does.",
       "v1.3.64.2: calculator hint bubble. One fixed .calc-hint-bubble (body child) says \"Double-click me to use this on the calculator\" above the drawn .calc-lcd[data-done] display nearest the viewport centre that is fully visible. Appears after 5 s of no scroll/resize/wheel/touch/key, stays 10 s, returns after 1 min; the × hides it for 1 min; scroll etc. or a display double-click hides it with no cooldown.",
       "v1.3.64.1: double-clicking a .calc-lcd display now presses SOLVE instead of = when the loaded expression contains an equal sign (the Shift + Solve displays). Fixed in both calculator load paths (calcLoad message and window.__EXPR__ at first open).",
