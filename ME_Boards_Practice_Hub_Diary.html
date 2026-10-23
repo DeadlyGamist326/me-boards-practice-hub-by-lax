@@ -294,6 +294,7 @@ const entries = {
     stamp: "v1.3.63.1 – v1.3.63.8",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
+      "Dev-only: LAX saved the next batch of menu glyphs: small \u2220 \u03b8 j l, plus 18 normal 5x9 letters (H I N O T a t V c text-i n Q ... r o d G x). Added to both font tables (small via GS, normal via G, text i as \ue031). The raw JSON copy is kept in the project files at calculator-font/menu-glyphs.json.",
       "Dev-only (no version bump, nothing uses them yet): LAX's menu-word sheet gave 41 new small 5x6 glyphs (O P L S T Q N V R \u03a0 \u2211 a x n r ... o d G t h s g c m b / p \u25c0 \u25b6 u w I v y U k ?, plus text e and text i). Added to both GS tables with Object.assign; text e is \ue030 and text i is \ue031 so they do not clash with euler e and imaginary i. Menu words checked: no character of the requested list is missing.",
       "v1.3.63.8: LAX: the small 10 in scientific notation was one row too tall; its cell now draws it 4 rows tall (10111 10101 10101 10111) on the baseline, minus row still at row 3.",
       "v1.3.63.7: LAX: the x in the scientific-notation answer must sit on the baseline (not mid-height): small x glyph (GS 5x6) placed in rows 4-9 of its 5x9 cell, in both the engine draw and the floating calculator.",
