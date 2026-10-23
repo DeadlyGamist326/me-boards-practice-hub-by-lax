@@ -291,11 +291,12 @@
 <script>
 const entries = {
   "2026-10-23": {
-    stamp: "v1.3.63.1 – v1.3.63.8",
+    stamp: "v1.3.63.1 – v1.3.63.9",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
       "Dev-only: LAX saved the next batch of menu glyphs: small \u2220 \u03b8 j l, plus 18 normal 5x9 letters (H I N O T a t V c text-i n Q ... r o d G x). Added to both font tables (small via GS, normal via G, text i as \ue031). The raw JSON copy is kept in the project files at calculator-font/menu-glyphs.json.",
       "Dev-only (no version bump, nothing uses them yet): LAX's menu-word sheet gave 41 new small 5x6 glyphs (O P L S T Q N V R \u03a0 \u2211 a x n r ... o d G t h s g c m b / p \u25c0 \u25b6 u w I v y U k ?, plus text e and text i). Added to both GS tables with Object.assign; text e is \ue030 and text i is \ue031 so they do not clash with euler e and imaginary i. Menu words checked: no character of the requested list is missing.",
+      "v1.3.63.9: LAX sent the menu screens (saved at /mnt/project-files/calculator-font/menus.json). Floating calculator: MODE, Shift + MODE and Apps keys now open menus (MENUS table, menu/calcMode state, renderMenu/menuKey/menuPick in the float source). Small 5x6 words, 36-dot-high screen, items across then down, 1 or 2 columns, optional header, numbering restarts at 1 per screen, Up/Down change screen (arrow markers top/bottom right), number picks, AC/MODE/Apps close. MODE 3/5/6/8 (STAT/EQN/MATX/VCTR) open the sub-menus LAX names MODE-3/5/7/8, so the matrix menu is reached with key 6 (the list says 6:MATX, 7:TABLE) - to confirm with LAX. Apps picks the menu by calcMode (1/3/7/8). Picking an item only switches mode and says it has no function yet. Keyboard Up/Down arrows now press UP/DOWN.",
       "v1.3.63.8: LAX: the small 10 in scientific notation was one row too tall; its cell now draws it 4 rows tall (10111 10101 10101 10111) on the baseline, minus row still at row 3.",
       "v1.3.63.7: LAX: the x in the scientific-notation answer must sit on the baseline (not mid-height): small x glyph (GS 5x6) placed in rows 4-9 of its 5x9 cell, in both the engine draw and the floating calculator.",
       "v1.3.63.6: LAX: the 10 must be the SMALL TEN glyph (GS \ue024, 5x6) on the baseline, and the negative sign merged into the 10 character: one 5x9 cell = 2 blank rows, row 3 = 01111 (4 dots, cols 2-5) when negative, then the 6 small-10 rows. The exponent digits follow in their own small cells on the top row.",
