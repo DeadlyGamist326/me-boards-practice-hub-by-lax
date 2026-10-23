@@ -1555,7 +1555,7 @@ function layoutAll(t){
     function init() { document.body.appendChild(bub); arm(); }
     if (document.body) init(); else document.addEventListener('DOMContentLoaded', init);
   })();
-  /* Five quick taps on the LAX logo open every Full solution (last hint) on the open screen. */
+  /* Five quick taps on the LAX logo open every Full solution (last hint) on the open screen; problems hidden by the Practice by formula filter are skipped. */
 (function () {
   let taps = 0, last = 0;
   document.addEventListener('click', (e) => {
@@ -1572,7 +1572,7 @@ function layoutAll(t){
       const all = w.querySelectorAll('.hint-btn');
       if (all.length) btns.add(all[all.length - 1]);
     });
-    btns.forEach((b) => { if (!b.classList.contains('active')) b.click(); });
+    btns.forEach((b) => { if (b.getClientRects().length && !b.classList.contains('active')) b.click(); });
   });
 })();
 
