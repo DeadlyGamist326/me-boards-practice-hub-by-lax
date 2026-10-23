@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-23": {
-    stamp: "v1.3.63.1 – v1.3.63.6",
+    stamp: "v1.3.63.1 – v1.3.63.7",
     title: "Solutions back to one full-width column, calculator scientific notation",
     body: [
+      "v1.3.63.7: LAX: the x in the scientific-notation answer must sit on the baseline (not mid-height): small x glyph (GS 5x6) placed in rows 4-9 of its 5x9 cell, in both the engine draw and the floating calculator.",
       "v1.3.63.6: LAX: the 10 must be the SMALL TEN glyph (GS \ue024, 5x6) on the baseline, and the negative sign merged into the 10 character: one 5x9 cell = 2 blank rows, row 3 = 01111 (4 dots, cols 2-5) when negative, then the 6 small-10 rows. The exponent digits follow in their own small cells on the top row.",
       "v1.3.63.5: LAX: the 10 in the scientific-notation answer must be the 10 of the 10^ box (TEN glyph \ue024, one 5x9 cell), not two digits 1 and 0. Both the engine draw and the floating calculator sciToks now use it.",
       "v1.3.63.4: LAX: the floating calculator itself still showed e. It has its own render() (separate from calcLcdEngine.draw), now using sciToks/sciGlyph for the main answer row and Solve result lines, same x10 + raised small exponent + 4-dot minus.",
