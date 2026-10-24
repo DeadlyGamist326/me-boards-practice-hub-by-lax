@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-10-24": {
-    stamp: "v1.3.65.6",
-    title: "Selectable Handout formulas",
+    stamp: "v1.3.65.6 \u2013 v1.3.65.7",
+    title: "Selectable Handout formulas, PPE Day 1-8 brought to the Day 9-11 standard",
     body: [
+      "v1.3.65.7: LAX asked to audit PPE Day 1-8 against the latest standard (PPE Day 9-11, MD Day 1) and put PPE Day 1-11 in Quick Access. Audit found: Handout 1-4 had no .concept-card (flat h3/h4 + formula rows), \u201cwhere\u201d lines were prose .var-def, Day 5 still used the retired .vc-sym chips, long grid boxes had no fb-long, Select formulas only worked on Day 9-11 and 4 PS5 questions had no topic. Fixes: a throwaway script (jsdom, runtime innerHTML equals the template source, verified) regrouped Handout 1-4 into cards (h3 = card, h4 = card titled \u201ch3 \u00b7 h4\u201d, short numbered p = title, p = .cc-desc), turned clean \u201csym = text\u201d var-defs of Day 1-8 into .var-chip grids with unit slashes as standing fractions, Day 5 vc-sym chips into LaTeX chips, grid blocks of 66+ characters got fb-long; counts of rows, blocks, grids, sample problems and hint panels were identical before and after. Select formulas IDS now PPE 1-11 plus MD 1. Quick Access loop runs Day 1-11. PS5 #8, #10, #32, #39 got topics and handout5FormulaOutline a section IV (43-45). Trivia/Problem Set solutions of Day 1-8 already match the standard (given boxes, calc displays); PS6 #5, PS7 #5, PS8 #10 and #12 stay flagged for LAX\u2019s source. PPE Day 1-8 have no Sample Problems pages or Formula Builder because no \u201cSample Problems PPE Day N\u201d file was uploaded.",
       "v1.3.65.6: LAX asked to make Handout formulas selectable with a Copy button per handout, light gray highlight; scoped to PPE Day 9-11 and MD Day 1. A new script block after the Study checklist script wraps showView, and for view-handout-ppe-9/10/11 and view-handout-md-1 it adds Select formulas / Copy (n) / Clear buttons to the .quiz-topbar. In select mode a click on a .formula-row or .formula-block inside a .concept-card toggles .fsel-picked (gray). Copy writes the LaTeX source (MathJax math items) grouped by h2 and cc-title in Handout order; formula-rows join their left/center/right parts. Handout sample problems are not selectable."
     ]
   },
