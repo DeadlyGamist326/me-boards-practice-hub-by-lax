@@ -81,7 +81,7 @@
   async function renderPage(n) {
     var page = await doc.getPage(n);
     var sc = +$("scale").value * 1.5, base = page.getViewport({ scale: 1 });
-    var maxPx = 60e6; // keep the picture within what browsers can draw
+    var maxPx = /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent) ? 16e6 : 60e6; // phones draw smaller canvases
     if (base.width * base.height * sc * sc > maxPx) sc = Math.sqrt(maxPx / (base.width * base.height));
     var vp = page.getViewport({ scale: sc });
     var c = document.createElement("canvas");
