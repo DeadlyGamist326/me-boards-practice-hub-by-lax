@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paste to PDF</title>
+<style>
+  :root { --bg:#f6f5f2; --card:#fff; --text:#1c1c1c; --muted:#6b6b6b; --line:#d9d6cf; --accent:#2563eb; --danger:#c2410c; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161616; --card:#222; --text:#eee; --muted:#9a9a9a; --line:#3a3a3a; --accent:#60a5fa; --danger:#fb923c; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:16px; }
+  main { max-width:900px; margin:0 auto; }
+  h1 { font-size:22px; margin:8px 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+  #drop { border:2px dashed var(--line); border-radius:12px; background:var(--card); padding:28px 16px; text-align:center; cursor:pointer; outline:none; }
+  #drop:focus, #drop.over { border-color:var(--accent); }
+  #drop b { font-size:16px; }
+  #drop span { display:block; color:var(--muted); font-size:13px; margin-top:6px; }
+  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:16px 0; }
+  .bar label { font-size:14px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  select, input[type=text] { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--text); }
+  button { font:inherit; padding:9px 16px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .spacer { flex:1; }
+  #list { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+  .pg { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px; display:flex; flex-direction:column; gap:6px; }
+  .pg.dragging { opacity:.4; }
+  .pg img { width:100%; height:150px; object-fit:contain; background:#fff; border-radius:6px; }
+  .pg .row { display:flex; align-items:center; justify-content:space-between; gap:4px; font-size:13px; color:var(--muted); }
+  .pg .row button { padding:3px 8px; font-size:13px; }
+  .pg .del { color:var(--danger); }
+  #msg { color:var(--muted); font-size:14px; min-height:1.3em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Paste to PDF</h1>
+  <p class="sub">Paste pictures and download them as one PDF. Everything stays on your device.</p>
+
+  <div id="drop" tabindex="0">
+    <b>Press Ctrl+V to paste pictures</b>
+    <span>or drag and drop images here, or click to choose files</span>
+  </div>
+  <input type="file" id="file" accept="image/*" multiple hidden>
+
+  <div class="bar">
+    <label>Page size
+      <select id="size">
+        <option value="fit">Fit to image</option>
+        <option value="a4" selected>A4</option>
+        <option value="letter">Letter</option>
+      </select>
+    </label>
+    <label>Margin
+      <select id="margin">
+        <option value="0">None</option>
+        <option value="18" selected>Small</option>
+        <option value="36">Medium</option>
+      </select>
+    </label>
+    <label>File name <input type="text" id="name" value="pictures" size="14"></label>
+    <span class="spacer"></span>
+    <button id="clear" disabled>Clear all</button>
+    <button id="make" class="primary" disabled>Download PDF</button>
+  </div>
+  <div id="msg"></div>
+  <div id="list"></div>
+</main>
+
+<script>
+(function () {
+  var pages = []; // {id, canvas, url}
+  var nextId = 1, dragFrom = -1;
+  var $ = function (id) { return document.getElementById(id); };
+  var list = $("list"), msg = $("msg");
+
+  function say(t) { msg.textContent = t || ""; }
+
+  function addBlob(blob) {
+    return new Promise(function (resolve) {
+      var url = URL.createObjectURL(blob);
+      var img = new Image();
+      img.onload = function () {
+        var c = document.createElement("canvas");
+        c.width = img.naturalWidth; c.height = img.naturalHeight;
+        var x = c.getContext("2d");
+        x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+        x.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+        pages.push({ id: nextId++, canvas: c, thumb: c.toDataURL("image/jpeg", 0.6) });
+        resolve(true);
+      };
+      img.onerror = function () { URL.revokeObjectURL(url); resolve(false); };
+      img.src = url;
+    });
+  }
+
+  async function addFiles(files) {
+    var n = 0, bad = 0;
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      if (!f.type || f.type.indexOf("image/") !== 0) { bad++; continue; }
+      if (await addBlob(f)) n++; else bad++;
+    }
+    say(n + " picture(s) added" + (bad ? ", " + bad + " skipped (not a readable image)" : "") + ".");
+    render();
+  }
+
+  function render() {
+    list.innerHTML = "";
+    pages.forEach(function (p, i) {
+      var d = document.createElement("div");
+      d.className = "pg"; d.draggable = true;
+      var img = document.createElement("img"); img.src = p.thumb; img.alt = "Page " + (i + 1);
+      var row = document.createElement("div"); row.className = "row";
+      var lab = document.createElement("span"); lab.textContent = "Page " + (i + 1);
+      var l = btn("◀", function () { move(i, i - 1); }, i === 0);
+      var r = btn("▶", function () { move(i, i + 1); }, i === pages.length - 1);
+      var x = btn("✕", function () { pages.splice(i, 1); render(); }, false); x.className = "del";
+      row.append(l, lab, r, x);
+      d.append(img, row);
+      d.addEventListener("dragstart", function () { dragFrom = i; d.classList.add("dragging"); });
+      d.addEventListener("dragend", function () { d.classList.remove("dragging"); });
+      d.addEventListener("dragover", function (e) { if (dragFrom >= 0) e.preventDefault(); });
+      d.addEventListener("drop", function (e) {
+        if (dragFrom >= 0) { e.preventDefault(); e.stopPropagation(); var f = dragFrom; dragFrom = -1; move(f, i); }
+      });
+      list.appendChild(d);
+    });
+    $("make").disabled = $("clear").disabled = pages.length === 0;
+  }
+  function btn(t, fn, dis) { var b = document.createElement("button"); b.textContent = t; b.onclick = fn; b.disabled = dis; return b; }
+  function move(a, b) {
+    if (b < 0 || b >= pages.length || a === b) return;
+    pages.splice(b, 0, pages.splice(a, 1)[0]); render();
+  }
+
+  // paste
+  document.addEventListener("paste", function (e) {
+    var files = [], items = (e.clipboardData && e.clipboardData.items) || [];
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].kind === "file" && items[i].type.indexOf("image/") === 0) files.push(items[i].getAsFile());
+    }
+    if (files.length) { e.preventDefault(); addFiles(files); }
+    else say("No picture found in the clipboard.");
+  });
+  // drop + pick
+  var drop = $("drop");
+  drop.onclick = function () { $("file").click(); };
+  drop.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("file").click(); } };
+  $("file").onchange = function (e) { addFiles(e.target.files); e.target.value = ""; };
+  ["dragenter", "dragover"].forEach(function (t) { document.addEventListener(t, function (e) {
+    if (dragFrom < 0) { e.preventDefault(); drop.classList.add("over"); } }); });
+  ["dragleave", "drop"].forEach(function (t) { document.addEventListener(t, function () { drop.classList.remove("over"); }); });
+  document.addEventListener("drop", function (e) {
+    if (dragFrom >= 0) return;
+    e.preventDefault();
+    if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+  $("clear").onclick = function () { pages = []; say(""); render(); };
+
+  // ---- minimal PDF writer (JPEG pages) ----
+  function b64ToBytes(dataUrl) {
+    var s = atob(dataUrl.split(",")[1]), u = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i);
+    return u;
+  }
+  function build() {
+    var size = $("size").value, m = +$("margin").value;
+    var enc = new TextEncoder(), parts = [], offs = [], len = 0;
+    function push(x) { var u = typeof x === "string" ? enc.encode(x) : x; parts.push(u); len += u.length; }
+    function obj(n, body) { offs[n] = len; push(n + " 0 obj\n"); push(body); push("\nendobj\n"); }
+    var N = pages.length, kids = [];
+    for (var i = 0; i < N; i++) kids.push((3 + i * 3) + " 0 R");
+    push("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
+    obj(1, "<< /Type /Catalog /Pages 2 0 R >>");
+    obj(2, "<< /Type /Pages /Kids [" + kids.join(" ") + "] /Count " + N + " >>");
+    pages.forEach(function (p, i) {
+      var iw = p.canvas.width, ih = p.canvas.height;
+      var W, H, dw, dh, dx, dy;
+      if (size === "fit") {
+        var k = 72 / 96; // px -> pt
+        W = iw * k + 2 * m; H = ih * k + 2 * m; dw = iw * k; dh = ih * k; dx = m; dy = m;
+      } else {
+        var base = size === "a4" ? [595.28, 841.89] : [612, 792];
+        W = iw > ih ? base[1] : base[0]; H = iw > ih ? base[0] : base[1];
+        var s = Math.min((W - 2 * m) / iw, (H - 2 * m) / ih);
+        dw = iw * s; dh = ih * s; dx = (W - dw) / 2; dy = (H - dh) / 2;
+      }
+      var jpg = b64ToBytes(p.canvas.toDataURL("image/jpeg", 0.92));
+      var pg = 3 + i * 3, ct = pg + 1, im = pg + 2;
+      obj(pg, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + W.toFixed(2) + " " + H.toFixed(2) +
+        "] /Contents " + ct + " 0 R /Resources << /XObject << /Im0 " + im + " 0 R >> >> >>");
+      var cs = "q " + dw.toFixed(2) + " 0 0 " + dh.toFixed(2) + " " + dx.toFixed(2) + " " + dy.toFixed(2) + " cm /Im0 Do Q";
+      obj(ct, "<< /Length " + cs.length + " >>\nstream\n" + cs + "\nendstream");
+      offs[im] = len;
+      push(im + " 0 obj\n<< /Type /XObject /Subtype /Image /Width " + iw + " /Height " + ih +
+        " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + jpg.length + " >>\nstream\n");
+      push(jpg); push("\nendstream\nendobj\n");
+    });
+    var total = 3 + N * 3, xref = len;
+    var x = "xref\n0 " + total + "\n0000000000 65535 f \n";
+    for (var n = 1; n < total; n++) x += ("0000000000" + offs[n]).slice(-10) + " 00000 n \n";
+    push(x + "trailer\n<< /Size " + total + " /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF");
+    return new Blob(parts, { type: "application/pdf" });
+  }
+
+  $("make").onclick = function () {
+    say("Making PDF...");
+    setTimeout(function () {
+      try {
+        var blob = build();
+        var name = ($("name").value.trim() || "pictures").replace(/[\\/:*?"<>|]+/g, "_") + ".pdf";
+        var a = document.createElement("a");
+        a.href = URL.createObjectURL(blob); a.download = name;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+        say("Done: " + name + " (" + pages.length + " page" + (pages.length > 1 ? "s" : "") + ", " + (blob.size / 1048576).toFixed(2) + " MB).");
+      } catch (err) { say("Could not make the PDF: " + err.message); }
+    }, 30);
+  };
+  render();
+})();
+</script>
+</body>
+</html>
