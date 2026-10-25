@@ -50,9 +50,11 @@
     </label>
     <label>Quality
       <select id="scale">
-        <option value="1">Normal</option>
-        <option value="2" selected>High</option>
-        <option value="3">Very high</option>
+        <option value="1">Low (smallest file)</option>
+        <option value="2" selected>Normal</option>
+        <option value="3">High</option>
+        <option value="4">Very high</option>
+        <option value="5">Maximum (sharpest, biggest file)</option>
       </select>
     </label>
     <span class="spacer"></span>
@@ -78,7 +80,10 @@
 
   async function renderPage(n) {
     var page = await doc.getPage(n);
-    var vp = page.getViewport({ scale: +$("scale").value * 1.5 });
+    var sc = +$("scale").value * 1.5, base = page.getViewport({ scale: 1 });
+    var maxPx = 60e6; // keep the picture within what browsers can draw
+    if (base.width * base.height * sc * sc > maxPx) sc = Math.sqrt(maxPx / (base.width * base.height));
+    var vp = page.getViewport({ scale: sc });
     var c = document.createElement("canvas");
     c.width = Math.round(vp.width); c.height = Math.round(vp.height);
     var x = c.getContext("2d");
