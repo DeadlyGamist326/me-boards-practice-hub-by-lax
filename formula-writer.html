@@ -69,7 +69,8 @@
   <div id="list"></div>
 
   <textarea id="out" placeholder="The LaTeX text will appear here." readonly></textarea>
-  <div class="bar"><button id="copy" disabled>Copy text</button></div>
+  <div class="bar"><button id="copy" disabled>Copy text</button>
+    <button id="wipe">Clear saved model files</button></div>
   <h2 class="cap">Cropped pictures</h2>
   <div class="note" style="margin:0 0 4px">Press "Crop" on a picture and drag a box around the part you want to keep (a diagram, for example). For PDFs, the pictures inside the PDF are cropped for you.</div>
   <div id="crops"></div>
@@ -131,6 +132,16 @@
       ids.push(best);
     }
     return ids.slice(1);
+  };
+
+  // delete every saved copy of the model (ours and the ones older versions of this page may have left)
+  window.clearModelCache = async function () {
+    var names = await caches.keys(), n = 0;
+    for (var i = 0; i < names.length; i++) {
+      if (names[i] === "formula-writer-v1" || names[i].indexOf("transformers") === 0 || names[i].indexOf("onnx") === 0) { await caches.delete(names[i]); n++; }
+    }
+    reader = null;
+    return n;
   };
 
   window.getReader = async function (progress, status) {
@@ -365,6 +376,14 @@
       say("Could not write the formulas: " + (e && e.message ? e.message : e) + ". Check your internet connection for the first load and try again.");
     }
     busy = false; render();
+  };
+
+  $("wipe").onclick = async function () {
+    if (busy) return;
+    try {
+      var n = await window.clearModelCache();
+      say(n ? "Saved model files cleared. The next \"Write formulas\" downloads them again." : "There were no saved model files.");
+    } catch (e) { say("Could not clear the saved files: " + (e && e.message ? e.message : e)); }
   };
 
   $("copy").onclick = async function () {
