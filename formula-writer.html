@@ -83,15 +83,24 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script type="module">
-  // The formula reader. Change MODEL_ID here if you ever want to try another model.
-  var MODEL_ID = "breezedeus/pix2text-mfr";
+  // The formula reader. Models are tried in this order; change the list to try another.
+  var MODELS = ["onnx-community/nougat-latex-base-ONNX", "onnx-community/latex_finetuned-ONNX"];
+  var DTYPES = ["q8", "fp32"]; // smaller download first
   var TJS_URL = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2";
   var reader = null;
-  window.getReader = async function (progress) {
+  window.getReader = async function (progress, status) {
     if (reader) return reader;
-    var tjs = await import(TJS_URL);
-    reader = await tjs.pipeline("image-to-text", MODEL_ID, { dtype: "fp32", progress_callback: progress });
-    return reader;
+    var tjs = await import(TJS_URL), errors = [];
+    for (var i = 0; i < MODELS.length; i++) {
+      for (var j = 0; j < DTYPES.length; j++) {
+        try {
+          if (status) status(MODELS[i].split("/")[1] + " (" + DTYPES[j] + ")");
+          reader = await tjs.pipeline("image-to-text", MODELS[i], { dtype: DTYPES[j], progress_callback: progress });
+          return reader;
+        } catch (e) { errors.push(MODELS[i].split("/")[1] + " " + DTYPES[j] + ": " + (e && e.message ? e.message : e)); }
+      }
+    }
+    throw new Error(errors.join(" | "));
   };
 </script>
 <script>
@@ -282,9 +291,10 @@
     busy = true; render(); $("copy").disabled = true; $("out").value = "";
     try {
       say("Loading the formula reader (first time only)...");
+      var which = "";
       var rd = await window.getReader(function (p) {
-        if (p && p.status === "progress" && p.file) say("Downloading the reader: " + Math.round(p.progress || 0) + "%");
-      });
+        if (p && p.status === "progress" && p.file) say("Downloading the reader " + which + ": " + Math.round(p.progress || 0) + "% (" + p.file.split("/").pop() + ")");
+      }, function (w) { which = w; say("Loading " + w + "..."); });
       var res = [];
       for (var i = 0; i < items.length; i++) {
         say("Writing formula " + (i + 1) + " of " + items.length + "...");
