@@ -30,6 +30,8 @@
   .pg img { width:100%; height:190px; object-fit:contain; background:#fff; border-radius:6px; }
   .pg .row { display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:13px; color:var(--muted); }
   .pg .row button { padding:5px 10px; font-size:13px; }
+  #warn { color:#b45309; font-size:14px; font-weight:600; margin:0 0 12px; display:none; }
+  #warn.on { display:block; }
   #msg { color:var(--muted); font-size:14px; min-height:1.3em; }
 </style>
 </head>
@@ -61,6 +63,7 @@
     <button id="all" class="primary" disabled>Download all, one by one</button>
   </div>
   <div id="msg"></div>
+  <div id="warn"></div>
   <div id="list"></div>
 </main>
 
@@ -69,6 +72,7 @@
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var list = $("list"), msg = $("msg");
+  var warnPages = {};
   var doc = null, baseName = "page", token = 0;
   function say(t) { msg.textContent = t || ""; }
 
@@ -78,17 +82,27 @@
   function ext() { return $("fmt").value === "jpeg" ? "jpg" : "png"; }
   function pad(n, total) { var s = String(n); while (s.length < String(total).length) s = "0" + s; return s; }
 
+  function showWarn() {
+    var w = $("warn"), k = Object.keys(warnPages);
+    if (!k.length) { w.className = ""; w.textContent = ""; return; }
+    w.className = "on";
+    w.textContent = "Warning: page " + k.join(", ") + " is bigger than the maximum size this device can draw, so it is saved smaller than the quality you chose.";
+  }
+
   async function renderPage(n) {
     var page = await doc.getPage(n);
     var sc = +$("scale").value * 1.5, base = page.getViewport({ scale: 1 });
     var maxPx = /Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent) ? 16e6 : 60e6; // phones draw smaller canvases
-    if (base.width * base.height * sc * sc > maxPx) sc = Math.sqrt(maxPx / (base.width * base.height));
+    var capped = base.width * base.height * sc * sc > maxPx;
+    if (capped) sc = Math.sqrt(maxPx / (base.width * base.height));
     var vp = page.getViewport({ scale: sc });
     var c = document.createElement("canvas");
     c.width = Math.round(vp.width); c.height = Math.round(vp.height);
     var x = c.getContext("2d");
     x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
     await page.render({ canvasContext: x, viewport: vp }).promise;
+    if (capped) warnPages[n] = true; else delete warnPages[n];
+    showWarn();
     return c;
   }
   function toBlob(c) {
@@ -110,7 +124,7 @@
     if (!window.pdfjsLib) return;
     if (!file || (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name))) { say("Please choose a PDF file."); return; }
     var my = ++token;
-    list.innerHTML = ""; $("all").disabled = true; doc = null;
+    list.innerHTML = ""; $("all").disabled = true; doc = null; warnPages = {}; showWarn();
     baseName = file.name.replace(/\.pdf$/i, "").replace(/[\\/:*?"<>|]+/g, "_") || "page";
     say("Reading PDF...");
     try {
