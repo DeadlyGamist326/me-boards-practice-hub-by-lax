@@ -83,97 +83,138 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script type="module">
-  // The formula reader. It runs the model files directly (encoder + decoder), because this model
-  // has no "merged" decoder file that the ready-made loader needs.
-  var REPO = "onnx-community/nougat-latex-base-ONNX";
-  var BASE = "https://huggingface.co/" + REPO + "/resolve/main/";
-  var ENCODER = "onnx/encoder_model_quantized.onnx";
-  var DECODER = "onnx/decoder_model_quantized.onnx";
-  var TJS_URL = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2";
-  var ORT_DIR = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/";
-  var MAX_TOKENS = 300;
-  var reader = null;
+<script type="text/plain" id="wk">// ---- runs in a background worker so the page never freezes ----
+var REPO = "onnx-community/nougat-latex-base-ONNX";
+var BASE = "https://huggingface.co/" + REPO + "/resolve/main/";
+var ENCODER = "onnx/encoder_model_quantized.onnx";
+var DECODER = "onnx/decoder_model_quantized.onnx";
+var TJS_URL = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2";
+var ORT_DIR = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/";
+var MAX_TOKENS = 300;
+var reader = null;
 
-  // download once, keep in the browser cache, report progress
-  async function getFile(path, label, say) {
-    var url = BASE + path, cache = null;
-    try { cache = await caches.open("formula-writer-v1"); var hit = await cache.match(url); if (hit) return await hit.arrayBuffer(); } catch (e) { cache = null; }
-    var res = await fetch(url);
-    if (!res.ok) throw new Error("Could not download " + path + " (" + res.status + ")");
-    var total = +res.headers.get("content-length") || 0, got = 0, parts = [], rd = res.body.getReader();
-    for (;;) {
-      var r = await rd.read(); if (r.done) break;
-      parts.push(r.value); got += r.value.length;
-      if (say) say("Downloading " + label + ": " + (total ? Math.round(got / total * 100) + "%" : (got / 1048576).toFixed(0) + " MB"));
-    }
-    var blob = new Blob(parts);
-    try { if (cache) await cache.put(url, new Response(blob)); } catch (e) { /* cache is optional */ }
-    return await blob.arrayBuffer();
+function say(t) { postMessage({ type: "status", text: t }); }
+
+// download once, keep in the browser cache, report progress
+async function getFile(path, label) {
+  var url = BASE + path, cache = null;
+  try { cache = await caches.open("formula-writer-v1"); var hit = await cache.match(url); if (hit) return await hit.arrayBuffer(); } catch (e) { cache = null; }
+  var res = await fetch(url);
+  if (!res.ok) throw new Error("Could not download " + path + " (" + res.status + ")");
+  var total = +res.headers.get("content-length") || 0, got = 0, parts = [], rd = res.body.getReader();
+  for (;;) {
+    var r = await rd.read(); if (r.done) break;
+    parts.push(r.value); got += r.value.length;
+    say("Downloading " + label + ": " + (total ? Math.round(got / total * 100) + "%" : (got / 1048576).toFixed(0) + " MB"));
   }
+  var blob = new Blob(parts);
+  try { if (cache) await cache.put(url, new Response(blob)); } catch (e) { /* cache is optional */ }
+  return await blob.arrayBuffer();
+}
 
-  // greedy decoding: ask the decoder for the next token again and again until it says stop
-  window.greedyDecode = async function (decoder, ort, hidden, startId, eosId, maxTokens) {
-    var ids = [startId], names = decoder.inputNames;
-    var encLen = hidden.dims[1];
-    for (var step = 0; step < maxTokens; step++) {
-      var feeds = {};
-      names.forEach(function (n) {
-        if (n === "input_ids") feeds[n] = new ort.Tensor("int64", BigInt64Array.from(ids.map(BigInt)), [1, ids.length]);
-        else if (n === "encoder_hidden_states") feeds[n] = hidden;
-        else if (n === "encoder_attention_mask") feeds[n] = new ort.Tensor("int64", new BigInt64Array(encLen).fill(1n), [1, encLen]);
-        else if (n === "attention_mask") feeds[n] = new ort.Tensor("int64", new BigInt64Array(ids.length).fill(1n), [1, ids.length]);
-      });
-      var out = await decoder.run(feeds);
-      var logits = out.logits || out[decoder.outputNames[0]];
-      var V = logits.dims[2], off = (ids.length - 1) * V, best = 0, bv = -Infinity;
-      for (var v = 0; v < V; v++) { var x = logits.data[off + v]; if (x > bv) { bv = x; best = v; } }
-      if (best === eosId) break;
-      ids.push(best);
-    }
-    return ids.slice(1);
+// greedy decoding: ask the decoder for the next token again and again until it says stop
+async function greedyDecode(decoder, ort, hidden, startId, eosId, maxTokens) {
+  var ids = [startId], names = decoder.inputNames;
+  var encLen = hidden.dims[1];
+  for (var step = 0; step < maxTokens; step++) {
+    var feeds = {};
+    names.forEach(function (n) {
+      if (n === "input_ids") feeds[n] = new ort.Tensor("int64", BigInt64Array.from(ids.map(BigInt)), [1, ids.length]);
+      else if (n === "encoder_hidden_states") feeds[n] = hidden;
+      else if (n === "encoder_attention_mask") feeds[n] = new ort.Tensor("int64", new BigInt64Array(encLen).fill(1n), [1, encLen]);
+      else if (n === "attention_mask") feeds[n] = new ort.Tensor("int64", new BigInt64Array(ids.length).fill(1n), [1, ids.length]);
+    });
+    var out = await decoder.run(feeds);
+    var logits = out.logits || out[decoder.outputNames[0]];
+    var V = logits.dims[2], off = (ids.length - 1) * V, best = 0, bv = -Infinity;
+    for (var v = 0; v < V; v++) { var x = logits.data[off + v]; if (x > bv) { bv = x; best = v; } }
+    if (best === eosId) break;
+    ids.push(best);
+    if (step % 10 === 9) say("Writing... (" + ids.length + " pieces so far)");
+  }
+  return ids.slice(1);
+}
+
+async function load() {
+  var tjs = await import(TJS_URL);
+  var ort = await import(ORT_DIR + "ort.min.mjs");
+  ort.env.wasm.wasmPaths = ORT_DIR;
+  ort.env.wasm.numThreads = 1;
+  say("Loading the reader settings...");
+  var processor = await tjs.AutoProcessor.from_pretrained(REPO);
+  var tokenizer = await tjs.AutoTokenizer.from_pretrained(REPO);
+  var cfg = await (await fetch(BASE + "config.json")).json();
+  var dec = cfg.decoder || {};
+  var startId = cfg.decoder_start_token_id != null ? cfg.decoder_start_token_id : (dec.decoder_start_token_id != null ? dec.decoder_start_token_id : (dec.bos_token_id != null ? dec.bos_token_id : 0));
+  var eosId = cfg.eos_token_id != null ? cfg.eos_token_id : (dec.eos_token_id != null ? dec.eos_token_id : 2);
+  var encBuf = await getFile(ENCODER, "the picture reader (1 of 2)");
+  var decBuf = await getFile(DECODER, "the formula writer (2 of 2)");
+  say("Starting the reader...");
+  var opts = { executionProviders: ["wasm"] };
+  var encoder = await ort.InferenceSession.create(encBuf, opts);
+  var decoder = await ort.InferenceSession.create(decBuf, opts);
+  return async function (dataUrl) {
+    var image = await tjs.RawImage.fromURL(dataUrl);
+    var px = (await processor(image)).pixel_values;
+    var enc = await encoder.run({ [encoder.inputNames[0]]: new ort.Tensor("float32", px.data, px.dims) });
+    var hidden = enc.last_hidden_state || enc[encoder.outputNames[0]];
+    var ids = await greedyDecode(decoder, ort, hidden, startId, eosId, MAX_TOKENS);
+    return tokenizer.decode(ids, { skip_special_tokens: true });
   };
+}
 
-  // delete every saved copy of the model (ours and the ones older versions of this page may have left)
-  window.clearModelCache = async function () {
-    var names = await caches.keys(), n = 0;
-    for (var i = 0; i < names.length; i++) {
-      if (names[i] === "formula-writer-v1" || names[i].indexOf("transformers") === 0 || names[i].indexOf("onnx") === 0) { await caches.delete(names[i]); n++; }
+onmessage = async function (e) {
+  var m = e.data;
+  try {
+    if (m.type === "run") {
+      if (!reader) reader = await load();
+      say("Writing formula " + m.n + " of " + m.total + "...");
+      postMessage({ type: "result", id: m.id, text: await reader(m.url) });
+    } else if (m.type === "reset") { reader = null; postMessage({ type: "reset" }); }
+  } catch (err) {
+    postMessage({ type: "error", id: m.id, message: err && err.message ? err.message : String(err) });
+  }
+};
+</script>
+<script>
+  // Starts the background worker and gives the page a simple "picture in, text out" function.
+  (function () {
+    var w = null, pending = {}, nextId = 1, onStatus = null;
+    function start() {
+      var src = document.getElementById("wk").textContent;
+      w = new Worker(URL.createObjectURL(new Blob([src], { type: "text/javascript" })), { type: "module" });
+      w.onmessage = function (e) {
+        var m = e.data;
+        if (m.type === "status") { if (onStatus) onStatus(m.text); }
+        else if (m.type === "result" && pending[m.id]) { pending[m.id].ok(m.text); delete pending[m.id]; }
+        else if (m.type === "error" && pending[m.id]) { pending[m.id].fail(new Error(m.message)); delete pending[m.id]; }
+      };
+      w.onerror = function (e) {
+        Object.keys(pending).forEach(function (k) { pending[k].fail(new Error(e.message || "The background reader stopped.")); delete pending[k]; });
+        w = null;
+      };
     }
-    reader = null;
-    return n;
-  };
-
-  window.getReader = async function (progress, status) {
-    if (reader) return reader;
-    var say = status || function () {};
-    var tjs = await import(TJS_URL);
-    var ort = await import(ORT_DIR + "ort.min.mjs");
-    ort.env.wasm.wasmPaths = ORT_DIR;
-    ort.env.wasm.numThreads = 1;
-    say("Loading the reader settings...");
-    var processor = await tjs.AutoProcessor.from_pretrained(REPO);
-    var tokenizer = await tjs.AutoTokenizer.from_pretrained(REPO);
-    var cfg = await (await fetch(BASE + "config.json")).json();
-    var dec = cfg.decoder || {};
-    var startId = cfg.decoder_start_token_id != null ? cfg.decoder_start_token_id : (dec.decoder_start_token_id != null ? dec.decoder_start_token_id : (dec.bos_token_id != null ? dec.bos_token_id : 0));
-    var eosId = cfg.eos_token_id != null ? cfg.eos_token_id : (dec.eos_token_id != null ? dec.eos_token_id : 2);
-    var encBuf = await getFile(ENCODER, "the picture reader (1 of 2)", say);
-    var decBuf = await getFile(DECODER, "the formula writer (2 of 2)", say);
-    say("Starting the reader...");
-    var opts = { executionProviders: ["wasm"] };
-    var encoder = await ort.InferenceSession.create(encBuf, opts);
-    var decoder = await ort.InferenceSession.create(decBuf, opts);
-    reader = async function (dataUrl) {
-      var image = await tjs.RawImage.fromURL(dataUrl);
-      var px = (await processor(image)).pixel_values;
-      var enc = await encoder.run({ [encoder.inputNames[0]]: new ort.Tensor("float32", px.data, px.dims) });
-      var hidden = enc.last_hidden_state || enc[encoder.outputNames[0]];
-      var ids = await window.greedyDecode(decoder, ort, hidden, startId, eosId, MAX_TOKENS);
-      return tokenizer.decode(ids, { skip_special_tokens: true });
+    window.getReader = async function (progress, status) {
+      onStatus = status;
+      if (!w) start();
+      var count = 0;
+      return function (url, n, total) {
+        return new Promise(function (ok, fail) {
+          var id = nextId++; pending[id] = { ok: ok, fail: fail };
+          w.postMessage({ type: "run", id: id, url: url, n: n, total: total });
+        });
+      };
     };
-    return reader;
-  };
+    // delete every saved copy of the model (ours and the ones older versions of this page may have left)
+    window.clearModelCache = async function () {
+      var names = await caches.keys(), n = 0;
+      for (var i = 0; i < names.length; i++) {
+        if (names[i] === "formula-writer-v1" || names[i].indexOf("transformers") === 0 || names[i].indexOf("onnx") === 0) { await caches.delete(names[i]); n++; }
+      }
+      if (w) { w.terminate(); w = null; }
+      return n;
+    };
+  })();
 </script>
 <script>
 (function () {
@@ -366,8 +407,7 @@
       var rd = await window.getReader(null, say);
       var res = [];
       for (var i = 0; i < items.length; i++) {
-        say("Writing formula " + (i + 1) + " of " + items.length + "...");
-        res.push(await rd(items[i].url) || "");
+        res.push(await rd(items[i].url, i + 1, items.length) || "");
         $("out").value = window.joinFormulas(res, $("wrap").checked);
       }
       $("copy").disabled = false;
