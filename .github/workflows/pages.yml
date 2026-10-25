@@ -35,6 +35,7 @@ jobs:
           cp download-pdf.html _site/download-pdf.html
           cp paste-to-pdf.html _site/paste-to-pdf.html
           cp pdf-to-image.html _site/pdf-to-image.html
+          cp formula-writer.html _site/formula-writer.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
