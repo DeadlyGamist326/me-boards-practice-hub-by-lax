@@ -33,6 +33,7 @@ jobs:
           cp "$latest" _site/index.html
           cp ME_Boards_Practice_Hub_Diary.html _site/diary.html
           cp download-pdf.html _site/download-pdf.html
+          cp paste-to-pdf.html _site/paste-to-pdf.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
