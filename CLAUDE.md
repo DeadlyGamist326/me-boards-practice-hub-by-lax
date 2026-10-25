@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.66.1.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.66.3.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -68,6 +68,8 @@ restart it from the latest `main` first (same branch name).
 **MD Day 1 (v1.3.65.0, LAX, 2026-10-23):** Sample Problems (6, `view-samples-md-1`), Problem Set (41, `quiz-md-ps-1`) and Trivia (15, `quiz-md-1`) were built from the uploaded "Sample Problems MD Day 1", "Problem Set MD Day 1" and "Trivia MD 1" PDFs (file name decides placement; the Handout was not touched). All three share ONE outline, `md1FormulaOutline` (sections and items named after the MD Handout Day 1 h2 and card titles, plus a few extra problem types), which the Study checklist outline "M1" also uses. All solutions follow RULINGS section 17 (calculator displays with stored letters, inline conversions, units, cancel marks); where a printed key disagrees with the real arithmetic the answer line shows the exact value and says so. Displays sit on the right rail (`RAILS`). Pending: MD Day 2+ stay locked placeholders (loop starts at i=2).
 
 **PPE Sample Problems Day 1-8 (v1.3.66.0, LAX 2026-10-25):** built from the uploaded "Sample Problems PPE Day 1-8" PDFs (13, 11, 9, 10, 10, 9, 13, 10 problems; `view-samples-ppe-1..8`, in `availablePpeSampleProblems`, `RAILS`, `FB_PPE` 1-11, filters via `attachStaticTopicFilter` with new topics appended to `handout1..8FormulaOutline`). Same rulings as Day 9-11 (RULINGS 17, L lists the disclosures).
+
+**PPE Day 1 Handout (v1.3.66.3, LAX 2026-10-25):** the uploaded "PPE DAY 1.pdf" (69 lecture slides, theory only, no problems) is the master for the Day 1 Handout theory; the old Handout text only fills gaps. Sample Problems, Problem Set and Trivia are not filled from it.
 
 **PPE units (v1.3.59.83):** every PPE Day 9-11 full solution (Sample Problems, Handout end problems, Problem Set) carries units on every quantity, cancel marks, and an as-is substituted line (defined formula with known values+units); do not write number-only substituted lines (RULINGS section 3).
 
