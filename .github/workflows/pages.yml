@@ -34,6 +34,7 @@ jobs:
           cp ME_Boards_Practice_Hub_Diary.html _site/diary.html
           cp download-pdf.html _site/download-pdf.html
           cp paste-to-pdf.html _site/paste-to-pdf.html
+          cp pdf-to-image.html _site/pdf-to-image.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
