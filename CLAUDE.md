@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.65.4.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.66.0.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -66,6 +66,8 @@ restart it from the latest `main` first (same branch name).
 **PPE Day 1-8 retrofit (LAX, 2026-10-23, in-file RULINGS section 16):** everything above (solution way, units and cancel marks, given boxes, inline conversions, calculator displays with stored letters, RE in TR, no fraction-of-a-variable steps) also applies to PPE Day 1-8 Trivia, Problem Set and Handout sample problems; only the 4th hint changes. One day per version. Status: Day 1-8 done (v1.3.63.24-30 and v1.3.64.0), retrofit complete. Handout sample problems are of two kinds: hint-panel ones (replace the hint-solution panel) and static Given/Solution ones (Day 2 last 4, Day 3, Day 4: replace from the Given label to the sp-answer line). Where the key disagrees with the real arithmetic the result shows the real value and the answer line keeps the key with a short disclosure. The Day 1-8 Trivia and Problem Set displays are on the right rail (`RAILS`), Handout displays stay inline.
 
 **MD Day 1 (v1.3.65.0, LAX, 2026-10-23):** Sample Problems (6, `view-samples-md-1`), Problem Set (41, `quiz-md-ps-1`) and Trivia (15, `quiz-md-1`) were built from the uploaded "Sample Problems MD Day 1", "Problem Set MD Day 1" and "Trivia MD 1" PDFs (file name decides placement; the Handout was not touched). All three share ONE outline, `md1FormulaOutline` (sections and items named after the MD Handout Day 1 h2 and card titles, plus a few extra problem types), which the Study checklist outline "M1" also uses. All solutions follow RULINGS section 17 (calculator displays with stored letters, inline conversions, units, cancel marks); where a printed key disagrees with the real arithmetic the answer line shows the exact value and says so. Displays sit on the right rail (`RAILS`). Pending: MD Day 2+ stay locked placeholders (loop starts at i=2).
+
+**PPE Sample Problems Day 1-8 (v1.3.66.0, LAX 2026-10-25):** built from the uploaded "Sample Problems PPE Day 1-8" PDFs (13, 11, 9, 10, 10, 9, 13, 10 problems; `view-samples-ppe-1..8`, in `availablePpeSampleProblems`, `RAILS`, `FB_PPE` 1-11, filters via `attachStaticTopicFilter` with new topics appended to `handout1..8FormulaOutline`). Same rulings as Day 9-11 (RULINGS 17, L lists the disclosures).
 
 **PPE units (v1.3.59.83):** every PPE Day 9-11 full solution (Sample Problems, Handout end problems, Problem Set) carries units on every quantity, cancel marks, and an as-is substituted line (defined formula with known values+units); do not write number-only substituted lines (RULINGS section 3).
 
