@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF TO IMAGE</title>
+<style>
+  :root { --bg:#f6f5f2; --card:#fff; --text:#1c1c1c; --muted:#6b6b6b; --line:#d9d6cf; --accent:#2563eb; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161616; --card:#222; --text:#eee; --muted:#9a9a9a; --line:#3a3a3a; --accent:#60a5fa; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:16px; }
+  main { max-width:900px; margin:0 auto; }
+  h1 { font-size:22px; margin:8px 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+  #drop { border:2px dashed var(--line); border-radius:12px; background:var(--card); padding:28px 16px; text-align:center; cursor:pointer; outline:none; }
+  #drop:focus, #drop.over { border-color:var(--accent); }
+  #drop b { font-size:16px; }
+  #drop span { display:block; color:var(--muted); font-size:13px; margin-top:6px; }
+  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:16px 0; }
+  .bar label { font-size:14px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  select, input[type=text] { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--text); }
+  button { font:inherit; padding:9px 16px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .spacer { flex:1; }
+  #list { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; }
+  .pg { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px; display:flex; flex-direction:column; gap:6px; }
+  .pg img { width:100%; height:190px; object-fit:contain; background:#fff; border-radius:6px; }
+  .pg .row { display:flex; align-items:center; justify-content:space-between; gap:6px; font-size:13px; color:var(--muted); }
+  .pg .row button { padding:5px 10px; font-size:13px; }
+  #msg { color:var(--muted); font-size:14px; min-height:1.3em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>PDF TO IMAGE</h1>
+  <p class="sub">Choose a PDF and download each page as a picture, one by one. Everything stays on your device.</p>
+
+  <div id="drop" tabindex="0">
+    <b>Click to choose a PDF</b>
+    <span>or drag and drop a PDF here</span>
+  </div>
+  <input type="file" id="file" accept="application/pdf,.pdf" hidden>
+
+  <div class="bar">
+    <label>Format
+      <select id="fmt"><option value="png" selected>PNG</option><option value="jpeg">JPG</option></select>
+    </label>
+    <label>Quality
+      <select id="scale">
+        <option value="1">Normal</option>
+        <option value="2" selected>High</option>
+        <option value="3">Very high</option>
+      </select>
+    </label>
+    <span class="spacer"></span>
+    <button id="all" class="primary" disabled>Download all, one by one</button>
+  </div>
+  <div id="msg"></div>
+  <div id="list"></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var list = $("list"), msg = $("msg");
+  var doc = null, baseName = "page", token = 0;
+  function say(t) { msg.textContent = t || ""; }
+
+  if (!window.pdfjsLib) { say("Could not load the PDF reader. Check your internet connection and reload."); }
+  else pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  function ext() { return $("fmt").value === "jpeg" ? "jpg" : "png"; }
+  function pad(n, total) { var s = String(n); while (s.length < String(total).length) s = "0" + s; return s; }
+
+  async function renderPage(n) {
+    var page = await doc.getPage(n);
+    var vp = page.getViewport({ scale: +$("scale").value * 1.5 });
+    var c = document.createElement("canvas");
+    c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+    var x = c.getContext("2d");
+    x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+    await page.render({ canvasContext: x, viewport: vp }).promise;
+    return c;
+  }
+  function toBlob(c) {
+    var f = $("fmt").value;
+    return new Promise(function (r) { c.toBlob(r, "image/" + f, 0.92); });
+  }
+  function save(blob, name) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 10000);
+  }
+  async function downloadPage(n) {
+    var c = await renderPage(n);
+    save(await toBlob(c), baseName + "-" + pad(n, doc.numPages) + "." + ext());
+  }
+
+  async function load(file) {
+    if (!window.pdfjsLib) return;
+    if (!file || (file.type !== "application/pdf" && !/\.pdf$/i.test(file.name))) { say("Please choose a PDF file."); return; }
+    var my = ++token;
+    list.innerHTML = ""; $("all").disabled = true; doc = null;
+    baseName = file.name.replace(/\.pdf$/i, "").replace(/[\\/:*?"<>|]+/g, "_") || "page";
+    say("Reading PDF...");
+    try {
+      doc = await pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+    } catch (e) { say("Could not open this PDF (" + e.message + ")."); return; }
+    for (var n = 1; n <= doc.numPages; n++) {
+      if (my !== token) return;
+      say("Preparing page " + n + " of " + doc.numPages + "...");
+      var c = await renderPage(n);
+      var t = document.createElement("canvas"), k = 360 / Math.max(c.width, c.height);
+      t.width = Math.round(c.width * k); t.height = Math.round(c.height * k);
+      t.getContext("2d").drawImage(c, 0, 0, t.width, t.height);
+      addCard(n, t.toDataURL("image/jpeg", 0.7));
+    }
+    say(doc.numPages + " page" + (doc.numPages > 1 ? "s" : "") + " ready.");
+    $("all").disabled = false;
+  }
+  function addCard(n, thumb) {
+    var d = document.createElement("div"); d.className = "pg";
+    var img = document.createElement("img"); img.src = thumb; img.alt = "Page " + n;
+    var row = document.createElement("div"); row.className = "row";
+    var lab = document.createElement("span"); lab.textContent = "Page " + n;
+    var b = document.createElement("button"); b.textContent = "Download";
+    b.onclick = async function () { b.disabled = true; try { await downloadPage(n); } finally { b.disabled = false; } };
+    row.append(lab, b); d.append(img, row); list.appendChild(d);
+  }
+
+  $("all").onclick = async function () {
+    if (!doc) return;
+    var btn = $("all"); btn.disabled = true;
+    try {
+      for (var n = 1; n <= doc.numPages; n++) {
+        say("Downloading page " + n + " of " + doc.numPages + "...");
+        await downloadPage(n);
+        await new Promise(function (r) { setTimeout(r, 400); });
+      }
+      say("Done. If some pages are missing, allow multiple downloads for this site in your browser and try again.");
+    } catch (e) { say("Download failed: " + e.message); }
+    btn.disabled = false;
+  };
+  $("fmt").onchange = $("scale").onchange = function () { /* applied on next download */ };
+
+  var drop = $("drop");
+  drop.onclick = function () { $("file").click(); };
+  drop.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("file").click(); } };
+  $("file").onchange = function (e) { load(e.target.files[0]); e.target.value = ""; };
+  ["dragenter", "dragover"].forEach(function (t) { document.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave", "drop"].forEach(function (t) { document.addEventListener(t, function () { drop.classList.remove("over"); }); });
+  document.addEventListener("drop", function (e) {
+    e.preventDefault();
+    if (e.dataTransfer && e.dataTransfer.files.length) load(e.dataTransfer.files[0]);
+  });
+})();
+</script>
+</body>
+</html>
