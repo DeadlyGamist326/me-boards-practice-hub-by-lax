@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Formula Writer</title>
+<style>
+  :root { --bg:#f6f5f2; --card:#fff; --text:#1c1c1c; --muted:#6b6b6b; --line:#d9d6cf; --accent:#2563eb; --danger:#c2410c; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161616; --card:#222; --text:#eee; --muted:#9a9a9a; --line:#3a3a3a; --accent:#60a5fa; --danger:#fb923c; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:16px; }
+  main { max-width:900px; margin:0 auto; }
+  h1 { font-size:22px; margin:8px 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+  #drop { border:2px dashed var(--line); border-radius:12px; background:var(--card); padding:28px 16px; text-align:center; cursor:pointer; outline:none; }
+  #drop:focus, #drop.over { border-color:var(--accent); }
+  #drop b { font-size:16px; }
+  #drop span { display:block; color:var(--muted); font-size:13px; margin-top:6px; }
+  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:16px 0; }
+  .bar label { font-size:14px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  button { font:inherit; padding:9px 16px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .spacer { flex:1; }
+  #list { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
+  .pg { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px; display:flex; flex-direction:column; gap:6px; }
+  .pg img { width:100%; height:110px; object-fit:contain; background:#fff; border-radius:6px; }
+  .pg .row { display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--muted); }
+  .pg .row button { padding:3px 8px; font-size:13px; color:var(--danger); }
+  #msg { color:var(--muted); font-size:14px; min-height:1.3em; margin-bottom:8px; }
+  #out { width:100%; min-height:180px; margin-top:16px; padding:12px; border:1px solid var(--line); border-radius:10px; background:var(--card); color:var(--text); font:14px/1.5 ui-monospace,Menlo,Consolas,monospace; resize:vertical; }
+  .note { color:var(--muted); font-size:13px; margin-top:8px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Formula Writer</h1>
+  <p class="sub">Paste pictures of formulas (or add a PDF) and get the LaTeX text. Nothing is uploaded, so you do not need upload speed. Everything runs on your device.</p>
+
+  <div id="drop" tabindex="0">
+    <b>Press Ctrl+V to paste pictures</b>
+    <span>or drag and drop pictures or a PDF here, or click to choose files</span>
+  </div>
+  <input type="file" id="file" accept="image/*,application/pdf,.pdf" multiple hidden>
+
+  <div class="bar">
+    <label><input type="checkbox" id="wrap"> Wrap each formula in \( \)</label>
+    <span class="spacer"></span>
+    <button id="clear" disabled>Clear all</button>
+    <button id="go" class="primary" disabled>Write formulas</button>
+  </div>
+  <div id="msg"></div>
+  <div id="list"></div>
+
+  <textarea id="out" placeholder="The LaTeX text will appear here." readonly></textarea>
+  <div class="bar"><button id="copy" disabled>Copy text</button></div>
+  <p class="note">The first time you press "Write formulas", the reader model is downloaded once (it can take a minute), then it is kept for next time. It reads printed formulas best. Always check the result.</p>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script type="module">
+  // The formula reader. Change MODEL_ID here if you ever want to try another model.
+  var MODEL_ID = "breezedeus/pix2text-mfr";
+  var TJS_URL = "https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.0.2";
+  var reader = null;
+  window.getReader = async function (progress) {
+    if (reader) return reader;
+    var tjs = await import(TJS_URL);
+    reader = await tjs.pipeline("image-to-text", MODEL_ID, { progress_callback: progress });
+    return reader;
+  };
+</script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var items = []; // {id, url (dataURL), thumb}
+  var msg = $("msg"), list = $("list");
+  var busy = false;
+  function say(t) { msg.textContent = t || ""; }
+
+  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  function render() {
+    list.innerHTML = "";
+    items.forEach(function (it, i) {
+      var d = document.createElement("div"); d.className = "pg";
+      var img = document.createElement("img"); img.src = it.thumb; img.alt = "Picture " + (i + 1);
+      var row = document.createElement("div"); row.className = "row";
+      var lab = document.createElement("span"); lab.textContent = it.label;
+      var x = document.createElement("button"); x.textContent = "✕"; x.disabled = busy;
+      x.onclick = function () { items.splice(i, 1); render(); };
+      row.append(lab, x); d.append(img, row); list.appendChild(d);
+    });
+    $("go").disabled = busy || !items.length;
+    $("clear").disabled = busy || !items.length;
+  }
+
+  function fromCanvas(c, label) {
+    var t = document.createElement("canvas"), k = Math.min(1, 300 / Math.max(c.width, c.height));
+    t.width = Math.max(1, Math.round(c.width * k)); t.height = Math.max(1, Math.round(c.height * k));
+    t.getContext("2d").drawImage(c, 0, 0, t.width, t.height);
+    items.push({ url: c.toDataURL("image/png"), thumb: t.toDataURL("image/jpeg", 0.7), label: label });
+  }
+
+  function addImage(blob, label) {
+    return new Promise(function (resolve) {
+      var u = URL.createObjectURL(blob), img = new Image();
+      img.onload = function () {
+        var c = document.createElement("canvas"); c.width = img.naturalWidth; c.height = img.naturalHeight;
+        var x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0);
+        URL.revokeObjectURL(u); fromCanvas(c, label); resolve(true);
+      };
+      img.onerror = function () { URL.revokeObjectURL(u); resolve(false); };
+      img.src = u;
+    });
+  }
+
+  async function addPdf(file) {
+    if (!window.pdfjsLib) { say("Could not load the PDF reader. Check your internet connection."); return 0; }
+    var doc = await pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise, n = 0;
+    for (var p = 1; p <= doc.numPages; p++) {
+      say("Reading " + file.name + " page " + p + " of " + doc.numPages + "...");
+      var page = await doc.getPage(p), vp = page.getViewport({ scale: 2.5 });
+      var c = document.createElement("canvas"); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+      var x = c.getContext("2d"); x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+      await page.render({ canvasContext: x, viewport: vp }).promise;
+      fromCanvas(c, "PDF p." + p); n++;
+    }
+    return n;
+  }
+
+  async function addFiles(files) {
+    files = Array.prototype.slice.call(files); // copy: the file input list is cleared after choosing
+    var n = 0, bad = 0;
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      try {
+        if (f.type === "application/pdf" || /\.pdf$/i.test(f.name)) n += await addPdf(f);
+        else if (f.type && f.type.indexOf("image/") === 0) { if (await addImage(f, "Picture")) n++; else bad++; }
+        else bad++;
+      } catch (e) { bad++; }
+    }
+    say(n + " picture(s) added" + (bad ? ", " + bad + " skipped" : "") + ".");
+    render();
+  }
+
+  document.addEventListener("paste", function (e) {
+    var files = [], its = (e.clipboardData && e.clipboardData.items) || [];
+    for (var i = 0; i < its.length; i++) if (its[i].kind === "file") files.push(its[i].getAsFile());
+    if (files.length) { e.preventDefault(); addFiles(files); }
+  });
+  var drop = $("drop");
+  drop.onclick = function () { $("file").click(); };
+  drop.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); $("file").click(); } };
+  $("file").onchange = function (e) { addFiles(e.target.files); e.target.value = ""; };
+  ["dragenter", "dragover"].forEach(function (t) { document.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add("over"); }); });
+  ["dragleave", "drop"].forEach(function (t) { document.addEventListener(t, function () { drop.classList.remove("over"); }); });
+  document.addEventListener("drop", function (e) {
+    e.preventDefault();
+    if (e.dataTransfer && e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+  $("clear").onclick = function () { items = []; $("out").value = ""; $("copy").disabled = true; say(""); render(); };
+
+  // Joins the results: two line breaks between formulas.
+  window.joinFormulas = function (list, wrap) {
+    return list.map(function (t) { t = String(t).trim(); return wrap ? "\\(" + t + "\\)" : t; }).join("\n\n");
+  };
+
+  $("go").onclick = async function () {
+    busy = true; render(); $("copy").disabled = true; $("out").value = "";
+    try {
+      say("Loading the formula reader (first time only)...");
+      var rd = await window.getReader(function (p) {
+        if (p && p.status === "progress" && p.file) say("Downloading the reader: " + Math.round(p.progress || 0) + "%");
+      });
+      var res = [];
+      for (var i = 0; i < items.length; i++) {
+        say("Writing formula " + (i + 1) + " of " + items.length + "...");
+        var o = await rd(items[i].url, { max_new_tokens: 256 });
+        res.push((o && o[0] && o[0].generated_text) || "");
+        $("out").value = window.joinFormulas(res, $("wrap").checked);
+      }
+      $("copy").disabled = false;
+      say("Done. " + res.length + " formula" + (res.length > 1 ? "s" : "") + " written.");
+    } catch (e) {
+      say("Could not write the formulas: " + (e && e.message ? e.message : e) + ". Check your internet connection for the first load and try again.");
+    }
+    busy = false; render();
+  };
+
+  $("copy").onclick = async function () {
+    var t = $("out").value;
+    try { await navigator.clipboard.writeText(t); say("Copied."); }
+    catch (e) { $("out").select(); document.execCommand("copy"); say("Copied."); }
+  };
+  render();
+})();
+</script>
+</body>
+</html>

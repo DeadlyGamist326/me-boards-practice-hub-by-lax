@@ -101,6 +101,7 @@
   }
 
   async function addFiles(files) {
+    files = Array.prototype.slice.call(files); // copy: the file input list is cleared after choosing
     var n = 0, bad = 0;
     for (var i = 0; i < files.length; i++) {
       var f = files[i];
