@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.66.9.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.66.10.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -70,6 +70,8 @@ restart it from the latest `main` first (same branch name).
 **PPE Sample Problems Day 1-8 (v1.3.66.0, LAX 2026-10-25):** built from the uploaded "Sample Problems PPE Day 1-8" PDFs (13, 11, 9, 10, 10, 9, 13, 10 problems; `view-samples-ppe-1..8`, in `availablePpeSampleProblems`, `RAILS`, `FB_PPE` 1-11, filters via `attachStaticTopicFilter` with new topics appended to `handout1..8FormulaOutline`). Same rulings as Day 9-11 (RULINGS 17, L lists the disclosures).
 
 **PPE Day 1 Handout (v1.3.66.3, LAX 2026-10-25):** the uploaded "PPE DAY 1.pdf" (69 lecture slides, theory only, no problems) is the master for the Day 1 Handout theory; the old Handout text only fills gaps. Sample Problems, Problem Set and Trivia are not filled from it.
+
+**PPE Constant Values (v1.3.66.10, LAX 2026-10-26):** `view-pconst`, `PC_DATA` (groups of rows `{n, v:[LaTeX lines], L:[links]}`), `pcBuild`. A constant stated in a PPE Handout links to that Handout section (`["h", day, h2 start, heading start]`, resolved by `pcHeading`); a constant that appears only in solutions links to the problem (`["s"|"p"|"t", day, number]`, Sample Problems, Problem Set, Trivia). New PPE constants go into `PC_DATA` with their links.
 
 **PPE Terms Practice (v1.3.66.6, LAX 2026-10-25):** `view-pterms`, `PTERMS_DATA` (468 terms, Day 1-11, `day/topic/q/choices/a`), `pt*` functions cloned from the Math Terms Practice engine with their own `#pt-panel` MASTERY checklist and `ptProgressV1`. Source: the uploaded "Power and Industrial Plant Engineering Elements" question book (no answer key; answers were set by engineering knowledge, unclear questions skipped). That file is for this reviewer only. Add terms by appending to `PTERMS_DATA`.
 
