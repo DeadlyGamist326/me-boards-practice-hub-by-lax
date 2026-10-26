@@ -38,10 +38,10 @@
 <body>
 <main>
   <h1>VIDEO CROP</h1>
-  <p class="sub">Choose a video, then drag on it to draw the crop box (even while it plays). Hold <kbd>Shift</kbd> for a square. The side handles move one direction only. Everything runs in your browser.</p>
+  <p class="sub">Choose a video, then drag on it to draw the crop box (even while it plays). Hold <kbd>Shift</kbd> for a square. The side handles move one direction only. <kbd>Arrow keys</kbd> nudge the box 1 px (<kbd>Ctrl</kbd> = 10 px), <kbd>Alt</kbd>+arrows resize it, <kbd>Space</kbd> plays or pauses. The video loops from the start. Everything runs in your browser.</p>
   <div id="pick" tabindex="0" role="button">Click or drop a video here</div>
   <input id="f" type="file" accept="video/*" hidden>
-  <div id="stage"><video id="vid" playsinline></video><div id="ov"></div><div id="box">
+  <div id="stage"><video id="vid" playsinline loop></video><div id="ov"></div><div id="box">
     <i class="h" data-h="nw"></i><i class="h" data-h="n"></i><i class="h" data-h="ne"></i><i class="h" data-h="e"></i>
     <i class="h" data-h="se"></i><i class="h" data-h="s"></i><i class="h" data-h="sw"></i><i class="h" data-h="w"></i></div></div>
   <div class="bar" id="ctl" style="display:none">
@@ -54,7 +54,10 @@
     <label>Ratio <select id="ratio"><option value="">free</option><option value="1">1:1 square</option><option value="1.7778">16:9</option><option value="0.5625">9:16</option><option value="1.3333">4:3</option></select></label>
     <button id="all">Select all</button>
     <button id="png">Save frame as PNG</button>
-    <button id="rec" class="primary">Record cropped video</button>
+    <label>Format <select id="fmt"><option value="mp4">MP4</option><option value="webm">WebM</option></select></label>
+    <button id="rec" class="primary">Save cropped video</button>
+    <label>GIF fps <select id="gfps"><option>8</option><option selected>10</option><option>15</option></select></label>
+    <button id="gif">Save as GIF</button>
     <button id="stop" disabled>Stop</button>
   </div>
   <div id="msg" role="status"></div>
@@ -155,29 +158,105 @@ $('rec').onclick = async () => {
   c.width = even(cr.w); c.height = even(cr.h);
   const g = c.getContext('2d'), out = c.captureStream(30);
   const src = vid.captureStream(); src.getAudioTracks().forEach(t => out.addTrack(t));
-  const types = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
-  const mime = types.find(t => MediaRecorder.isTypeSupported(t));
+  const want = $('fmt').value;
+  const lists = { mp4: ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4;codecs=avc1', 'video/mp4'], webm: ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'] };
+  let mime = lists[want].find(t => MediaRecorder.isTypeSupported(t)), note = '';
+  if (!mime && want === 'mp4') { mime = lists.webm.find(t => MediaRecorder.isTypeSupported(t)); note = ' This browser cannot make MP4, so it was saved as WebM (Chrome or Edge 126+ can do MP4).'; }
+  const ext = mime && mime.startsWith('video/mp4') ? 'mp4' : 'webm';
   const mr = new MediaRecorder(out, mime ? { mimeType: mime } : undefined), chunks = [];
   mr.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
-  let raf;
+  let raf; vid.loop = false;
   const tick = () => { g.drawImage(vid, cr.x, cr.y, cr.w, cr.h, 0, 0, c.width, c.height); raf = requestAnimationFrame(tick); };
   const finish = () => {
-    cancelAnimationFrame(raf); vid.removeEventListener('ended', finish); vid.pause();
+    cancelAnimationFrame(raf); vid.removeEventListener('ended', finish); vid.pause(); vid.loop = true;
     $('rec').disabled = false; $('stop').disabled = true; recording = null;
     if (mr.state !== 'inactive') mr.stop();
   };
   mr.onstop = () => {
-    const b = new Blob(chunks, { type: 'video/webm' }), a = document.createElement('a');
-    a.href = URL.createObjectURL(b); a.download = 'cropped.webm'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-    msg.textContent = 'Saved cropped.webm.';
+    const b = new Blob(chunks, { type: ext === 'mp4' ? 'video/mp4' : 'video/webm' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = 'cropped.' + ext; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    msg.textContent = 'Saved cropped.' + ext + '.' + note;
   };
   recording = finish; $('rec').disabled = true; $('stop').disabled = false;
   vid.currentTime = 0; await new Promise(r => setTimeout(r, 200));
   mr.start(); tick(); vid.addEventListener('ended', finish);
   try { await vid.play(); } catch (e) { msg.textContent = 'Could not play the video.'; finish(); return; }
-  msg.textContent = 'Recording the crop in real time. The box is locked for this recording. Press Stop to end early.';
+  msg.textContent = 'Recording the crop in real time. Press Stop to end early.';
 };
 $('stop').onclick = () => { if (recording) recording(); };
+
+// GIF (own encoder: fixed 3-3-2 palette with ordered dither, frames taken by seeking)
+function lzw(idx) {
+  const out = []; let bits = 0, nb = 0, size = 9, next = 258; const dict = new Map();
+  const put = c => { bits |= c << nb; nb += size; while (nb >= 8) { out.push(bits & 255); bits >>= 8; nb -= 8; } };
+  put(256); let cur = idx[0];
+  for (let i = 1; i < idx.length; i++) {
+    const k = idx[i], key = cur * 256 + k, v = dict.get(key);
+    if (v !== undefined) { cur = v; continue; }
+    put(cur);
+    if (next < 4096) { dict.set(key, next++); if (next > (1 << size) && size < 12) size++; }
+    else { put(256); dict.clear(); next = 258; size = 9; }
+    cur = k;
+  }
+  put(cur); put(257); if (nb > 0) out.push(bits & 255);
+  return out;
+}
+const BAY = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+function gifEncode(frames, w, h, delay) {
+  const o = [], u16 = n => o.push(n & 255, n >> 8 & 255), str = t => { for (const ch of t) o.push(ch.charCodeAt(0)); };
+  str('GIF89a'); u16(w); u16(h); o.push(0xF7, 0, 0);
+  for (let i = 0; i < 256; i++) o.push(Math.round((i >> 5) * 255 / 7), Math.round(((i >> 2) & 7) * 255 / 7), Math.round((i & 3) * 255 / 3));
+  o.push(0x21, 0xFF, 11); str('NETSCAPE2.0'); o.push(3, 1, 0, 0, 0);
+  for (const f of frames) {
+    o.push(0x21, 0xF9, 4, 0); u16(delay); o.push(0, 0);
+    o.push(0x2C); u16(0); u16(0); u16(w); u16(h); o.push(0, 8);
+    const idx = new Uint8Array(w * h);
+    for (let y = 0, p = 0; y < h; y++) for (let x = 0; x < w; x++, p++) {
+      const t = (BAY[(y & 3) * 4 + (x & 3)] - 7.5) * 2, q = p * 4;
+      const r = Math.max(0, Math.min(255, f[q] + t)), g = Math.max(0, Math.min(255, f[q + 1] + t)), b = Math.max(0, Math.min(255, f[q + 2] + t * 2));
+      idx[p] = (Math.round(r / 255 * 7) << 5) | (Math.round(g / 255 * 7) << 2) | Math.round(b / 255 * 3);
+    }
+    const data = lzw(idx);
+    for (let i = 0; i < data.length; i += 255) { const n = Math.min(255, data.length - i); o.push(n); for (let k = 0; k < n; k++) o.push(data[i + k]); }
+    o.push(0);
+  }
+  o.push(0x3B);
+  return new Uint8Array(o);
+}
+window.__gifEncode = gifEncode;
+$('gif').onclick = async () => {
+  if (!crop) { msg.textContent = 'Draw a crop box first.'; return; }
+  const cr = { ...crop }, fps = +$('gfps').value, k = Math.min(1, 480 / cr.w);
+  const w = Math.max(2, Math.round(cr.w * k)), h = Math.max(2, Math.round(cr.h * k));
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d', { willReadFrequently: true }), frames = [], n = Math.max(1, Math.floor(vid.duration * fps));
+  vid.pause(); $('gif').disabled = $('rec').disabled = true;
+  for (let i = 0; i < n; i++) {
+    await new Promise(r => { vid.addEventListener('seeked', r, { once: true }); vid.currentTime = Math.min(vid.duration - 0.001, i / fps); });
+    g.drawImage(vid, cr.x, cr.y, cr.w, cr.h, 0, 0, w, h);
+    frames.push(g.getImageData(0, 0, w, h).data);
+    msg.textContent = 'Making GIF: frame ' + (i + 1) + ' of ' + n + '...';
+    if (frames.length * w * h * 4 > 700e6) break;
+  }
+  const bytes = gifEncode(frames, w, h, Math.round(100 / fps)), a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([bytes], { type: 'image/gif' })); a.download = 'cropped.gif'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  msg.textContent = 'Saved cropped.gif (' + w + ' x ' + h + ', ' + fps + ' fps, ' + (bytes.length / 1048576).toFixed(1) + ' MB).';
+  $('gif').disabled = $('rec').disabled = false; vid.currentTime = 0; vid.play();
+};
+
+// keyboard: arrows nudge/resize the box, space plays or pauses
+document.addEventListener('keydown', e => {
+  if (!vid.videoWidth || /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+  if (e.key === ' ') { e.preventDefault(); $('pp').click(); return; }
+  const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+  if (!d || !crop) return;
+  e.preventDefault();
+  const st = e.ctrlKey || e.metaKey ? 10 : 1, W = vid.videoWidth, H = vid.videoHeight;
+  if (e.altKey) { crop.w = clamp(crop.w + d[0] * st, 4, W - crop.x); crop.h = clamp(crop.h + d[1] * st, 4, H - crop.y); }
+  else { crop.x = clamp(crop.x + d[0] * st, 0, W - crop.w); crop.y = clamp(crop.y + d[1] * st, 0, H - crop.h); }
+  draw();
+});
 </script>
 </body>
 </html>
