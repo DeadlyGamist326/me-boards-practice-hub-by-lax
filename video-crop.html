@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VIDEO CROP</title>
+<style>
+  :root { --bg:#f6f5f2; --card:#fff; --text:#1c1c1c; --muted:#6b6b6b; --line:#d9d6cf; --accent:#2563eb; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161616; --card:#222; --text:#eee; --muted:#9a9a9a; --line:#3a3a3a; --accent:#60a5fa; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:16px; }
+  main { max-width:960px; margin:0 auto; }
+  h1 { font-size:22px; margin:8px 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+  #pick { border:2px dashed var(--line); border-radius:12px; background:var(--card); padding:28px 16px; text-align:center; cursor:pointer; }
+  #pick:focus, #pick.over { border-color:var(--accent); outline:none; }
+  #stage { position:relative; display:none; margin:12px auto; width:fit-content; max-width:100%; line-height:0; user-select:none; touch-action:none; background:#000; }
+  #vid { max-width:100%; max-height:70vh; display:block; }
+  #ov { position:absolute; inset:0; cursor:crosshair; }
+  #box { position:absolute; border:2px solid #fff; outline:1px solid #000; box-shadow:0 0 0 9999px rgba(0,0,0,.55); cursor:move; display:none; }
+  .h { position:absolute; width:16px; height:16px; background:#fff; border:2px solid var(--accent); border-radius:3px; }
+  .h[data-h="nw"]{left:-9px;top:-9px;cursor:nwse-resize} .h[data-h="ne"]{right:-9px;top:-9px;cursor:nesw-resize}
+  .h[data-h="sw"]{left:-9px;bottom:-9px;cursor:nesw-resize} .h[data-h="se"]{right:-9px;bottom:-9px;cursor:nwse-resize}
+  .h[data-h="n"]{left:calc(50% - 8px);top:-9px;cursor:ns-resize} .h[data-h="s"]{left:calc(50% - 8px);bottom:-9px;cursor:ns-resize}
+  .h[data-h="w"]{top:calc(50% - 8px);left:-9px;cursor:ew-resize} .h[data-h="e"]{top:calc(50% - 8px);right:-9px;cursor:ew-resize}
+  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:10px 0; }
+  .bar label { font-size:14px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  select, button { font:inherit; padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  #seek { flex:1; min-width:140px; }
+  #msg { color:var(--muted); font-size:14px; min-height:20px; }
+  kbd { border:1px solid var(--line); border-radius:4px; padding:0 5px; background:var(--card); font-size:12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>VIDEO CROP</h1>
+  <p class="sub">Choose a video, then drag on it to draw the crop box (even while it plays). Hold <kbd>Shift</kbd> for a square. The side handles move one direction only. Everything runs in your browser.</p>
+  <div id="pick" tabindex="0" role="button">Click or drop a video here</div>
+  <input id="f" type="file" accept="video/*" hidden>
+  <div id="stage"><video id="vid" playsinline></video><div id="ov"></div><div id="box">
+    <i class="h" data-h="nw"></i><i class="h" data-h="n"></i><i class="h" data-h="ne"></i><i class="h" data-h="e"></i>
+    <i class="h" data-h="se"></i><i class="h" data-h="s"></i><i class="h" data-h="sw"></i><i class="h" data-h="w"></i></div></div>
+  <div class="bar" id="ctl" style="display:none">
+    <button id="pp">Play</button>
+    <input id="seek" type="range" min="0" max="1000" value="0">
+    <span id="tm">0:00</span>
+  </div>
+  <div class="bar" id="ctl2" style="display:none">
+    <label>Move box <select id="lock"><option value="">freely</option><option value="x">horizontal only</option><option value="y">vertical only</option></select></label>
+    <label>Ratio <select id="ratio"><option value="">free</option><option value="1">1:1 square</option><option value="1.7778">16:9</option><option value="0.5625">9:16</option><option value="1.3333">4:3</option></select></label>
+    <button id="all">Select all</button>
+    <button id="png">Save frame as PNG</button>
+    <button id="rec" class="primary">Record cropped video</button>
+    <button id="stop" disabled>Stop</button>
+  </div>
+  <div id="msg" role="status"></div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const vid = $('vid'), stage = $('stage'), ov = $('ov'), box = $('box'), msg = $('msg'), pick = $('pick'), f = $('f');
+let crop = null; // video pixels {x,y,w,h}
+let recording = null;
+const sc = () => vid.clientWidth / vid.videoWidth;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+function draw() {
+  if (!crop) { box.style.display = 'none'; return; }
+  const s = sc(); box.style.display = 'block';
+  box.style.left = crop.x * s + 'px'; box.style.top = crop.y * s + 'px';
+  box.style.width = crop.w * s + 'px'; box.style.height = crop.h * s + 'px';
+  msg.textContent = 'Crop ' + Math.round(crop.w) + ' x ' + Math.round(crop.h) + ' px';
+}
+function load(file) {
+  if (!file || !file.type.startsWith('video/')) return;
+  vid.src = URL.createObjectURL(file);
+  vid.onloadedmetadata = () => {
+    stage.style.display = 'block'; $('ctl').style.display = $('ctl2').style.display = 'flex';
+    pick.style.display = 'none'; crop = null; draw();
+    msg.textContent = 'Drag on the video to draw the crop box.';
+  };
+}
+pick.onclick = () => f.click();
+pick.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f.click(); } };
+f.onchange = () => load(f.files[0]);
+pick.ondragover = e => { e.preventDefault(); pick.classList.add('over'); };
+pick.ondragleave = () => pick.classList.remove('over');
+pick.ondrop = e => { e.preventDefault(); pick.classList.remove('over'); load(e.dataTransfer.files[0]); };
+$('pp').onclick = () => vid.paused ? vid.play() : vid.pause();
+vid.onplay = () => $('pp').textContent = 'Pause';
+vid.onpause = () => $('pp').textContent = 'Play';
+const fmt = t => Math.floor(t / 60) + ':' + String(Math.floor(t % 60)).padStart(2, '0');
+vid.ontimeupdate = () => { if (!seeking) $('seek').value = vid.duration ? vid.currentTime / vid.duration * 1000 : 0; $('tm').textContent = fmt(vid.currentTime) + ' / ' + fmt(vid.duration || 0); };
+let seeking = false;
+$('seek').oninput = () => { seeking = true; vid.currentTime = $('seek').value / 1000 * vid.duration; };
+$('seek').onchange = () => { seeking = false; };
+$('all').onclick = () => { crop = { x: 0, y: 0, w: vid.videoWidth, h: vid.videoHeight }; draw(); };
+window.addEventListener('resize', draw);
+
+// pointer handling
+let drag = null;
+function pt(e) { const r = vid.getBoundingClientRect(), s = sc(); return { x: clamp((e.clientX - r.left) / s, 0, vid.videoWidth), y: clamp((e.clientY - r.top) / s, 0, vid.videoHeight) }; }
+function ratio(e) { return e.shiftKey ? 1 : (parseFloat($('ratio').value) || 0); }
+ov.addEventListener('pointerdown', e => { const p = pt(e); drag = { mode: 'new', start: p }; crop = { x: p.x, y: p.y, w: 0, h: 0 }; ov.setPointerCapture(e.pointerId); });
+box.addEventListener('pointerdown', e => {
+  e.stopPropagation();
+  const h = e.target.dataset && e.target.dataset.h;
+  drag = h ? { mode: 'size', h, orig: { ...crop } } : { mode: 'move', start: pt(e), orig: { ...crop } };
+  box.setPointerCapture(e.pointerId);
+});
+function onMove(e) {
+  if (!drag) return;
+  const p = pt(e), W = vid.videoWidth, H = vid.videoHeight, r = ratio(e);
+  if (drag.mode === 'new') {
+    let dx = p.x - drag.start.x, dy = p.y - drag.start.y;
+    if (r) { const m = Math.max(Math.abs(dx), Math.abs(dy / (1 / r))); dx = Math.sign(dx || 1) * m; dy = Math.sign(dy || 1) * m / r; }
+    let x2 = drag.start.x + dx, y2 = drag.start.y + dy;
+    if (x2 < 0 || x2 > W || y2 < 0 || y2 > H) { const k = Math.min(x2 < 0 ? drag.start.x / -dx : 1, x2 > W ? (W - drag.start.x) / dx : 1, y2 < 0 ? drag.start.y / -dy : 1, y2 > H ? (H - drag.start.y) / dy : 1); x2 = drag.start.x + dx * k; y2 = drag.start.y + dy * k; }
+    crop = { x: Math.min(drag.start.x, x2), y: Math.min(drag.start.y, y2), w: Math.abs(x2 - drag.start.x), h: Math.abs(y2 - drag.start.y) };
+  } else if (drag.mode === 'move') {
+    const lk = $('lock').value, o = drag.orig;
+    let nx = o.x + (lk === 'y' ? 0 : p.x - drag.start.x), ny = o.y + (lk === 'x' ? 0 : p.y - drag.start.y);
+    crop = { x: clamp(nx, 0, W - o.w), y: clamp(ny, 0, H - o.h), w: o.w, h: o.h };
+  } else {
+    const o = drag.orig, h = drag.h; let l = o.x, t = o.y, rt = o.x + o.w, b = o.y + o.h;
+    if (h.includes('w')) l = Math.min(p.x, rt - 4); if (h.includes('e')) rt = Math.max(p.x, l + 4);
+    if (h.includes('n')) t = Math.min(p.y, b - 4); if (h.includes('s')) b = Math.max(p.y, t + 4);
+    if (r && h.length === 2) { // corner with square/ratio: keep ratio
+      let w = rt - l, hh = w / r; if (h.includes('n')) t = b - hh; else b = t + hh;
+      if (t < 0) { t = 0; hh = b - t; w = hh * r; if (h.includes('w')) l = rt - w; else rt = l + w; }
+      if (b > H) { b = H; hh = b - t; w = hh * r; if (h.includes('w')) l = rt - w; else rt = l + w; }
+    }
+    crop = { x: l, y: t, w: rt - l, h: b - t };
+  }
+  draw();
+}
+ov.addEventListener('pointermove', onMove); box.addEventListener('pointermove', onMove);
+const end = () => { drag = null; if (crop && (crop.w < 4 || crop.h < 4)) { crop = null; draw(); msg.textContent = 'Drag on the video to draw the crop box.'; } };
+ov.addEventListener('pointerup', end); box.addEventListener('pointerup', end);
+
+// outputs
+function even(n) { return Math.max(2, Math.floor(n / 2) * 2); }
+$('png').onclick = () => {
+  if (!crop) { msg.textContent = 'Draw a crop box first.'; return; }
+  const c = document.createElement('canvas'); c.width = Math.round(crop.w); c.height = Math.round(crop.h);
+  c.getContext('2d').drawImage(vid, crop.x, crop.y, crop.w, crop.h, 0, 0, c.width, c.height);
+  c.toBlob(b => { const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'frame.png'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 10000); });
+};
+$('rec').onclick = async () => {
+  if (!crop) { msg.textContent = 'Draw a crop box first.'; return; }
+  if (!window.MediaRecorder || !vid.captureStream) { msg.textContent = 'This browser cannot record video. Try Chrome or Edge.'; return; }
+  const cr = { ...crop }, c = document.createElement('canvas');
+  c.width = even(cr.w); c.height = even(cr.h);
+  const g = c.getContext('2d'), out = c.captureStream(30);
+  const src = vid.captureStream(); src.getAudioTracks().forEach(t => out.addTrack(t));
+  const types = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+  const mime = types.find(t => MediaRecorder.isTypeSupported(t));
+  const mr = new MediaRecorder(out, mime ? { mimeType: mime } : undefined), chunks = [];
+  mr.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+  let raf;
+  const tick = () => { g.drawImage(vid, cr.x, cr.y, cr.w, cr.h, 0, 0, c.width, c.height); raf = requestAnimationFrame(tick); };
+  const finish = () => {
+    cancelAnimationFrame(raf); vid.removeEventListener('ended', finish); vid.pause();
+    $('rec').disabled = false; $('stop').disabled = true; recording = null;
+    if (mr.state !== 'inactive') mr.stop();
+  };
+  mr.onstop = () => {
+    const b = new Blob(chunks, { type: 'video/webm' }), a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = 'cropped.webm'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    msg.textContent = 'Saved cropped.webm.';
+  };
+  recording = finish; $('rec').disabled = true; $('stop').disabled = false;
+  vid.currentTime = 0; await new Promise(r => setTimeout(r, 200));
+  mr.start(); tick(); vid.addEventListener('ended', finish);
+  try { await vid.play(); } catch (e) { msg.textContent = 'Could not play the video.'; finish(); return; }
+  msg.textContent = 'Recording the crop in real time. The box is locked for this recording. Press Stop to end early.';
+};
+$('stop').onclick = () => { if (recording) recording(); };
+</script>
+</body>
+</html>
