@@ -23,71 +23,80 @@
   #msg { color:var(--muted); font-size:14px; }
   #list { display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:10px; }
   .it { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:6px; font-size:12px; overflow-wrap:anywhere; }
+  .it a { display:block; margin-top:4px; color:var(--accent); }
   .it img { width:100%; height:90px; object-fit:contain; display:block; margin-bottom:4px; }
 </style>
 </head>
 <body>
 <main>
   <h1>WEBP TO PNG</h1>
-  <p class="sub">Choose or drop many .webp images. They convert in your browser (nothing is uploaded) and download as one zip.</p>
-  <div id="drop" tabindex="0" role="button">Click or drop images here</div>
+  <p class="sub">Choose or drop many .webp images. Paste (Ctrl+V), choose or drop as many as you like. They convert in your browser (nothing is uploaded). Download them one by one, or press Download all.</p>
+  <div id="drop" tabindex="0" role="button">Click, drop or paste images here (Ctrl+V works on the whole page)</div>
   <input id="f" type="file" accept="image/*" multiple hidden>
   <div class="bar">
-    <button id="go" class="primary" disabled>Convert and download zip</button>
+    <button id="go" class="primary" disabled>Download all</button>
     <button id="clr" disabled>Clear</button>
     <span id="msg" role="status"></span>
   </div>
   <div id="list"></div>
 </main>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
-let files = [];
+let items = []; // {name, blob, url}
 const $ = id => document.getElementById(id);
 const drop = $('drop'), f = $('f'), go = $('go'), clr = $('clr'), list = $('list'), msg = $('msg');
+const used = {};
 function render() {
   list.innerHTML = '';
-  files.forEach(x => {
+  items.forEach(x => {
     const d = document.createElement('div'); d.className = 'it';
-    const im = document.createElement('img'); im.src = URL.createObjectURL(x); im.onload = () => URL.revokeObjectURL(im.src);
+    const im = document.createElement('img'); im.src = x.url;
     const t = document.createElement('div'); t.textContent = x.name;
-    d.append(im, t); list.appendChild(d);
+    const a = document.createElement('a'); a.href = x.url; a.download = x.name; a.textContent = 'Download';
+    d.append(im, t, a); list.appendChild(d);
   });
-  go.disabled = clr.disabled = !files.length;
-  msg.textContent = files.length ? files.length + ' image(s) ready.' : '';
+  go.disabled = clr.disabled = !items.length;
 }
-function add(fl) { files = files.concat([...fl].filter(x => x.type.startsWith('image/'))); render(); }
-drop.onclick = () => f.click();
-drop.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f.click(); } };
-f.onchange = () => { add(f.files); f.value = ''; };
-drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
-drop.ondragleave = () => drop.classList.remove('over');
-drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); add(e.dataTransfer.files); };
-clr.onclick = () => { files = []; render(); };
 function toPng(file) {
   return new Promise((res, rej) => {
     const img = new Image(), u = URL.createObjectURL(file);
     img.onload = () => {
       const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
       c.getContext('2d').drawImage(img, 0, 0);
-      c.toBlob(b => { URL.revokeObjectURL(u); b ? res(b) : rej(new Error(file.name)); }, 'image/png');
+      c.toBlob(b => { URL.revokeObjectURL(u); b ? res(b) : rej(new Error('encode')); }, 'image/png');
     };
-    img.onerror = () => rej(new Error(file.name));
+    img.onerror = () => rej(new Error('load'));
     img.src = u;
   });
 }
+async function add(fl) {
+  const arr = [...fl].filter(x => x.type.startsWith('image/')); let bad = 0;
+  for (const x of arr) {
+    let n = (x.name || 'pasted-image').replace(/\.[^.]+$/, ''); used[n] = (used[n] || 0) + 1; if (used[n] > 1) n += '-' + used[n];
+    msg.textContent = 'Converting ' + x.name + '...';
+    try { const b = await toPng(x); items.push({ name: n + '.png', blob: b, url: URL.createObjectURL(b) }); render(); } catch (e) { bad++; }
+  }
+  msg.textContent = items.length + ' PNG(s) ready.' + (bad ? ' ' + bad + ' could not be converted.' : '');
+}
+drop.onclick = () => f.click();
+drop.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); f.click(); } };
+f.onchange = () => { add(f.files); f.value = ''; };
+drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+drop.ondragleave = () => drop.classList.remove('over');
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); add(e.dataTransfer.files); };
+document.addEventListener('paste', e => {
+  const fl = [...(e.clipboardData ? e.clipboardData.files : [])];
+  if (fl.length) { e.preventDefault(); add(fl); }
+});
+clr.onclick = () => { items.forEach(x => URL.revokeObjectURL(x.url)); items = []; render(); msg.textContent = ''; };
 go.onclick = async () => {
   go.disabled = true;
-  const z = new JSZip(), used = {}, bad = []; let i = 0;
-  for (const x of files) {
-    let n = x.name.replace(/\.[^.]+$/, ''); used[n] = (used[n] || 0) + 1; if (used[n] > 1) n += '-' + used[n];
-    try { z.file(n + '.png', await toPng(x)); } catch (e) { bad.push(x.name); }
-    msg.textContent = 'Converting ' + (++i) + ' of ' + files.length + '...';
+  for (let i = 0; i < items.length; i++) {
+    const a = document.createElement('a'); a.href = items[i].url; a.download = items[i].name;
+    document.body.appendChild(a); a.click(); a.remove();
+    msg.textContent = 'Downloading ' + (i + 1) + ' of ' + items.length + '...';
+    await new Promise(r => setTimeout(r, 400));
   }
-  if (bad.length === files.length) { msg.textContent = 'None of the files could be converted.'; go.disabled = false; return; }
-  const blob = await z.generateAsync({ type: 'blob' });
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'converted-png.zip'; a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-  msg.textContent = 'Done. ' + (files.length - bad.length) + ' converted' + (bad.length ? ', skipped: ' + bad.join(', ') : '') + '.';
+  msg.textContent = 'Done. If your browser asks, allow multiple downloads.';
   go.disabled = false;
 };
 </script>
