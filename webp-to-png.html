@@ -16,6 +16,8 @@
   p.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
   #drop { border:2px dashed var(--line); border-radius:12px; background:var(--card); padding:28px 16px; text-align:center; cursor:pointer; outline:none; }
   #drop:focus, #drop.over { border-color:var(--accent); }
+  .bar label { font-size:14px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  select { font:inherit; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--text); }
   .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:16px 0; }
   button { font:inherit; padding:9px 16px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
   button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
@@ -30,11 +32,14 @@
 <body>
 <main>
   <h1>WEBP TO PNG</h1>
-  <p class="sub">Choose or drop many .webp images. Paste (Ctrl+V), choose or drop as many as you like. They convert in your browser (nothing is uploaded). Download them one by one, or press Download all.</p>
+  <p class="sub">Choose or drop many .webp images. Paste (Ctrl+V), choose or drop as many as you like. They convert in your browser (nothing is uploaded). Download them one by one, press Download all, or make one PDF from all of them.</p>
   <div id="drop" tabindex="0" role="button">Click, drop or paste images here (Ctrl+V works on the whole page)</div>
   <input id="f" type="file" accept="image/*" multiple hidden>
   <div class="bar">
     <button id="go" class="primary" disabled>Download all</button>
+    <button id="pdf" disabled>Download PDF</button>
+    <label><input type="checkbox" id="auto" checked> Also make the PDF with Download all</label>
+    <label>PDF page <select id="psize"><option value="fit">Fit each picture</option><option value="a4">A4</option><option value="letter">Letter</option></select></label>
     <button id="clr" disabled>Clear</button>
     <span id="msg" role="status"></span>
   </div>
@@ -54,7 +59,7 @@ function render() {
     const a = document.createElement('a'); a.href = x.url; a.download = x.name; a.textContent = 'Download';
     d.append(im, t, a); list.appendChild(d);
   });
-  go.disabled = clr.disabled = !items.length;
+  go.disabled = clr.disabled = $('pdf').disabled = !items.length;
 }
 function toPng(file) {
   return new Promise((res, rej) => {
@@ -96,9 +101,64 @@ go.onclick = async () => {
     msg.textContent = 'Downloading ' + (i + 1) + ' of ' + items.length + '...';
     await new Promise(r => setTimeout(r, 400));
   }
-  msg.textContent = 'Done. If your browser asks, allow multiple downloads.';
+  if ($('auto').checked) await makePdf();
+  else msg.textContent = 'Done. If your browser asks, allow multiple downloads.';
   go.disabled = false;
 };
+
+// PDF (one picture per page, JPEG inside, white behind transparent areas)
+function blobToJpeg(blob) {
+  return new Promise((res, rej) => {
+    const img = new Image(), u = URL.createObjectURL(blob);
+    img.onload = async () => {
+      const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0);
+      URL.revokeObjectURL(u);
+      c.toBlob(async b => b ? res({ w: c.width, h: c.height, bytes: new Uint8Array(await b.arrayBuffer()) }) : rej(new Error('encode')), 'image/jpeg', 0.92);
+    };
+    img.onerror = () => rej(new Error('load'));
+    img.src = u;
+  });
+}
+async function makePdf() {
+  const size = $('psize').value, m = size === 'fit' ? 0 : 18, enc = new TextEncoder(), parts = [], offs = [];
+  let len = 0;
+  const push = x => { const u = typeof x === 'string' ? enc.encode(x) : x; parts.push(u); len += u.length; };
+  const obj = (n, body) => { offs[n] = len; push(n + ' 0 obj\n'); push(body); push('\nendobj\n'); };
+  const N = items.length, kids = [];
+  for (let i = 0; i < N; i++) kids.push((3 + i * 3) + ' 0 R');
+  push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2, '<< /Type /Pages /Kids [' + kids.join(' ') + '] /Count ' + N + ' >>');
+  for (let i = 0; i < N; i++) {
+    msg.textContent = 'Making PDF: page ' + (i + 1) + ' of ' + N + '...';
+    const j = await blobToJpeg(items[i].blob), iw = j.w, ih = j.h;
+    let W, H, dw, dh, dx, dy;
+    if (size === 'fit') { const k = 72 / 96; W = iw * k; H = ih * k; dw = W; dh = H; dx = 0; dy = 0; }
+    else {
+      const base = size === 'a4' ? [595.28, 841.89] : [612, 792];
+      W = iw > ih ? base[1] : base[0]; H = iw > ih ? base[0] : base[1];
+      const k = Math.min((W - 2 * m) / iw, (H - 2 * m) / ih);
+      dw = iw * k; dh = ih * k; dx = (W - dw) / 2; dy = (H - dh) / 2;
+    }
+    const pg = 3 + i * 3, ct = pg + 1, im = pg + 2;
+    obj(pg, '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + W.toFixed(2) + ' ' + H.toFixed(2) + '] /Contents ' + ct + ' 0 R /Resources << /XObject << /Im0 ' + im + ' 0 R >> >> >>');
+    const cs = 'q ' + dw.toFixed(2) + ' 0 0 ' + dh.toFixed(2) + ' ' + dx.toFixed(2) + ' ' + dy.toFixed(2) + ' cm /Im0 Do Q';
+    obj(ct, '<< /Length ' + cs.length + ' >>\nstream\n' + cs + '\nendstream');
+    offs[im] = len;
+    push(im + ' 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + iw + ' /Height ' + ih + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + j.bytes.length + ' >>\nstream\n');
+    push(j.bytes); push('\nendstream\nendobj\n');
+  }
+  const total = 3 + N * 3, xref = len;
+  let x = 'xref\n0 ' + total + '\n0000000000 65535 f \n';
+  for (let n = 1; n < total; n++) x += ('0000000000' + offs[n]).slice(-10) + ' 00000 n \n';
+  push(x + 'trailer\n<< /Size ' + total + ' /Root 1 0 R >>\nstartxref\n' + xref + '\n%%EOF');
+  const blob = new Blob(parts, { type: 'application/pdf' }), a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'pictures.pdf'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  msg.textContent = 'Done. pictures.pdf (' + N + ' page' + (N > 1 ? 's' : '') + ', ' + (blob.size / 1048576).toFixed(2) + ' MB).';
+}
+$('pdf').onclick = async () => { $('pdf').disabled = true; try { await makePdf(); } catch (e) { msg.textContent = 'Could not make the PDF: ' + e.message; } $('pdf').disabled = !items.length; };
 </script>
 </body>
 </html>
