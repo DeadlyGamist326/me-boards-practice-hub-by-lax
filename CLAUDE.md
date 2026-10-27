@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.66.13.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.67.0.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -74,6 +74,8 @@ restart it from the latest `main` first (same branch name).
 **PPE Constant Values (v1.3.66.10, LAX 2026-10-26):** `view-pconst`, `PC_DATA` (groups of rows `{n, v:[LaTeX lines], L:[links]}`), `pcBuild`. A constant stated in a PPE Handout links to that Handout section (`["h", day, h2 start, heading start]`, resolved by `pcHeading`); a constant that appears only in solutions links to the problem (`["s"|"p"|"t", day, number]`, Sample Problems, Problem Set, Trivia). New PPE constants go into `PC_DATA` with their links.
 
 **Missed Questions PPE Day 9-11 and MD Day 1 (v1.3.66.11, LAX 2026-10-26):** `view-missed-ppe-9/10/11` (11, 5, 1 questions) and `view-missed-md-1` (4), data `missedPpe9Data`, `missedPpe10Data`, `missedPpe11Data`, `missedMd1Data` (declared right after `md1FormulaOutline`), built from the two lists LAX pasted. Same engine as the Math Missed pages (blank `""` choices where only the wrong pick and the key were recorded), shared outlines (new topics appended), `availablePpeMissed` / `availableMdMissed`, rail entries in `RAILS`, solutions per RULINGS 17. Where a key does not reproduce (fan law 25 to 94 C, heat pump COP 5) the key letter is kept and the exact value is disclosed in the solution. PPE Day 1-8, 12+ and MD Day 2+ Missed stay locked.
+
+**MD Handout Day 2 (v1.3.67.0, LAX 2026-10-27):** built from the uploaded "Handouts MD Day 2" PDF (54 image-only slides, read visually): 7 sections (Shafts, Stress and Deflection, Combined Loading, Solid replaced by Hollow, Keys, Splines, Flange Coupling) in `handout-md-2`, 7 problems under their sections as Sample Problems with calculator displays. Sample Problems, Problem Set and Trivia MD 2 stay locked. Disclosures are in the diary.
 
 **PPE Terms Practice (v1.3.66.6, LAX 2026-10-25):** `view-pterms`, `PTERMS_DATA` (468 terms, Day 1-11, `day/topic/q/choices/a`), `pt*` functions cloned from the Math Terms Practice engine with their own `#pt-panel` MASTERY checklist and `ptProgressV1`. Source: the uploaded "Power and Industrial Plant Engineering Elements" question book (no answer key; answers were set by engineering knowledge, unclear questions skipped). That file is for this reviewer only. Add terms by appending to `PTERMS_DATA`.
 
