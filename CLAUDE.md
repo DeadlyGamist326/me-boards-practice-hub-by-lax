@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.68.0.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.68.1.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -78,6 +78,8 @@ restart it from the latest `main` first (same branch name).
 **MD Handout Day 2 (v1.3.67.0, LAX 2026-10-27):** built from the uploaded "Handouts MD Day 2" PDF (54 image-only slides, read visually): 7 sections (Shafts, Stress and Deflection, Combined Loading, Solid replaced by Hollow, Keys, Splines, Flange Coupling) in `handout-md-2`, 7 problems under their sections as Sample Problems with calculator displays. Disclosures are in the diary.
 
 **MD Day 2 Sample Problems, Problem Set, Trivia (v1.3.68.0, LAX 2026-10-27):** built by file name from the uploaded "Sample Problems MD Day 2" (8, `view-samples-md-2`), "Problem Set MD Day 2" (61, `mdPs2Data`, `quiz-md-ps-2`) and "Trivia MD 2" (15, `mdTrivia2Data`, `quiz-md-2`) PDFs, all on ONE outline `md2FormulaOutline`; rail entries in `RAILS`; solutions per RULINGS 17. New RULINGS 17 item M: two results / no exact match (size = higher, capacity = lower, bolts rounded up, nearest choice, always with an explanation; a disagreeing key letter is kept and disclosed). MD Day 3+ stay locked placeholders (loop starts at i=3).
+
+**MD Day 2 rebuilt on the second handout (v1.3.68.1, LAX 2026-10-27):** the uploaded "Handouts MD Day 2 another" PDF sets the FLOW (sections I-VIII, outline `md2FormulaOutline`) and adds formulas, but its variable convention is not used and nothing older is removed. Torsion + bending is solved with the direct S_s and S_t formulas (k_m, k_t), power with P = 2πTN (N in rps, factor 1 min/60 s inside the formula). In-file RULINGS 17 item N. The formula sheet PDF in the project files predates this change.
 
 **PPE Terms Practice (v1.3.66.6, LAX 2026-10-25):** `view-pterms`, `PTERMS_DATA` (468 terms, Day 1-11, `day/topic/q/choices/a`), `pt*` functions cloned from the Math Terms Practice engine with their own `#pt-panel` MASTERY checklist and `ptProgressV1`. Source: the uploaded "Power and Industrial Plant Engineering Elements" question book (no answer key; answers were set by engineering knowledge, unclear questions skipped). That file is for this reviewer only. Add terms by appending to `PTERMS_DATA`.
 
