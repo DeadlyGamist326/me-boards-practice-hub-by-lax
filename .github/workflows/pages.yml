@@ -37,6 +37,7 @@ jobs:
           cp pdf-to-image.html _site/pdf-to-image.html
           cp webp-to-png.html _site/webp-to-png.html
           cp video-crop.html _site/video-crop.html
+          cp tools.html _site/tools.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
