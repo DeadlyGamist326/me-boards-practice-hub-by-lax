@@ -20,6 +20,7 @@
   .ghost { position:absolute; inset:0; z-index:0; padding:12px 14px; font:inherit; font-size:16px; line-height:normal; border:1px solid transparent; border-radius:12px; background:var(--card); white-space:pre; overflow:hidden; pointer-events:none; color:transparent; display:flex; align-items:center; }
   .ghost span { color:var(--muted); opacity:.55; }
   #dym { min-height:22px; margin:0 0 12px; font-size:14px; color:var(--muted); display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+  #dym .rest { opacity:.45; }
   #dym button { font:inherit; font-size:13px; padding:3px 10px; border-radius:999px; border:1px solid var(--line); background:var(--card); color:var(--accent); cursor:pointer; }
   .search { width:100%; font:inherit; font-size:16px; padding:12px 14px; margin:0 0 16px; line-height:normal; border-radius:12px; border:1px solid var(--line); background:var(--card); color:var(--text); }
   .search:focus { outline:none; border-color:var(--accent); }
@@ -212,8 +213,12 @@
       const b = document.createElement("button");
       b.type = "button";
       const fixed = parts.slice(); fixed[bad] = x;
-      b.textContent = fixed.join(" ");
-      b.addEventListener("click", () => { q.value = b.textContent; filter(); assist(); q.focus(); });
+      const full = fixed.join(" ");
+      const head = parts.slice(0, bad).concat("").join(" ") ;
+      b.append(document.createTextNode(head + x.slice(0, w.length)));
+      if (x.length > w.length) { const r = document.createElement("span"); r.className = "rest"; r.textContent = x.slice(w.length); b.append(r); }
+      if (bad < parts.length - 1) b.append(document.createTextNode(" " + parts.slice(bad + 1).join(" ")));
+      b.addEventListener("click", () => { q.value = full; filter(); assist(); q.focus(); });
       dym.append(b);
     });
     dym.append(document.createTextNode("?"));
