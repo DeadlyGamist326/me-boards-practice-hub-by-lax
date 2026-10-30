@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MBOS PDF Editor</title>
+<style>
+:root{--bg:#f6f5f2;--card:#fff;--text:#1d1d1b;--mute:#6b6a65;--line:#e3e1da;--acc:#c2410c;--accfg:#fff;--ok:#15803d;--okbg:#e7f4ec;--bad:#b91c1c;--badbg:#fbeaea}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171716;--card:#232321;--text:#efeee9;--mute:#a09f98;--line:#3a3a37;--acc:#fb923c;--accfg:#1a1a18;--ok:#4ade80;--okbg:#1b2e22;--bad:#f87171;--badbg:#3a1f1f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171716;--card:#232321;--text:#efeee9;--mute:#a09f98;--line:#3a3a37;--acc:#fb923c;--accfg:#1a1a18;--ok:#4ade80;--okbg:#1b2e22;--bad:#f87171;--badbg:#3a1f1f;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:1120px;margin:0 auto}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:12px 20px;justify-content:space-between;margin-bottom:16px}
+h1{font-size:22px;margin:0;text-wrap:balance}
+.sub{color:var(--mute);margin:2px 0 0;font-size:13px}
+.up{display:inline-block;padding:11px 20px;border-radius:10px;background:var(--acc);color:var(--accfg);font-weight:700;cursor:pointer}
+.up:focus-within{outline:2px solid var(--text);outline-offset:2px}
+.up.off{opacity:.5;pointer-events:none}
+input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
+#sum{min-height:20px;margin:0 0 12px;font-size:13px;font-weight:600}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:860px){.grid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
+.scroll{max-height:392px;overflow:auto}
+.empty{color:var(--mute);font-size:13px;padding:22px 0;text-align:center}
+.item{padding:8px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.row1{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nm{min-width:0}
+.nm b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.o{color:var(--mute);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.chip{font-size:11px;padding:1px 7px;border-radius:99px;white-space:nowrap}
+.chip.ok{background:var(--okbg);color:var(--ok)}.chip.bad{background:var(--badbg);color:var(--bad)}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+button{font:600 13px system-ui,sans-serif;padding:6px 12px;border:1px solid var(--acc);border-radius:8px;background:transparent;color:var(--acc);cursor:pointer;white-space:nowrap}
+button.pri{background:var(--acc);color:var(--accfg)}
+button:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+button[hidden]{display:none}
+.tw{overflow:auto;max-height:244px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute)}
+td.bad{color:var(--bad)}
+td.long{max-width:150px;overflow:hidden;text-overflow:ellipsis}
+.acts{display:flex;gap:6px}
+</style>
+</head>
+<body>
+<main>
+<div class="top">
+  <div><h1>MBOS PDF Editor</h1><p class="sub">Everything runs in your browser. Nothing is uploaded anywhere.</p></div>
+  <label id="upl" class="up">Upload PDF files<input id="f" type="file" accept="application/pdf" multiple></label>
+</div>
+<div id="sum" role="status"></div>
+<div class="grid">
+  <section class="panel">
+    <div class="ph"><span>Files</span><span class="acts"><button id="zip" hidden>Download all (zip)</button></span></div>
+    <div id="res" class="scroll"><div class="empty">Upload one or more PDFs to start.</div></div>
+  </section>
+  <section class="panel">
+    <div class="ph"><span>Auto copy table</span><span class="acts"><button id="cp" class="pri" hidden>Copy table</button><button id="cl" hidden>Clear table</button></span></div>
+    <div class="tw"><table><thead><tr><th>Amount</th><th>Reference Number</th><th>Acct Name</th><th>Remarks</th></tr></thead><tbody id="tb"></tbody></table><div id="te" class="empty">No rows yet.</div></div>
+  </section>
+</div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+const $=id=>document.getElementById(id);
+const TERMS=["Current Balance","Available Balance"],HZ=8,FZ=8,SCALE=2,PAD=3,YEAR=new Date().getFullYear();
+const MON=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+let DL=null;
+try{if(window.claude&&window.claude.use)window.claude.use("downloads").then(d=>{DL=d},()=>{})}catch(e){}
+
+function getLines(items,vp){
+  const U=pdfjsLib.Util,L=[];
+  for(const it of items){
+    if(!it.str||!it.str.trim())continue;
+    const t=U.transform(vp.transform,it.transform);
+    const h=Math.abs(it.height*vp.scale)||Math.hypot(t[2],t[3]);
+    let ln=L.find(l=>Math.abs(l.y-t[5])<h*0.6);
+    if(!ln){ln={y:t[5],h,it:[]};L.push(ln)}
+    ln.h=Math.max(ln.h,h);ln.it.push({x:t[4],w:it.width*vp.scale,s:it.str});
+  }
+  for(const l of L){
+    l.it.sort((a,b)=>a.x-b.x);let s="",end=null;
+    for(const i of l.it){s+=(end!==null&&i.x-end>l.h*0.2&&!/\s$/.test(s)&&!/^\s/.test(i.s)?" ":"")+i.s;end=i.x+i.w}
+    l.text=s.replace(/\s+/g," ").trim();
+  }
+  return L.sort((a,b)=>a.y-b.y);
+}
+const norm=s=>s.toLowerCase().replace(/\d+/g,"#").replace(/\s+/g,"");
+function merge(b){b.sort((x,y)=>x[0]-y[0]);const m=[];for(const x of b){const p=m[m.length-1];if(p&&x[0]<=p[1])p[1]=Math.max(p[1],x[1]);else m.push([x[0],x[1]])}return m}
+
+function meta(pages){
+  let name=null,acct=null,mon=null,yr=null,amount=null,ref=null,remarks=null;
+  const pick=(P,j,re,ex)=>{const m=P[j].text.match(re);const r=m&&ex(m[1]||"");if(r)return r;return P[j+1]?ex(P[j+1].text):null};
+  const exAmt=t=>{const m=t.match(/\d[\d,]*(?:\.\d+)?/);return m?m[0].replace(/,/g,""):null};
+  const exRef=t=>{const m=t.match(/([A-Za-z]{3})\s*-\s*(\d{6})\s*-\s*(\d{6})\s*-\s*(\d{8})/);return m?m[1]+"-"+m[2]+"-"+m[3]+"-"+m[4]:null};
+  const exTxt=t=>t.trim()||null;
+  for(const P of pages)for(let j=0;j<P.length;j++){
+    const l=P[j];
+    const m=l.text.match(/beneficiary\s*account\s*(\d{13})\s*\(PHP\)\s*[·•⋅∙.]\s*(.+)$/i);
+    if(m&&!name){name=m[2].replace(/[\\/:*?"<>|]/g,"").replace(/\s+/g," ").trim();acct=m[1]+" (PHP) · "+m[2].replace(/\s+/g," ").trim()}
+    const r=l.text.match(/payroll\s*[-–—]\s*([a-z]{3,})\.?\s*(\d{4})?/i);
+    if(r&&mon===null){const i=MON.indexOf(r[1].slice(0,3).toLowerCase());if(i>=0){mon=i;yr=r[2]?+r[2]:null}}
+    if(amount===null&&/amount/i.test(l.text)&&!/balance/i.test(l.text))amount=pick(P,j,/amount\s*:?\s*(.*)$/i,exAmt);
+    if(ref===null&&/reference/i.test(l.text))ref=pick(P,j,/reference\s*(?:number|no\.?|#)?\s*:?\s*(.*)$/i,exRef);
+    if(remarks===null&&/remarks/i.test(l.text))remarks=pick(P,j,/remarks\s*:?\s*(.*)$/i,exTxt);
+  }
+  if(!ref)for(const P of pages)for(const l of P){const r=exRef(l.text);if(r&&!ref)ref=r}
+  let date=null;
+  if(mon!==null){const y=yr||YEAR;date=String(mon+1).padStart(2,"0")+String(new Date(y,mon+1,0).getDate()).padStart(2,"0")+y}
+  return{name,date,acct,amount,ref,remarks};
+}
+
+function wipeGray(d,w,h){
+  const n=w*h,dark=new Uint8Array(n),t=new Uint8Array(n),dil=new Uint8Array(n),R=1;
+  for(let i=0;i<n;i++){if(Math.min(d[i*4],d[i*4+1],d[i*4+2])<150)dark[i]=1}
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let v=0;for(let k=-R;k<=R&&!v;k++){const xx=x+k;if(xx>=0&&xx<w&&dark[y*w+xx])v=1}t[y*w+x]=v}
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let v=0;for(let k=-R;k<=R&&!v;k++){const yy=y+k;if(yy>=0&&yy<h&&t[yy*w+x])v=1}dil[y*w+x]=v}
+  for(let i=0;i<n;i++){const k=i*4,mn=Math.min(d[k],d[k+1],d[k+2]),mx=Math.max(d[k],d[k+1],d[k+2]);
+    if(mx-mn<=10&&mn>=160&&!dil[i]){d[k]=d[k+1]=d[k+2]=255}}
+}
+async function clean(file){
+  const pdf=await pdfjsLib.getDocument({data:await file.arrayBuffer()}).promise;
+  const pages=[],vps=[],pgs=[],pad=PAD*SCALE/2;
+  for(let n=1;n<=pdf.numPages;n++){
+    const pg=await pdf.getPage(n),vp=pg.getViewport({scale:SCALE});
+    pgs.push(pg);vps.push(vp);pages.push(getLines((await pg.getTextContent()).items,vp));
+  }
+  const info=meta(pages),cnt={},found={};
+  TERMS.forEach(t=>found[t]=0);
+  pages.forEach(P=>{const seen=new Set();P.forEach(l=>seen.add(norm(l.text)));seen.forEach(k=>cnt[k]=(cnt[k]||0)+1)});
+  let doc=null,hf=0;
+  for(let n=0;n<pgs.length;n++){
+    const vp=vps[n],H=vp.height,P=pages[n],bands=[],multi=pgs.length>1;
+    for(const l of P){
+      const t=l.text.toLowerCase();
+      for(const k of TERMS)if(t.includes(k.toLowerCase())){found[k]++;bands.push([l.y-l.h-pad,l.y+l.h*0.3+pad])}
+    }
+    const hd=P.filter(l=>l.y<H*HZ/100&&(!multi||cnt[norm(l.text)]>1));
+    const ft=P.filter(l=>l.y>H*(1-FZ/100)&&(!multi||cnt[norm(l.text)]>1));
+    if(hd.length){hf++;bands.push([0,Math.max(...hd.map(l=>l.y+l.h*0.3+pad))])}
+    if(ft.length){hf++;bands.push([Math.min(...ft.map(l=>l.y-l.h-pad)),H])}
+    const m=merge(bands.map(b=>[Math.max(0,b[0]),Math.min(H,b[1])]));
+    const src=document.createElement("canvas");src.width=Math.ceil(vp.width);src.height=Math.ceil(H);
+    await pgs[n].render({canvasContext:src.getContext("2d"),viewport:vp}).promise;
+    const cut=m.reduce((a,b)=>a+(b[1]-b[0]),0),oh=Math.max(10,Math.round(src.height-cut));
+    const out=document.createElement("canvas");out.width=src.width;out.height=oh;
+    const c=out.getContext("2d");c.fillStyle="#fff";c.fillRect(0,0,out.width,oh);
+    let sy=0,dy=0;
+    for(const b of [...m,[src.height,src.height]]){const h=b[0]-sy;if(h>0&&dy+h<=oh+1){c.drawImage(src,0,sy,src.width,h,0,dy,src.width,h);dy+=h}sy=b[1]}
+    const im=c.getImageData(0,0,out.width,oh),d=im.data;
+    for(let i=0;i<d.length;i+=4){const mn=Math.min(d[i],d[i+1],d[i+2]);if(mn>=232&&Math.max(d[i],d[i+1],d[i+2])-mn<=8){d[i]=d[i+1]=d[i+2]=255}}
+    wipeGray(d,out.width,oh);
+    c.putImageData(im,0,0);
+    const w=vp.width/SCALE,h=oh/SCALE,or=w>h?"l":"p";
+    if(!doc)doc=new jspdf.jsPDF({unit:"pt",format:[w,h],orientation:or});else doc.addPage([w,h],or);
+    doc.addImage(out.toDataURL("image/jpeg",0.88),"JPEG",0,0,w,h);
+  }
+  return{blob:doc.output("blob"),info,found,hf};
+}
+
+async function save(name,blob){
+  if(DL){
+    try{await DL.save({filename:name,data:blob});return ""}
+    catch(e){return e&&e.code==="declined"?"Save cancelled.":"Could not save: "+(e&&e.message||"error")}
+  }
+  const u=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  await new Promise(r=>setTimeout(r,500));setTimeout(()=>URL.revokeObjectURL(u),60000);
+  return "";
+}
+let rows=[],done=[];
+function addRow(v){
+  const tr=document.createElement("tr");
+  v.forEach((x,i)=>{const td=document.createElement("td");td.textContent=x||"✗ missing";if(i>=2)td.className="long";if(i>=2)td.title=x||"";if(!x)td.classList.add("bad");tr.appendChild(td)});
+  $("tb").appendChild(tr);$("te").style.display="none";$("cp").hidden=false;$("cl").hidden=false;rows.push(v.map(x=>x||""));
+}
+$("cl").onclick=()=>{$("tb").innerHTML="";rows=[];$("te").style.display="";$("cp").hidden=true;$("cl").hidden=true};
+$("cp").onclick=()=>{
+  const t=rows.map(r=>r.join("\t")).join("\n");
+  const ok=()=>{$("cp").textContent="Copied!";setTimeout(()=>$("cp").textContent="Copy table",1500)};
+  const fb=()=>{const a=document.createElement("textarea");a.value=t;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){}a.remove()};
+  navigator.clipboard?navigator.clipboard.writeText(t).then(ok,fb):fb();
+};
+function chip(parent,ok,text){
+  const d=document.createElement("span");d.className="chip "+(ok?"ok":"bad");
+  d.textContent=(ok?"✓ ":"✗ ")+text;parent.appendChild(d);
+}
+$("zip").onclick=async()=>{
+  const z=new JSZip();done.forEach(d=>z.file(d.nm,d.blob));
+  const b=await z.generateAsync({type:"blob"});
+  const er=await save("edited-pdfs.zip",b);if(er)$("sum").textContent=er;
+};
+$("f").onchange=async e=>{
+  const files=[...e.target.files];e.target.value="";
+  if(!files.length)return;
+  $("upl").classList.add("off");
+  const R=$("res");R.innerHTML="";done=[];$("zip").hidden=true;$("sum").textContent="";$("sum").className="";
+  const used=new Set();let miss=0,errs=0;
+  for(let i=0;i<files.length;i++){
+    const it=document.createElement("div");it.className="item";
+    const r1=document.createElement("div");r1.className="row1";
+    const nmBox=document.createElement("div");nmBox.className="nm";
+    const b=document.createElement("b"),o=document.createElement("span");o.className="o";
+    b.textContent=files[i].name;o.textContent="Processing... ("+(i+1)+" / "+files.length+")";
+    nmBox.append(b,o);r1.appendChild(nmBox);it.appendChild(r1);
+    R.appendChild(it);
+    try{
+      const r=await clean(files[i]);
+      const base=r.info.name&&r.info.date?r.info.name+" "+r.info.date:files[i].name.replace(/\.pdf$/i,"")+" edited";
+      let nm=base+".pdf",k=2;while(used.has(nm))nm=base+" ("+k+++").pdf";used.add(nm);
+      b.textContent=nm;b.title=nm;o.textContent="From: "+files[i].name;
+      const I=r.info,ch=document.createElement("div");ch.className="chips";
+      let bad=false;
+      for(const t of TERMS){const n=r.found[t];if(!n)bad=true;chip(ch,!!n,t.split(" ")[0]+(n>1?" ("+n+")":""))}
+      chip(ch,!!I.name,"Name");chip(ch,!!I.date,"Date");chip(ch,!!I.amount,"Amount");chip(ch,!!I.ref,"Ref");chip(ch,!!I.remarks,"Remarks");
+      it.appendChild(ch);
+      if(!I.name||!I.date||!I.amount||!I.ref||!I.remarks)bad=true;
+      addRow([I.amount,I.ref,I.acct,I.remarks]);
+      if(bad)miss++;
+      done.push({nm,blob:r.blob});
+      const bt=document.createElement("button");bt.textContent="Download";
+      bt.onclick=async()=>{bt.disabled=true;const er=await save(nm,r.blob);bt.disabled=false;bt.textContent=er?"Try again":"Downloaded"};
+      r1.appendChild(bt);
+      if(!DL){const er=await save(nm,r.blob);if(!er)bt.textContent="Downloaded"}
+    }catch(x){errs++;console.error(x);o.textContent="Error reading this file.";o.className="o bad"}
+  }
+  const s=$("sum");
+  s.className=miss||errs?"bad":"ok";
+  s.textContent=miss||errs?"Done. "+(miss+errs)+" file(s) have something missing or an error. Check the red ✗ marks.":"Done. Everything was found in all files.";
+  if(done.length>1)$("zip").hidden=false;
+  $("upl").classList.remove("off");
+};
+</script>
+
+</body>
+</html>
