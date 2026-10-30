@@ -21,12 +21,21 @@
   #status.ok { color: var(--ok); }
   #status.fail { color: var(--warn); font-size: clamp(22px, 5vw, 32px); }
   #hint { margin-top: 18px; font-size: 14px; color: var(--muted); min-height: 1.2em; }
+  #how { display: none; margin: 22px auto 0; max-width: 460px; text-align: left; font-size: 15px; line-height: 1.5; }
+  #how.show { display: block; }
+  #how b { color: var(--ok); }
 </style>
 </head>
 <body>
 <h1>PDF DOWNLOADER</h1>
 <p id="status">COPYING...</p>
 <div id="hint"></div>
+<ol id="how">
+  <li>Open the PDF in <b>Google Drive</b> (the preview) and scroll down so every page has loaded.</li>
+  <li>Press <b>F12</b> and open the <b>Console</b> tab.</li>
+  <li>Paste with <b>Ctrl+V</b> and press <b>Enter</b> (type <b>allow pasting</b> first if the browser asks).</li>
+  <li>The PDF downloads with the same name as the tab.</li>
+</ol>
 
 <script type="text/plain" id="code">(async function () {
     let trustedURL;
@@ -164,6 +173,7 @@
     if (ok) {
       statusEl.textContent = "COPIED";
       statusEl.className = "ok";
+      document.getElementById("how").classList.add("show");
     } else {
       statusEl.textContent = "Click the page to copy";
       statusEl.className = "fail";
