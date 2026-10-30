@@ -18,7 +18,12 @@
   .sw { position:relative; margin:0 0 6px; }
   .sw .search { position:relative; margin:0; background:transparent; z-index:1; }
   .ghost { position:absolute; inset:0; z-index:0; padding:12px 14px; font:inherit; font-size:16px; line-height:normal; border:1px solid transparent; border-radius:12px; background:var(--card); white-space:pre; overflow:hidden; pointer-events:none; color:transparent; display:flex; align-items:center; }
+  .ghost { color:var(--text); }
   .ghost span { color:var(--muted); opacity:.55; }
+  .ghost .typo { color:#dc2626; opacity:1; font-weight:700; }
+  .sw .search { color:transparent; caret-color:var(--text); }
+  .sw .search::selection { background:rgba(37,99,235,.25); }
+  .sw .search::placeholder { color:var(--muted); }
   #dym { min-height:22px; margin:0 0 12px; font-size:14px; color:var(--muted); display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
   #dym .rest { opacity:.45; }
   #dym button { font:inherit; font-size:13px; padding:3px 10px; border-radius:999px; border:1px solid var(--line); background:var(--card); color:var(--accent); cursor:pointer; }
@@ -183,6 +188,45 @@
   const words = Array.from(vocab).sort((a, b) => (titleWords.has(b) - titleWords.has(a)) || a.length - b.length);
   const ghost = document.getElementById("ghost"), dym = document.getElementById("dym");
   let completion = "";
+  // which typed letters are the typo: align the unknown word with its best suggestion and flag the letters that do not line up
+  function bestFor(w) {
+    const best = words.map(x => [cost(w, x), x]).sort((a, b) => a[0] - b[0] || (titleWords.has(b[1]) - titleWords.has(a[1])))[0];
+    return best && best[0] <= (w.length < 4 ? 0.5 : w.length > 6 ? 2 : 1.5) ? best[1] : null;
+  }
+  function flags(a, b) {
+    let bestT = null;
+    for (let L = Math.max(1, a.length - 1); L <= Math.min(b.length, a.length + 1); L++) {
+      const t = b.slice(0, L), n = a.length, m = t.length;
+      const d = Array.from({ length: n + 1 }, (_, i) => [i]);
+      for (let j = 1; j <= m; j++) d[0][j] = j;
+      for (let i = 1; i <= n; i++) for (let j = 1; j <= m; j++)
+        d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === t[j-1] ? 0 : 1));
+      if (!bestT || d[n][m] < bestT.c) bestT = { c: d[n][m], d };
+    }
+    const f = new Array(a.length).fill(1);
+    if (!bestT) return f;
+    const d = bestT.d;
+    let i = a.length, j = Math.min(b.length, a.length + 1);
+    while (j > 0 && d[a.length][j] > bestT.c) j--;
+    while (i > 0 && j > 0) {
+      const sub = d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1);
+      if (d[i][j] === sub) { f[i-1] = a[i-1] === b[j-1] ? 0 : 1; i--; j--; }
+      else if (d[i][j] === d[i-1][j] + 1) { f[i-1] = 1; i--; }
+      else j--;
+    }
+    return f;
+  }
+  function typoMask(v) {
+    const mask = [];
+    for (const m of v.matchAll(/\S+/g)) {
+      const w = m[0].toLowerCase();
+      if (w.length < 3 || words.some(x => x.includes(w))) continue;
+      const target = bestFor(w);
+      if (!target) continue;
+      flags(w, target).forEach((fl, k) => { if (fl) mask[m.index + k] = 1; });
+    }
+    return mask;
+  }
   function predict() {
     completion = "";
     const v = q.value, m = v.match(/(\S+)$/);
@@ -192,7 +236,16 @@
       if (w) completion = w.slice(last.length);
     }
     ghost.innerHTML = "";
-    ghost.append(document.createTextNode(v));
+    const mask = typoMask(v);
+    let run = "", red = false;
+    const flush = () => {
+      if (!run) return;
+      if (red) { const e = document.createElement("span"); e.className = "typo"; e.textContent = run; ghost.append(e); }
+      else ghost.append(document.createTextNode(run));
+      run = "";
+    };
+    [...v].forEach((ch, i) => { const r = !!mask[i]; if (r !== red) { flush(); red = r; } run += ch; });
+    flush();
     if (completion) { const sp = document.createElement("span"); sp.textContent = completion; ghost.append(sp); }
   }
   function suggest() {
