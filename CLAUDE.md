@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.80.0.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.81.0.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -95,7 +95,7 @@ restart it from the latest `main` first (same branch name).
 
 **Formula Builder MD Day 2-4 (v1.3.75.0, LAX 2026-10-30):** chips MD Day 2/3/4 (`FB_MD`, day numbers 102-104, `fbMdItems`) (Sample Problems, Trivia and Problem Set of each day, v1.3.77.0; `fbMdArr`) run in the Hint 2 / Hint 4 mode: only Hint 2 is offered, Hint 4 (full solution) shows after an answer is selected. Other days keep the normal builder flow. Hint 2 also lists needed constants (v1.3.76.0): a constant the problem does not state is labelled "(not stated, assume)"; `fbPrep` collects them into `fb.consts` and the builder shows them with the formula. The Constant lines are done for all MD Day 2-4 items (Sample Problems v1.3.76.0, Trivia and Problem Set v1.3.78.0); a NEW MD problem needs its own Constant line in Hint 2.
 
-**Study checklist MD Day 2-4 and generated MD Variants (v1.3.79.0-80.0, LAX 2026-10-30):** the Study checklist has MD Day 2-4 (keys M2-M4, internal Formula Builder days 102-104). A MD topic with n < 5 problems gets n x max(2, 5 - n) generated problems from `mdvMake` (re-solves the original solution with new givens; `MDV_DAYS` lists the days switched on, Day 4 first, then Day 2, then Day 3). Details in the diary.
+**Study checklist MD Day 2-4 and generated MD Variants (v1.3.79.0-80.0, LAX 2026-10-30):** the Study checklist has MD Day 2-4 (keys M2-M4, internal Formula Builder days 102-104). A MD topic with n < 5 problems gets n x max(2, 5 - n) generated problems from `mdvMake` (re-solves the original solution with new givens; `MDV_DAYS` lists the days switched on, Day 4 first, then Day 2, then Day 3; Day 4 and 2 are on). Details in the diary.
 
 **Dev diary**: `ME_Boards_Practice_Hub_Diary.html` (same folder) is a
 separate, developer-facing log of everything done in each session —
