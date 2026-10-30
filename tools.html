@@ -186,11 +186,13 @@
     (c.querySelector(".d").textContent + " " + c.dataset.k).toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2).forEach(w => vocab.add(w));
   });
   const words = Array.from(vocab).sort((a, b) => (titleWords.has(b) - titleWords.has(a)) || a.length - b.length);
+  // prediction and "Did you mean" only use words that are in the tool names
+  const nameWords = words.filter(w => titleWords.has(w));
   const ghost = document.getElementById("ghost"), dym = document.getElementById("dym");
   let completion = "";
   // which typed letters are the typo: align the unknown word with its best suggestion and flag the letters that do not line up
   function bestFor(w) {
-    const best = words.map(x => [cost(w, x), x]).sort((a, b) => a[0] - b[0] || (titleWords.has(b[1]) - titleWords.has(a[1])))[0];
+    const best = nameWords.map(x => [cost(w, x), x]).sort((a, b) => a[0] - b[0] || (titleWords.has(b[1]) - titleWords.has(a[1])))[0];
     return best && best[0] <= (w.length < 4 ? 0.5 : w.length > 6 ? 2 : 1.5) ? best[1] : null;
   }
   function flags(a, b) {
@@ -232,7 +234,7 @@
     const v = q.value, m = v.match(/(\S+)$/);
     if (m && m[1].length >= 1 && v === v.trimEnd()) {
       const last = m[1].toLowerCase();
-      const w = words.find(x => x.startsWith(last) && x.length > last.length);
+      const w = nameWords.find(x => x.startsWith(last) && x.length > last.length);
       if (w) completion = w.slice(last.length);
     }
     ghost.innerHTML = "";
@@ -256,7 +258,7 @@
     const bad = parts.findIndex(w => !words.some(x => x.includes(w)));
     if (bad < 0 || parts[bad].length < 3) return;
     const w = parts[bad];
-    const cand = words.map(x => [cost(w, x), x])
+    const cand = nameWords.map(x => [cost(w, x), x])
       .filter(([d]) => d <= (w.length < 4 ? 0.5 : w.length > 6 ? 2 : 1.5))
       .sort((a, b) => a[0] - b[0] || (titleWords.has(b[1]) - titleWords.has(a[1])))
       .slice(0, 4).map(c => c[1]);
