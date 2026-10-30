@@ -20,6 +20,11 @@
   #none { display:none; color:var(--muted); font-size:14px; margin-top:8px; }
   .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; }
   a.tool { display:flex; gap:14px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px; color:inherit; text-decoration:none; }
+  .grid { position:relative; }
+  a.tool { transition:opacity .25s ease, transform .4s cubic-bezier(.22,1,.36,1), border-color .15s; }
+  a.tool.out { opacity:0; transform:scale(.85); pointer-events:none; }
+  a.tool.gone { display:none; }
+  @media (prefers-reduced-motion: reduce) { a.tool { transition:none; } }
   a.tool:hover, a.tool:focus-visible { border-color:var(--accent); outline:none; transform:translateY(-1px); }
   .ic { flex:none; width:56px; height:56px; border-radius:14px; display:grid; place-items:center; color:#fff; }
   .ic svg { width:30px; height:30px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
@@ -61,19 +66,52 @@
 <script>
   const q = document.getElementById("q"), none = document.getElementById("none");
   const cards = Array.from(document.querySelectorAll("a.tool"));
+  const gone = c => c.classList.contains("gone") || c.classList.contains("out");
   function filter() {
     const t = q.value.trim().toLowerCase();
+    const grid = document.getElementById("grid");
+    const first = new Map(cards.filter(c => !c.classList.contains("gone")).map(c => [c, c.getBoundingClientRect()]));
+    const g = grid.getBoundingClientRect();
+    const stay = [], enter = [];
     let shown = 0;
-    cards.forEach(a => {
-      const hit = !t || (a.textContent + " " + a.dataset.k).toLowerCase().includes(t);
-      a.style.display = hit ? "" : "none";
-      if (hit) shown++;
+    cards.forEach(c => {
+      const hit = !t || (c.textContent + " " + c.dataset.k).toLowerCase().includes(t);
+      if (hit) {
+        shown++;
+        clearTimeout(c._t);
+        const was = first.has(c);
+        c.classList.remove("gone", "out");
+        c.style.position = c.style.left = c.style.top = c.style.width = c.style.height = "";
+        (was ? stay : enter).push(c);
+      } else if (!gone(c)) {
+        const r = first.get(c);
+        c.style.position = "absolute";
+        c.style.left = (r.left - g.left) + "px";
+        c.style.top = (r.top - g.top) + "px";
+        c.style.width = r.width + "px";
+        c.style.height = r.height + "px";
+        c.classList.add("out");
+        c._t = setTimeout(() => {
+          c.classList.add("gone");
+          c.style.position = c.style.left = c.style.top = c.style.width = c.style.height = "";
+        }, 260);
+      }
     });
+    stay.forEach(c => {
+      const a = first.get(c), b = c.getBoundingClientRect();
+      const dx = a.left - b.left, dy = a.top - b.top;
+      if (!dx && !dy) return;
+      c.style.transition = "none";
+      c.style.transform = "translate(" + dx + "px," + dy + "px)";
+    });
+    enter.forEach(c => { c.style.transition = "none"; c.style.opacity = "0"; c.style.transform = "scale(.85)"; });
+    void grid.offsetWidth;
+    stay.concat(enter).forEach(c => { c.style.transition = ""; c.style.transform = ""; c.style.opacity = ""; });
     none.style.display = shown ? "none" : "block";
   }
   q.addEventListener("input", filter);
   q.addEventListener("keydown", e => {
-    if (e.key === "Enter") { const a = cards.find(c => c.style.display !== "none"); if (a) a.click(); }
+    if (e.key === "Enter") { const a = cards.find(c => !gone(c)); if (a) a.click(); }
   });
   // typing cursor is ready on load, and is released after 5 s if nothing was typed or clicked
   q.focus();
