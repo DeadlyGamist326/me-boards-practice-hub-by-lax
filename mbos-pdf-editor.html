@@ -52,6 +52,7 @@ td.long{max-width:150px;overflow:hidden;text-overflow:ellipsis}
 <main>
 <div class="top">
   <div><h1>MBOS PDF Editor</h1><p class="sub">Everything runs in your browser. Nothing is uploaded anywhere.</p></div>
+  <div class="acts"><button id="fol" hidden>Choose save folder</button><span id="folname" class="o"></span></div>
   <label id="upl" class="up">Upload PDF files<input id="f" type="file" accept="application/pdf" multiple></label>
 </div>
 <div id="sum" role="status"></div>
@@ -167,7 +168,19 @@ async function clean(file){
   return{blob:doc.output("blob"),info,found,hf};
 }
 
+let DIR=null;
+if(window.showDirectoryPicker){
+  $("fol").hidden=false;
+  $("fol").onclick=async()=>{
+    try{DIR=await window.showDirectoryPicker({mode:"readwrite",id:"mbos-save"});$("folname").textContent="Saving to: "+DIR.name;$("fol").textContent="Change folder"}
+    catch(e){if(e&&e.name!=="AbortError")$("sum").textContent="Could not open that folder."}
+  };
+}
 async function save(name,blob){
+  if(DIR){
+    try{const fh=await DIR.getFileHandle(name,{create:true}),w=await fh.createWritable();await w.write(blob);await w.close();return ""}
+    catch(e){DIR=null;$("folname").textContent="";$("fol").textContent="Choose save folder";return "Could not write to the folder, choose it again."}
+  }
   if(DL){
     try{await DL.save({filename:name,data:blob});return ""}
     catch(e){return e&&e.code==="declined"?"Save cancelled.":"Could not save: "+(e&&e.message||"error")}
