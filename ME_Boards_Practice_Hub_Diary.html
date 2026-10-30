@@ -291,13 +291,14 @@
 <script>
 const entries = {
   "2026-10-30": {
-    stamp: "v1.3.75.0 – v1.3.76.0",
+    stamp: "v1.3.75.0 – v1.3.77.0",
     title: "Formula Builder: MD Day 2-4 with the Hint 2 / Hint 4 mode",
     body: [
       "Formula Builder gets three new day chips, MD Day 2, 3 and 4 (the Sample Problems of each day: 8, 6 and 10 problems). Internal day numbers are 102-104 (`FB_MD`, `fbMdItems`, `md: true` on the item) so they never clash with PPE Day 2-4; `idtSamples[\"md2..4\"]` is snapshotted right after the MD Day 4 filter call because the MD pages are built after `idtSnapSamples` runs. They are kept out of the Day 12-18 \"all\" view, like PPE.",
       "Hint 2 / Hint 4 mode (LAX request): an MD item skips the stage flow in `fbRun`. The card shows only a Hint 2 button (the formula panel), then the answer choices; the full solution (Hint 4) is revealed only after a choice is selected. Hint 1 and Hint 3 are not offered, and Skip to Choices is disabled for these. Checked in a real browser: 8/6/10 items, Hint 2 toggles, Hint 4 appears after the click, no page errors.",
       "Scope limited to MD Day 2-4 as asked; PPE and Math days keep the normal builder flow.",
-      "v1.3.76.0: Hint 2 of MD Day 2-4 Sample Problems now carries the constants a problem needs, as `<p class=\"hint-note\">Constant: ...</p>` under the formula (8 problems: hp = 33,000 ft·lb/min, G, x = 38, g = 32.2). A constant the problem does not state gets the label \"(not stated, assume)\"; a stated one (G in MD2 #2 and #3) has no label. `fbPrep` now collects Hint 2 notes that start with Constant(s) into `fb.consts`, and the builder shows them under the locked formula (stage 1 lock and Skip view) on every day; the MD hint panel shows them natively. Other days only gain the line where their Hint 2 already had a Constant note (1 problem).\n"
+      "v1.3.76.0: Hint 2 of MD Day 2-4 Sample Problems now carries the constants a problem needs, as `<p class=\"hint-note\">Constant: ...</p>` under the formula (8 problems: hp = 33,000 ft·lb/min, G, x = 38, g = 32.2). A constant the problem does not state gets the label \"(not stated, assume)\"; a stated one (G in MD2 #2 and #3) has no label. `fbPrep` now collects Hint 2 notes that start with Constant(s) into `fb.consts`, and the builder shows them under the locked formula (stage 1 lock and Skip view) on every day; the MD hint panel shows them natively. Other days only gain the line where their Hint 2 already had a Constant note (1 problem).\n",
+      "v1.3.77.0: the builder MD Day 2-4 chips now hold the Trivia and the Problem Set too, not only the Sample Problems (Day 2: 8 + 15 + 61, Day 3: 6 + 15 + 59, Day 4: 10 + 15 + 43). `fbMdItems` reads the three sources through `fbMdArr(day, src)` (idtSamples snapshot, `mdTrivia2/3/4Data`, `mdPs2/3/4Data`); quiz items carry their `q`. Every item was run through `fbRun` in a real browser (choices and Hint 2 button present, no errors). Not done yet: Hint 2 constants for the Trivia and Problem Set items (only the 8 Sample Problems have the Constant line); a scan of their Hint 4 shows many (33,000, 550, 746, 9.81, 32.2, rho, E, G, f, efficiencies) and each needs a stated / not stated check against its question."
     ]
   },
   "2026-10-28": {
