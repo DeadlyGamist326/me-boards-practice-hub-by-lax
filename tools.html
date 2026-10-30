@@ -18,10 +18,8 @@
   .sw { position:relative; margin:0 0 6px; }
   .sw .search { position:relative; margin:0; background:transparent; z-index:1; }
   .ghost { position:absolute; inset:0; z-index:0; padding:12px 14px; font:inherit; font-size:16px; line-height:normal; border:1px solid transparent; border-radius:12px; background:var(--card); white-space:pre; overflow:hidden; pointer-events:none; color:transparent; display:flex; align-items:center; }
-  .ghost { color:var(--text); }
   .ghost span { color:var(--muted); opacity:.55; }
-  .ghost .typo { color:#dc2626; opacity:1; font-weight:700; }
-  .sw .search { color:transparent; caret-color:var(--text); }
+  #dym .typo { color:#dc2626; font-weight:700; }
   .sw .search::selection { background:rgba(37,99,235,.25); }
   .sw .search::placeholder { color:var(--muted); }
   #dym { min-height:22px; margin:0 0 12px; font-size:14px; color:var(--muted); display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
@@ -186,13 +184,11 @@
     (c.querySelector(".d").textContent + " " + c.dataset.k).toLowerCase().split(/[^a-z0-9]+/).filter(w => w.length > 2).forEach(w => vocab.add(w));
   });
   const words = Array.from(vocab).sort((a, b) => (titleWords.has(b) - titleWords.has(a)) || a.length - b.length);
+  // prediction and "Did you mean" only use words that are in the tool names
+  const nameWords = words.filter(w => titleWords.has(w));
   const ghost = document.getElementById("ghost"), dym = document.getElementById("dym");
   let completion = "";
-  // which typed letters are the typo: align the unknown word with its best suggestion and flag the letters that do not line up
-  function bestFor(w) {
-    const best = words.map(x => [cost(w, x), x]).sort((a, b) => a[0] - b[0] || (titleWords.has(b[1]) - titleWords.has(a[1])))[0];
-    return best && best[0] <= (w.length < 4 ? 0.5 : w.length > 6 ? 2 : 1.5) ? best[1] : null;
-  }
+  // which letters differ between the typed word and a suggestion (shown red in the "Did you mean" chip)
   function flags(a, b) {
     let bestT = null;
     for (let L = Math.max(1, a.length - 1); L <= Math.min(b.length, a.length + 1); L++) {
@@ -216,36 +212,16 @@
     }
     return f;
   }
-  function typoMask(v) {
-    const mask = [];
-    for (const m of v.matchAll(/\S+/g)) {
-      const w = m[0].toLowerCase();
-      if (w.length < 3 || words.some(x => x.includes(w))) continue;
-      const target = bestFor(w);
-      if (!target) continue;
-      flags(w, target).forEach((fl, k) => { if (fl) mask[m.index + k] = 1; });
-    }
-    return mask;
-  }
   function predict() {
     completion = "";
     const v = q.value, m = v.match(/(\S+)$/);
     if (m && m[1].length >= 1 && v === v.trimEnd()) {
       const last = m[1].toLowerCase();
-      const w = words.find(x => x.startsWith(last) && x.length > last.length);
+      const w = nameWords.find(x => x.startsWith(last) && x.length > last.length);
       if (w) completion = w.slice(last.length);
     }
     ghost.innerHTML = "";
-    const mask = typoMask(v);
-    let run = "", red = false;
-    const flush = () => {
-      if (!run) return;
-      if (red) { const e = document.createElement("span"); e.className = "typo"; e.textContent = run; ghost.append(e); }
-      else ghost.append(document.createTextNode(run));
-      run = "";
-    };
-    [...v].forEach((ch, i) => { const r = !!mask[i]; if (r !== red) { flush(); red = r; } run += ch; });
-    flush();
+    ghost.append(document.createTextNode(v));
     if (completion) { const sp = document.createElement("span"); sp.textContent = completion; ghost.append(sp); }
   }
   function suggest() {
@@ -256,7 +232,7 @@
     const bad = parts.findIndex(w => !words.some(x => x.includes(w)));
     if (bad < 0 || parts[bad].length < 3) return;
     const w = parts[bad];
-    const cand = words.map(x => [cost(w, x), x])
+    const cand = nameWords.map(x => [cost(w, x), x])
       .filter(([d]) => d <= (w.length < 4 ? 0.5 : w.length > 6 ? 2 : 1.5))
       .sort((a, b) => a[0] - b[0] || (titleWords.has(b[1]) - titleWords.has(a[1])))
       .slice(0, 4).map(c => c[1]);
@@ -268,7 +244,12 @@
       const fixed = parts.slice(); fixed[bad] = x;
       const full = fixed.join(" ");
       const head = parts.slice(0, bad).concat("").join(" ") ;
-      b.append(document.createTextNode(head + x.slice(0, w.length)));
+      b.append(document.createTextNode(head));
+      const fl = flags(w, x);
+      [...x.slice(0, w.length)].forEach((ch, k) => {
+        if (fl[k]) { const e = document.createElement("span"); e.className = "typo"; e.textContent = ch; b.append(e); }
+        else b.append(document.createTextNode(ch));
+      });
       if (x.length > w.length) { const r = document.createElement("span"); r.className = "rest"; r.textContent = x.slice(w.length); b.append(r); }
       if (bad < parts.length - 1) b.append(document.createTextNode(" " + parts.slice(bad + 1).join(" ")));
       b.addEventListener("click", () => { q.value = full; filter(); assist(); q.focus(); });
