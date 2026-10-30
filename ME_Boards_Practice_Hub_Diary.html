@@ -294,6 +294,7 @@ const entries = {
     stamp: "v1.3.75.0 – v1.3.79.0",
     title: "Formula Builder: MD Day 2-4 with the Hint 2 / Hint 4 mode",
     body: [
+      "MD Problem Set Day 2, sprocket tangent force (LAX request): Hint 2 now shows T = Fr and T = F(D/2) instead of F = T/R = 2T/D, and the full solution follows the same two steps (calculator display A = X×200/2×1/1000). Formula Builder reads Hint 2, so its copy changed with it. Same F = 2T/D form is still used in other MD Day 2-4 items (Sample Problems, Trivia, Problem Set; also T/R once), not changed; reported to LAX.",
       "Formula Builder gets three new day chips, MD Day 2, 3 and 4 (the Sample Problems of each day: 8, 6 and 10 problems). Internal day numbers are 102-104 (`FB_MD`, `fbMdItems`, `md: true` on the item) so they never clash with PPE Day 2-4; `idtSamples[\"md2..4\"]` is snapshotted right after the MD Day 4 filter call because the MD pages are built after `idtSnapSamples` runs. They are kept out of the Day 12-18 \"all\" view, like PPE.",
       "Hint 2 / Hint 4 mode (LAX request): an MD item skips the stage flow in `fbRun`. The card shows only a Hint 2 button (the formula panel), then the answer choices; the full solution (Hint 4) is revealed only after a choice is selected. Hint 1 and Hint 3 are not offered, and Skip to Choices is disabled for these. Checked in a real browser: 8/6/10 items, Hint 2 toggles, Hint 4 appears after the click, no page errors.",
       "Scope limited to MD Day 2-4 as asked; PPE and Math days keep the normal builder flow.",

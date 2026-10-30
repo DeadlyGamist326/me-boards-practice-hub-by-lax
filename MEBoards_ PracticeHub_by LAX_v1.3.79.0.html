@@ -86895,7 +86895,8 @@ const mdPs2Data = [
 </div>
 <span class="problem-type-tag">Torque</span>`,
       `<div class="hint-formula">\\( P=2\\pi TN \\)</div>
-<div class="hint-formula">\\( F=\\dfrac{T}{R}=\\dfrac{2T}{D} \\)</div>`,
+<div class="hint-formula">\\( T=Fr \\)</div>
+<div class="hint-formula">\\( T=F\\left(\\dfrac{D}{2}\\right) \\)</div>`,
       `<div class="hint-formula">\\( 200\\text{ kW},\\ 300\\text{ rpm},\\ 200\\text{ mm} \\)</div>`,
       `<p class="hint-given">Given:</p>
 <div class="formula-grid-3"><div class="formula-block">\\( P=200\\ \\text{kW} \\)</div><div class="formula-block">\\( N=300\\ \\text{rpm} \\)</div><div class="formula-block">\\( D=200\\ \\text{mm} \\)</div></div>
@@ -86904,10 +86905,12 @@ const mdPs2Data = [
 <p class="hint-note">Substitute the known values. The unknown torque carries the conversion factor of the unit wanted.</p>
 <div class="calc-pair"><div class="formula-block">\\( 200\\ \\text{kW}=2\\pi\\left(T\\ \\text{kN}\\cdot\\text{m}\\right)(300\\ \\dfrac{\\text{rev}}{\\cancel{\\text{min}}})\\left(\\dfrac{1\\ \\cancel{\\text{min}}}{60\\ \\text{s}}\\right) \\)</div><div class="calc-side"><div class="calc-box"><div class="calc-lcd" data-expr="200=2π×X×300×\\frac{1}{60}" data-ans="X=6.366197724"></div><div class="calc-legend"><span class="calc-how">Shift + Solve</span></div><div class="calc-store">Ans &rarr; STO &rarr; A</div></div></div></div>
 <div class="formula-block">\\( T=6.37\\ \\text{kN}\\cdot\\text{m} \\)</div>
-<p class="hint-note">Force transmitted at the sprocket (Handout, Keys: Force Transmitted):</p>
-<div class="formula-block">\\( F=\\dfrac{2T}{D} \\)</div>
+<p class="hint-note">The torque equals the tangent force times the radius of the sprocket:</p>
+<div class="formula-block">\\( T=Fr \\)</div>
+<p class="hint-note">The radius is half of the diameter:</p>
+<div class="formula-block">\\( T=F\\left(\\dfrac{D}{2}\\right) \\)</div>
 <p class="hint-note">Substitute the known values. D is in mm, so it carries the factor 1 m per 1000 mm and the m cancels with the m of the torque.</p>
-<div class="calc-pair"><div class="formula-block fb-long">\\( F=\\dfrac{2\\left(6.37\\ \\text{kN}\\cdot\\cancel{\\text{m}}\\right)}{\\left(200\\ \\cancel{\\text{mm}}\\right)\\left(\\dfrac{1\\ \\cancel{\\text{m}}}{1000\\ \\cancel{\\text{mm}}}\\right)} \\)</div><div class="calc-side"><div class="calc-box"><div class="calc-lcd" data-expr="\\frac{2×A}{200×\\frac{1}{1000}}" data-ans="63.66197724"></div><div class="calc-legend"><span class="calc-how">=</span><span class="calc-chip">A = 6.366197724</span></div></div></div></div>
+<div class="calc-pair"><div class="formula-block fb-long">\\( 6.37\\ \\text{kN}\\cdot\\cancel{\\text{m}}=\\left(F\\ \\text{kN}\\right)\\left(\\dfrac{200\\ \\cancel{\\text{mm}}}{2}\\right)\\left(\\dfrac{1\\ \\cancel{\\text{m}}}{1000\\ \\cancel{\\text{mm}}}\\right) \\)</div><div class="calc-side"><div class="calc-box"><div class="calc-lcd" data-expr="A=X×\\frac{200}{2}×\\frac{1}{1000}" data-ans="X=63.66197724"></div><div class="calc-legend"><span class="calc-how">Shift + Solve</span><span class="calc-chip">A = 6.366197724</span></div></div></div></div>
 <div class="formula-block">\\( F=63.66\\ \\text{kN} \\)</div>
 <div class="hint-answer">Answer: D. 63.66 kN</div>`
     ] },
