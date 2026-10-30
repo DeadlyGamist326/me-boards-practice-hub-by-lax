@@ -67,13 +67,23 @@
   const q = document.getElementById("q"), none = document.getElementById("none");
   const cards = Array.from(document.querySelectorAll("a.tool"));
   const gone = c => c.classList.contains("gone") || c.classList.contains("out");
-  // typo-tolerant match: every typed word must be a prefix of, or close to, a word on the card
+  // typo-tolerant match: every typed word must be a prefix of, or close to, a word on the card.
+  // "Close" is keyboard-aware: hitting a neighbouring key (e.g. v for c) or swapping two letters
+  // (common when the two hands type out of order) costs half an edit, anything else costs a full edit.
+  const ROWS = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
+  const POS = {};
+  ROWS.forEach((r, y) => [...r].forEach((ch, x) => { POS[ch] = [x + y * 0.5, y]; }));
+  function near(a, b) {
+    const p = POS[a], q = POS[b];
+    return !!p && !!q && Math.abs(p[0] - q[0]) <= 1.01 && Math.abs(p[1] - q[1]) <= 1;
+  }
   function dist(a, b) {
     const d = Array.from({ length: a.length + 1 }, (_, i) => [i]);
     for (let j = 1; j <= b.length; j++) d[0][j] = j;
     for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++) {
-      d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
-      if (i > 1 && j > 1 && a[i-1] === b[j-2] && a[i-2] === b[j-1]) d[i][j] = Math.min(d[i][j], d[i-2][j-2] + 1);
+      const sub = a[i-1] === b[j-1] ? 0 : near(a[i-1], b[j-1]) ? 0.5 : 1;
+      d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + sub);
+      if (i > 1 && j > 1 && a[i-1] === b[j-2] && a[i-2] === b[j-1]) d[i][j] = Math.min(d[i][j], d[i-2][j-2] + 0.5);
     }
     return d[a.length][b.length];
   }
@@ -84,8 +94,8 @@
     const words = text.split(/[^a-z0-9]+/).filter(Boolean);
     return t.split(/\s+/).every(q => {
       if (words.some(w => w.startsWith(q))) return true;
-      if (q.length < 4) return false;
-      const max = q.length > 6 ? 2 : 1;
+      if (q.length < 3) return false;
+      const max = q.length < 4 ? 0.5 : q.length > 6 ? 1.5 : 1;
       return words.some(w => dist(q, w.slice(0, q.length + 1)) <= max || dist(q, w) <= max);
     });
   }
