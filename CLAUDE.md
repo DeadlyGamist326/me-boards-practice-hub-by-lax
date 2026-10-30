@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.74.0.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.75.0.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -92,6 +92,8 @@ restart it from the latest `main` first (same branch name).
 **Gamma (v1.3.59.84, LAX):** specific weight is written γ (not w) and shows as LAX's hand-drawn gamma picture (`GAM_PNG`, `gammaize()`, `.gam`) while copying as the real γ; use `\\gamma` in hint/handout LaTeX or a plain γ in text and it is swapped automatically.
 
 **Formula Builder PPE (v1.3.59.81, Day 10 and 11 added v1.3.63.0):** PPE Day 9, 10 and 11 Sample Problems are in the Formula Builder (`FB_PPE` map, `fbPpeItems`, one chip per day). A new PPE Sample Problems day goes into `FB_PPE` with its outline (each problem needs the Hint 1 kw-map rows).
+
+**Formula Builder MD Day 2-4 (v1.3.75.0, LAX 2026-10-30):** chips MD Day 2/3/4 (`FB_MD`, day numbers 102-104, `fbMdItems`) run in the Hint 2 / Hint 4 mode: only Hint 2 is offered, Hint 4 (full solution) shows after an answer is selected. Other days keep the normal builder flow.
 
 **Dev diary**: `ME_Boards_Practice_Hub_Diary.html` (same folder) is a
 separate, developer-facing log of everything done in each session —
