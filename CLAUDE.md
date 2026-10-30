@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.82.2.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.82.3.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -79,7 +79,7 @@ restart it from the latest `main` first (same branch name).
 
 **MD Day 2 Sample Problems, Problem Set, Trivia (v1.3.68.0, LAX 2026-10-27):** built by file name from the uploaded "Sample Problems MD Day 2" (8, `view-samples-md-2`), "Problem Set MD Day 2" (61, `mdPs2Data`, `quiz-md-ps-2`) and "Trivia MD 2" (15, `mdTrivia2Data`, `quiz-md-2`) PDFs, all on ONE outline `md2FormulaOutline`; rail entries in `RAILS`; solutions per RULINGS 17. New RULINGS 17 item M: two results / no exact match (size = higher, capacity = lower, bolts rounded up, nearest choice, always with an explanation; a disagreeing key letter is kept and disclosed). MD Day 3+ stay locked placeholders (loop starts at i=3).
 
-**MD Day 2 rebuilt on the second handout (v1.3.68.1, LAX 2026-10-27):** the uploaded "Handouts MD Day 2 another" PDF sets the FLOW (sections I-VIII, outline `md2FormulaOutline`) and adds formulas, but its variable convention is not used and nothing older is removed. Torsion + bending is solved with the direct S_s and S_t formulas (k_m, k_t), power with P = 2πTN (N in rps, factor 1 min/60 s inside the formula). In-file RULINGS 17 item N. The formula sheet PDF in the project files predates this change.
+**MD Day 2 rebuilt on the second handout (v1.3.68.1, LAX 2026-10-27):** the uploaded "Handouts MD Day 2 another" PDF sets the FLOW (sections I-VIII, outline `md2FormulaOutline`) and adds formulas, but its variable convention is not used and nothing older is removed. Torsion + bending is solved with the direct S_s and S_t formulas (k_m, k_t), power with P = 2πTN (N in Hz = rps = rev/s, factor 1 min/60 s inside the formula; LAX 2026-10-30: 2π is shown as 2π/1 rev in every substituted line so the rev of N cancels visibly). In-file RULINGS 17 item N. The formula sheet PDF in the project files predates this change.
 
 **MD Handout Day 3 (v1.3.69.0, rewritten v1.3.69.1, LAX 2026-10-27):** `handout-md-3` is built from BOTH uploaded PDFs, "Handouts MD Day 3 Main file" (8 pages) and "Handouts MD Day 3" (59 image-only lecture slides): the union of all final equations (equivalent forms too), no derivation steps, units in every problem step (empirical formulas included), lecture symbols (W_f, W_r, W_ah, rho, D_m, S_us, theta). Sections I Flywheel, II Bolts and Screws, III Bolts, IV Power Screws, 9 problems under their sections as Sample Problems with calculator displays; flywheel problems use the normal speed as v1. Outline `md3FormulaOutline`. In-file RULINGS 17 item O; disclosures in the diary. MD Day 3 Sample Problems (6), Problem Set (59) and Trivia (15) were built in v1.3.70.0 from the uploaded files of those names with the most-derived one-equation formulas (outline `md3FormulaOutline`, rails in `RAILS`, RULINGS 17 applies); MD Day 4+ stay locked placeholders (loop starts at i=4). A long equation in a `.calc-pair` takes its own full row (`.handout-content .calc-pair > .formula-block.fb-long`).
 
