@@ -38,6 +38,7 @@ jobs:
           cp webp-to-png.html _site/webp-to-png.html
           cp video-crop.html _site/video-crop.html
           cp mbos-pdf-editor.html _site/mbos-pdf-editor.html
+          cp pdf-splitter.html _site/pdf-splitter.html
           cp tools.html _site/tools.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5

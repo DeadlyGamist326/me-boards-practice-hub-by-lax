@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF SPLITTER</title>
+<style>
+  :root { --bg:#f6f5f2; --card:#fff; --text:#1c1c1c; --muted:#6b6b6b; --line:#d9d6cf; --accent:#2563eb; --bad:#b91c1c; --ok:#15803d; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161616; --card:#222; --text:#eee; --muted:#9a9a9a; --line:#3a3a3a; --accent:#60a5fa; --bad:#f87171; --ok:#4ade80; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:16px; }
+  main { max-width:900px; margin:0 auto; }
+  h1 { font-size:22px; margin:8px 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+  #drop { border:2px dashed var(--line); border-radius:12px; background:var(--card); padding:28px 16px; text-align:center; cursor:pointer; outline:none; }
+  #drop:focus, #drop.over { border-color:var(--accent); }
+  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:14px 0; }
+  .bar label { font-size:14px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  input[type=number] { font:inherit; width:90px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--text); }
+  button { font:inherit; padding:9px 16px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  button[hidden] { display:none; }
+  #info { font-size:14px; color:var(--muted); min-height:20px; }
+  #msg { font-size:14px; min-height:20px; margin:6px 0; }
+  #msg.bad { color:var(--bad); } #msg.ok { color:var(--ok); }
+  #list { margin-top:8px; }
+  .part { display:flex; align-items:center; justify-content:space-between; gap:10px; background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px 14px; margin-bottom:8px; }
+  .part b { display:block; font-size:14px; overflow-wrap:anywhere; }
+  .part span { font-size:12px; color:var(--muted); }
+  .part.big { border-color:var(--bad); }
+  .part.big span { color:var(--bad); }
+  .part button { padding:6px 12px; font-size:13px; white-space:nowrap; }
+  #fn { font-size:13px; color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>PDF SPLITTER</h1>
+  <p class="sub">Split a PDF by pages so no part is bigger than the size you choose. Everything runs in your browser and nothing is uploaded.</p>
+  <div id="drop" tabindex="0" role="button">Click or drop a PDF here</div>
+  <input id="f" type="file" accept="application/pdf" hidden>
+  <div id="info"></div>
+  <div class="bar">
+    <label>Max size per part (MB) <input id="mb" type="number" min="0.1" step="0.5" value="30"></label>
+    <button id="go" class="primary" disabled>Split</button>
+  </div>
+  <div id="msg" role="status"></div>
+  <div class="bar" id="acts" hidden>
+    <button id="all">Download all parts</button>
+    <button id="zip">Download as zip</button>
+    <button id="fol" hidden>Choose save folder</button>
+    <span id="fn"></span>
+  </div>
+  <div id="list"></div>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const MB = 1024 * 1024;
+let src = null, fileName = "", fileSize = 0, parts = [], DIR = null, busy = false;
+const fmt = b => b >= MB ? (b / MB).toFixed(2) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
+const say = (t, c) => { $("msg").textContent = t; $("msg").className = c || ""; };
+const tick = () => new Promise(r => setTimeout(r, 0));
+
+const drop = $("drop"), f = $("f");
+drop.onclick = () => f.click();
+drop.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); f.click(); } };
+f.onchange = () => { load(f.files[0]); f.value = ""; };
+drop.ondragover = e => { e.preventDefault(); drop.classList.add("over"); };
+drop.ondragleave = () => drop.classList.remove("over");
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove("over"); load(e.dataTransfer.files[0]); };
+document.addEventListener("dragover", e => e.preventDefault());
+document.addEventListener("drop", e => { if (e.target !== drop) { e.preventDefault(); if (e.dataTransfer.files[0]) load(e.dataTransfer.files[0]); } });
+
+async function load(file) {
+  if (!file || busy) return;
+  if (!/pdf$/i.test(file.type) && !/\.pdf$/i.test(file.name)) { say("That is not a PDF file.", "bad"); return; }
+  say("Reading the PDF...");
+  try {
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    src = await PDFLib.PDFDocument.load(bytes, { ignoreEncryption: true });
+    fileName = file.name.replace(/\.pdf$/i, ""); fileSize = file.size;
+    parts = []; $("list").innerHTML = ""; $("acts").hidden = true;
+    $("info").textContent = file.name + ": " + src.getPageCount() + " pages, " + fmt(file.size);
+    $("go").disabled = false; say("");
+  } catch (e) { src = null; $("go").disabled = true; say("Could not read this PDF: " + e.message, "bad"); }
+}
+
+async function build(from, to) {
+  const d = await PDFLib.PDFDocument.create(), idx = [];
+  for (let i = from; i < to; i++) idx.push(i);
+  (await d.copyPages(src, idx)).forEach(p => d.addPage(p));
+  return d.save({ useObjectStreams: true });
+}
+
+$("go").onclick = async () => {
+  const max = parseFloat($("mb").value) * MB;
+  if (!(max > 0)) { say("Type a max size in MB first.", "bad"); return; }
+  busy = true; $("go").disabled = true; parts = []; $("list").innerHTML = ""; $("acts").hidden = true;
+  const n = src.getPageCount(), cache = new Map();
+  const sz = async (a, b) => { const k = a + "-" + b; if (!cache.has(k)) cache.set(k, (await build(a, b)).length); return cache.get(k); };
+  try {
+    let s = 0;
+    while (s < n) {
+      say("Working on page " + (s + 1) + " of " + n + "...");
+      await tick();
+      cache.clear();
+      let take = 1;
+      if ((await sz(s, s + 1)) <= max) {
+        let step = 1, bad = 0;
+        while (s + take < n) {
+          const t = Math.min(n - s, take + step);
+          if ((await sz(s, s + t)) <= max) { take = t; step *= 2; } else { bad = t; break; }
+        }
+        if (bad) { let lo = take, hi = bad; while (hi - lo > 1) { const mid = (lo + hi) >> 1; if ((await sz(s, s + mid)) <= max) lo = mid; else hi = mid; } take = lo; }
+      }
+      const bytes = await build(s, s + take);
+      parts.push({ from: s, to: s + take, bytes, over: bytes.length > max });
+      s += take;
+    }
+    showParts(max);
+  } catch (e) { say("Could not split this PDF: " + e.message, "bad"); }
+  busy = false; $("go").disabled = false;
+};
+
+const pad = (i) => String(i + 1).padStart(String(parts.length).length < 2 ? 2 : String(parts.length).length, "0");
+function partName(p, i) { return fileName + " part " + pad(i) + " (pages " + (p.from + 1) + (p.to - p.from > 1 ? "-" + p.to : "") + ").pdf"; }
+function showParts(max) {
+  const L = $("list"); L.innerHTML = "";
+  parts.forEach((p, i) => {
+    p.name = partName(p, i);
+    const d = document.createElement("div"); d.className = "part" + (p.over ? " big" : "");
+    const t = document.createElement("div"), b = document.createElement("b"), s = document.createElement("span");
+    b.textContent = p.name;
+    s.textContent = (p.to - p.from) + " page" + (p.to - p.from > 1 ? "s" : "") + ", " + fmt(p.bytes.length) + (p.over ? " (a single page is bigger than your limit, it cannot be split further)" : "");
+    t.append(b, s);
+    const bt = document.createElement("button"); bt.textContent = "Download";
+    bt.onclick = async () => { const er = await save(p.name, new Blob([p.bytes], { type: "application/pdf" })); if (!er) bt.textContent = "Saved"; else say(er, "bad"); };
+    d.append(t, bt); L.appendChild(d);
+  });
+  $("acts").hidden = false;
+  const over = parts.filter(p => p.over).length;
+  if (parts.length === 1 && !over) say("Already under " + fmt(max) + ", so there is only one part (" + fmt(parts[0].bytes.length) + ").", "ok");
+  else say(parts.length + " parts. Original " + fmt(fileSize) + (over ? ". " + over + " part(s) are over the limit because one page alone is that big." : "."), over ? "bad" : "ok");
+}
+
+if (window.showDirectoryPicker) {
+  $("fol").hidden = false;
+  $("fol").onclick = async () => {
+    try { DIR = await window.showDirectoryPicker({ mode: "readwrite", id: "pdf-splitter" }); $("fn").textContent = "Saving to: " + DIR.name; $("fol").textContent = "Change folder"; }
+    catch (e) { if (e && e.name !== "AbortError") say("Could not open that folder.", "bad"); }
+  };
+}
+async function save(name, blob) {
+  if (DIR) {
+    try { const fh = await DIR.getFileHandle(name, { create: true }), w = await fh.createWritable(); await w.write(blob); await w.close(); return ""; }
+    catch (e) { DIR = null; $("fn").textContent = ""; $("fol").textContent = "Choose save folder"; return "Could not write to the folder, choose it again."; }
+  }
+  const u = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = u; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(u), 60000);
+  return "";
+}
+$("all").onclick = async () => {
+  for (let i = 0; i < parts.length; i++) {
+    const er = await save(parts[i].name, new Blob([parts[i].bytes], { type: "application/pdf" }));
+    if (er) { say(er, "bad"); return; }
+    say("Saving " + (i + 1) + " of " + parts.length + "...");
+    await new Promise(r => setTimeout(r, 400));
+  }
+  say("Saved all " + parts.length + " parts. If your browser asks, allow multiple downloads.", "ok");
+};
+$("zip").onclick = async () => {
+  const z = new JSZip(); parts.forEach(p => z.file(p.name, p.bytes));
+  const er = await save(fileName + " parts.zip", await z.generateAsync({ type: "blob" }));
+  say(er || "Saved the zip.", er ? "bad" : "ok");
+};
+</script>
+</body>
+</html>
