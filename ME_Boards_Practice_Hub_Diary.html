@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-03": {
-    stamp: "v1.3.83.0 – v1.3.83.1",
+    stamp: "v1.3.83.0 – v1.3.83.2",
     title: "MD Handout Day 5 built from the uploaded PDF, then rebuilt on the annotated deck",
     body: [
+      "v1.3.83.2 (LAX): the Day 5 handout notes to remember (`.var-def`, 27 of them) now carry `note-box` (boxed like a formula-block, full width, so a long note is a full single-column row). Only `handout-md-5` is affected; other handouts keep plain `.var-def`.",
       "v1.3.83.1: `handout-md-5` is REBUILT from the annotated 58-slide deck (\"Handouts MD Day 5 Main file\", clean version with the red annotations; the no-annotation copy supplied the figure crops), replacing the 7-page PDF as baseline. Deck variables and flow: I Roller Chain and Sprocket (16 cards, 3 problems), II Belt Drive (13, 3), III V-Belt (2), IV Bearings (11, 4); 10 problems in all. `md5FormulaOutline` rewritten (card titles = tags). New versus v1.3.83.0: service factor and chain width, number of strands, slippage, centrifugal stress, classical V-belt length, journal bearing parts, viscosity units, clearance, bearing life and life ratio, bearing problem 4.",
       "v1.3.83.1 dropped (only in the old PDF): Sd = 400e, the ball and roller catalog capacity tables, the old V-belt formulas and the crossed-belt R-forms. Disclosures: slide 8 T1/T2 typo (T1 taken as the smaller sprocket); an annotation reads 131.71 where the exact value is 130.71 (exact used); one reliability percentage is illegible; key vs exact values: 7.24 vs 7.25 mm, 291.66 vs 291.78 lb, 363.63 vs 363.64 mm, 1800 vs 1836 h (key letter kept, exact value shown); handwritten notes were interpreted; rho is used for density as on the slides; belt problem 3 has no choices in the deck.",
       "`handout-md-5` (Handout page only) is built from the uploaded \"Handouts MD Day 5\" PDF (7 pages): I Roller Chain and Sprocket (11 cards), II Belts (9), III V-Belt (3), IV Bearings (10). Five figures were cropped from the PDF (roller chain, sprocket, open belt, crossed belt, journal bearing) and embedded as base64 JPEG. Sample Problems, Problem Set and Trivia MD 5 stay locked placeholders; `pendingContentMdHandouts` is now [6] and the pending loop covers Day 6 only. The Handout is in the selectable-formulas list. Outline `md5FormulaOutline` (card titles = tags); in-file RULINGS 17 item Q.",
