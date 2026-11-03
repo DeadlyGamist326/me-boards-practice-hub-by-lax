@@ -290,6 +290,16 @@
 
 <script>
 const entries = {
+  "2026-11-03": {
+    stamp: "v1.3.83.0",
+    title: "MD Handout Day 5 built from the uploaded PDF",
+    body: [
+      "`handout-md-5` (Handout page only) is built from the uploaded \"Handouts MD Day 5\" PDF (7 pages): I Roller Chain and Sprocket (11 cards), II Belts (9), III V-Belt (3), IV Bearings (10). Five figures were cropped from the PDF (roller chain, sprocket, open belt, crossed belt, journal bearing) and embedded as base64 JPEG. Sample Problems, Problem Set and Trivia MD 5 stay locked placeholders; `pendingContentMdHandouts` is now [6] and the pending loop covers Day 6 only. The Handout is in the selectable-formulas list. Outline `md5FormulaOutline` (card titles = tags); in-file RULINGS 17 item Q.",
+      "Variables are the PDF's own for now (a second file with the correct variables will come, like Day 3 and 4). Small clarifications to confirm with LAX: p is used for the pitch in D = p/sin(180/T) (the PDF prints a capital P); T_1, N_1 are written as the teeth and speed of the smaller sprocket; the V-belt d is written as the SMALL sheave (the PDF says large sheave, a typo, because the arc of contact on the small sheave needs D - d positive); N_a and N_c are written as actual and catalog rated speed (not defined in the PDF); f_b is the coefficient of friction of the bearing; u (viscosity) is kept as printed; k_1 appears twice in the PDF (stress constant and life factor), each card says which one it is.",
+      "9 end problems sit under their sections (3 chain, 3 belts, 3 bearings), one boxed step each, units and cancel marks, conversions inside the formulas, calculator displays with stored letters (RULINGS 17). The PDF has NO answer key, so every answer is solved from scratch and the nearest choice taken (rule M): chain 1 C 2.879 in; chain 2 C (exact 291.78 lb, 340 hp, choice C prints 291.66 lb); chain 3 A 131 (exact 130.71 pitches); belt 1 B (exact t = 7.25 mm, choice 7.24 mm); belt 2 B 69.5 hp; belt 3 has no choices (theta = 3.058 rad = 175.2 deg, L = 172.39 cm); bearing 1 C 507 kPa (each of the two main bearings carries half of the 4400 kg); bearing 2 A 136.42 mm; bearing 3 C (exact 363.64 mm, choice prints 363.63). Steps with e^x show the calculator display with the euler e glyph (not seen on earlier pages).",
+      "Printed formula notes: v = pi D N = p t N pairs D (larger) with N without saying which sprocket, so N is described as the speed of the sprocket whose D or teeth are used. Belt 2 uses the combined horsepower-and-stress formula with P unknown, one Shift + Solve, after storing v and e^(f theta).",
+    ]
+  },
   "2026-10-30": {
     stamp: "v1.3.75.0 – v1.3.82.4",
     title: "Formula Builder: MD Day 2-4 with the Hint 2 / Hint 4 mode",
