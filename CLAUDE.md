@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.83.0.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.83.1.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -85,7 +85,7 @@ restart it from the latest `main` first (same branch name).
 
 **MD Handout Day 4 (v1.3.71.0, LAX 2026-10-28):** `handout-md-4` is built from "Handouts MD Day 4 Main file" (7 pages) and then "Handouts MD Day 4" (41 image-only slides, the polisher and gap-filler); Handout page only. All final equations of both files, no derivations, units in every problem step, the SECOND file's variable convention (P_d, P_dn, theta/theta_n, psi, x, W_t, F_R, theta_s, alpha_p/alpha_g...). Sections I Helical, II Worm, III Bevel, IV Planetary Gear; 6 problems under their sections as Sample Problems; outline `md4FormulaOutline`. In-file RULINGS 17 item P; formula conflicts between the two files are disclosed in the diary. MD Day 4 Sample Problems, Problem Set and Trivia stay locked placeholders (loop starts at i=4); the pending Handout loop now covers Day 5-6 only. MD Trivia Day 4 (v1.3.72.0, 15 questions from "Trivia MD 4", `mdTrivia4Data`, `quiz-md-4`, shares `md4FormulaOutline`) is built; Trivia 5-6 stay locked (loop split `i >= 5`); MD Sample Problems Day 4 (v1.3.73.0, 10 worm gear problems from "Sample Problems MD Day 4", `view-samples-md-4`, `md4FormulaOutline`) is built too; Problem Set MD 4 (v1.3.74.0, 43 problems from "Problem Set MD Day 4", `mdPs4Data`, `quiz-md-ps-4`, `md4FormulaOutline` plus section V) is built too; MD Day 5+ Problem Set stays locked (loop `i >= 5`).
 
-**MD Handout Day 5 (v1.3.83.0, LAX 2026-11-03):** `handout-md-5` is built from the uploaded "Handouts MD Day 5" PDF (7 pages, no answer key) with the PDF's own variables; a second file with the correct variables is expected later. Sections I Roller Chain and Sprocket, II Belts, III V-Belt, IV Bearings; 9 problems under their sections as Sample Problems. Outline `md5FormulaOutline`. Handout page only; Day 5 Sample Problems, Problem Set and Trivia stay locked (loops `i >= 5`). In-file RULINGS 17 item Q.
+**MD Handout Day 5 (v1.3.83.0, rebuilt v1.3.83.1, LAX 2026-11-03):** `handout-md-5` is built from the annotated 58-slide deck "Handouts MD Day 5 Main file" (the first 7-page PDF is superseded; deck variables). Sections I Roller Chain and Sprocket, II Belt Drive, III V-Belt, IV Bearings; 10 problems under their sections as Sample Problems. Outline `md5FormulaOutline`. Handout page only; Day 5 Sample Problems, Problem Set and Trivia stay locked (loops `i >= 5`). In-file RULINGS 17 item Q.
 
 **PPE Terms Practice (v1.3.66.6, LAX 2026-10-25):** `view-pterms`, `PTERMS_DATA` (468 terms, Day 1-11, `day/topic/q/choices/a`), `pt*` functions cloned from the Math Terms Practice engine with their own `#pt-panel` MASTERY checklist and `ptProgressV1`. Source: the uploaded "Power and Industrial Plant Engineering Elements" question book (no answer key; answers were set by engineering knowledge, unclear questions skipped). That file is for this reviewer only. Add terms by appending to `PTERMS_DATA`.
 
