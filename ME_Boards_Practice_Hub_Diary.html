@@ -290,6 +290,16 @@
 
 <script>
 const entries = {
+  "2026-11-05": {
+    stamp: "v1.3.84.0",
+    title: "MD Handout Day 6 baseline layout built from the uploaded 8-page PDF",
+    body: [
+      "`handout-md-6` (Handout page only) is built from the uploaded \"Handouts MD Day 6\" PDF (8 pages, Alcorcon text handout): I Brakes (10 cards), II Clutch (9), III Wire Ropes (9), IV Welded Joints (2), V Riveted Joints (5). 19 figures were cropped from the PDF and embedded as base64 JPEG. The PDF's OWN variables are used for now; LAX will upload the main files (\"Handouts MD Day 6A/6B Main file\", 76 image-only slides) and those variables win, adding what is missing. `pendingContentMdHandouts` is now empty; the Handout is in the selectable-formulas list. Outline `md6FormulaOutline` (card titles = tags); in-file RULINGS 17 item R.",
+      "Seven end problems sit under their sections as Sample Problems with calculator displays (Brakes 2, Clutch 3, Welded Joints 1, Riveted Joints 1 with parts A-E); all LaTeX was parse-checked with mathjax-full (497 formulas, 0 errors).",
+      "Disclosures: clutch problem 1 (multiple disc) gives 32.75 hp, no printed choice matches (35.659 hp D kept as nearest); welded problem prints the diameter as 1.5 in but only 1.5 m reproduces the key, and the exact value is 2375.88 kPa against the printed 2375.76 kPa; riveted problem part C prints 8580.90 kg but the arithmetic gives 8451.76 kg (efficiency 62.1% against the printed 63.1%); the clutch starting torque T = alpha I / g is kept as printed (g is not defined in the file).",
+      "Watermark-free copies of the two main files were made (white background restored, annotations kept) and saved in the project files as md-day6/Handouts_MD_Day_6A_Main_file_clean.pdf and ..._6B_Main_file_clean.pdf. Method: per-pixel median over all 76 slides gives the static watermark layer, then light grey pixels connected to the white page are whitened; grey fills enclosed by outlines are left alone."
+    ]
+  },
   "2026-11-03": {
     stamp: "v1.3.83.0 – v1.3.83.2",
     title: "MD Handout Day 5 built from the uploaded PDF, then rebuilt on the annotated deck",
