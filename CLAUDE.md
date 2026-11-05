@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.86.0.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.88.0.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -89,7 +89,7 @@ restart it from the latest `main` first (same branch name).
 
 **MD Handout Day 6 (baseline v1.3.84.0, main files integrated v1.3.84.1, LAX 2026-11-05):** `handout-md-6` was built from the 8-page "Handouts MD Day 6" PDF, then rebuilt from "Handouts MD Day 6A/6B Main file" (76 slides; their variables win, baseline-only items kept). Sections I Brakes, II Clutch, III Wire Ropes (baseline only), IV Welded Joints, V Riveted Joints, VI Slab Milling, VII Drilling; 16 problems under their sections as Sample Problems; outline `md6FormulaOutline`, in-file RULINGS 17 item R. Handout only; Day 6 Sample Problems, Problem Set and Trivia stay locked. Watermark-free copies are in the project files (md-day6/); disclosures are in the diary.
 
-**MD Day 5-6 Sample Problems (v1.3.85.0-86.0, LAX 2026-11-05):** built by file name from the uploaded "Sample Problems MD Day 5" (12 chain and sprocket problems, `view-samples-md-5`) and "Sample Problems MD Day 6" (8 brakes + 3 clutch, `view-samples-md-6`) PDFs, outlines `md5FormulaOutline` / `md6FormulaOutline` (new topic Design Horsepower), RULINGS 17 applies, rails in `RAILS`. Problem Set and Trivia MD 5-6 stay locked placeholders until their files arrive (placeholder loop `i >= 5`, guarded by the pending lists).
+**MD Day 5-6 Sample Problems and Trivia (v1.3.85.0-88.0, LAX 2026-11-05):** built by file name from the uploaded "Sample Problems MD Day 5/6" (12 + 11, `view-samples-md-5/6`) and "Trivia MD 5/6" (15 + 15, `mdTrivia5Data`, `mdTrivia6Data`) PDFs, outlines `md5FormulaOutline` / `md6FormulaOutline`, RULINGS 17 applies, rails in `RAILS`. Problem Set MD 5-6 stay locked placeholders until their files are built (placeholder loop `i >= 5`, guarded by the pending lists).
 
 **PPE Terms Practice (v1.3.66.6, LAX 2026-10-25):** `view-pterms`, `PTERMS_DATA` (468 terms, Day 1-11, `day/topic/q/choices/a`), `pt*` functions cloned from the Math Terms Practice engine with their own `#pt-panel` MASTERY checklist and `ptProgressV1`. Source: the uploaded "Power and Industrial Plant Engineering Elements" question book (no answer key; answers were set by engineering knowledge, unclear questions skipped). That file is for this reviewer only. Add terms by appending to `PTERMS_DATA`.
 
