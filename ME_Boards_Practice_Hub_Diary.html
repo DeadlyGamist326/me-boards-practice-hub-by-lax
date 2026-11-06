@@ -290,6 +290,13 @@
 
 <script>
 const entries = {
+  "2026-11-06": {
+    stamp: "v1.3.91.0",
+    title: "MD Day 5-6 added to the Study checklist and the Formula Builder",
+    body: [
+      "v1.3.91.0: audit of the MD checklist and buttons after Day 5-6 went live. Home menus, Day buttons, calculator rails and Practice by formula filters were already wired for Day 1-6 (Day 7+ and Missed MD 2-6 stay locked, no files). Gaps fixed: Study checklist `MD_DAYS` now 1-6 with `outlines.M5/M6`; `FB_MD` gets 105/106 (`md5/md6FormulaOutline`), `fbMdArr` maps `mdTrivia5/6Data` and `mdPs5/6Data`, and the Sample Problems snapshot was turned into `fbSnapMdSamples` so Day 5-6 pages are snapshotted too (called right after `samples-md-6` is built). Verified in jsdom: 401 MD Formula Builder items, no load errors, checklist Day 5 shows 30 rows, Day 6 19 rows with Formula Builder links. Generated MD Variants (`MDV_DAYS`) are not switched on for Day 5-6 yet (one Day per version rule).",
+    ]
+  },
   "2026-11-05": {
     stamp: "v1.3.84.0 – v1.3.90.0",
     title: "MD Handout Day 6 baseline layout, then MD Day 5-6 Sample Problems, Trivia and Problem Set from the uploaded PDFs",
