@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-07": {
-    stamp: "v1.3.92.3 – v1.3.97.0",
+    stamp: "v1.3.92.3 – v1.3.98.0",
     title: "Formula Pattern Filter: no score or scroll, second filter",
     body: [
+      "v1.3.98.0: new 6th home column AERC BOOK (MD Day 1 to 6) between Trivia and Exam Missed Questions (`availableAercMd = [5]`, Quick Access grid is `grid-6`/`col-headers-6`; the Full Course Library MD panel also gets 6 columns, Math and PPE keep 5, headers are built in `onSubjectToggleClick`). MD Day 5 = `aercMd5Data` (100 questions, `view-aerc-md-5`, `quiz-aerc-md-5`) from LAX's uploaded \"MD_Day5_AERC Book_Questions.txt\"; plain quiz with the book key only, no hints and no solutions yet (never invented). LAX asked for the flow to be topic by topic: the 100 questions are sorted by Handout section (Chain, Belt, V-Belt, Bearings, General) and tagged with `topics`, outline `aerc5FormulaOutline`, so the Practice by formula filter works. Three questions say the book solution is not among the choices (hoisting drum bearing loss 0.02121 HP, ball bearing loading ratio and life 3.6 and 46.66, belt 8% total loss 92 rpm): `answer: -1` + `bookAnswer`; `lockChoice` marks no choice right or wrong, counts it answered and correct, and shows a `.book-note`. Last question has a duplicate choice (B and D both 69) as printed, key B kept. Days 1-4 and 6 stay blurred until files arrive.",
       "v1.3.92.3: Formula Pattern Filter practice questions (`fpf-quiz-p`, `fpf-quiz-t`) no longer run the quiz completion logic: `checkCompletion` returns at once for container ids starting with `fpf-quiz-`, so there is no result banner, score, confetti, stats or scroll to the bottom (LAX: practice only, no results in the filter).",
       "v1.3.93.1 (cont.): LAX also said the page only showed '1 formula' although the problems use many, so every matched problem now has a `.fpf-chainbar` (`fpfChainBar`) above it listing its whole chain, 'n formulas used in this problem'.",
       "v1.3.97.0: LAX clarified By Topic means the Handout section (e.g. Roller Chain and Sprocket) with all its sub topics together. New `fpfMode` sec (key `SP:<sectionIndex>\\u0001<chainkey>`): patterns per section sorted by count. The v1.3.96.0 filter (sub topics inside each section) was renamed + Grouped Sub topics.",
