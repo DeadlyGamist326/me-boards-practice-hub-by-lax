@@ -6741,17 +6741,9 @@ function fpfProblems(d) {
 }
 function fpfOpen() { fpfSel = null; fpfBuild(); showView("view-fpf"); }
 function fpfSetMode(m) { fpfMode = m; fpfSel = null; fpfBuild(); }
-/* Filter 2: how many problems (Sample Problems, Problem Set and Trivia together) use each formula, most used first. A formula is counted together with the variable it finds (formula + missing variable), and once per problem. */
-function fpfCounts(d) {
-  const map = {};
-  fpfProblems(d).forEach(p => {
-    new Set(p.chain.map(s => s[0] + "," + s[1])).forEach(k => {
-      const i = k.indexOf(","), fid = k.slice(0, i), mv = k.slice(i + 1);
-      const e = map[k] || (map[k] = { key: k, fid, mv, probs: [] });
-      e.probs.push(p);
-    });
-  });
-  return Object.values(map).sort((a, b) => b.probs.length - a.probs.length || (+a.fid.slice(1)) - (+b.fid.slice(1)) || (a.mv < b.mv ? -1 : 1));
+/* Filter 2: how many problems (Sample Problems, Problem Set and Trivia together) share each exact pattern (the whole chain of formula + missing variable, in order), most shared first. */
+function fpfRanked(d) {
+  return fpfEntries(d).slice().sort((a, b) => b.probs.length - a.probs.length || a.chain.length - b.chain.length);
 }
 function fpfEntries(d) {
   const map = new Map();
@@ -6779,10 +6771,12 @@ function fpfBuild() {
   ents.forEach(e => { if (e.chain.length === 1) have.add(e.key); });
   let html = '<div class="fpf-modes"><button type="button" class="fpf-mode' + (fpfMode === "pat" ? ' sel' : '') + '" onclick="fpfSetMode(\'pat\')">By pattern</button><button type="button" class="fpf-mode' + (fpfMode === "cnt" ? ' sel' : '') + '" onclick="fpfSetMode(\'cnt\')">By how often a formula appears</button></div><div id="fpf-results"></div>';
   if (fpfMode === "cnt") {
-    const cs = fpfCounts(d);
-    html += '<h2 class="fpf-h">Formulas and what they find, most used first</h2><p class="pc-note">How many Sample Problems, Problem Set and Trivia questions of this day use each formula for finding each variable (the same formula finding a different variable is its own card). Tap a card to see those problems.</p><div class="fpf-grid">';
-    cs.forEach((c, i) => {
-      html += '<button type="button" class="fpf-card' + (fpfSel === "F:" + c.key ? ' sel' : '') + '" data-key="F:' + c.key.replace(/"/g, '&quot;') + '" onclick="fpfPick(this)"><span class="fpf-count"><span class="fpf-rank">#' + (i + 1) + '</span> ' + c.probs.length + (c.probs.length === 1 ? ' problem' : ' problems') + '</span>' + fpfStepHtml(d, [c.fid, c.mv]) + '<span class="fpf-probs">' + fpfProbsLabel(d, c.probs) + '</span></button>';
+    const cs = fpfRanked(d);
+    html += '<h2 class="fpf-h">Patterns, most used first</h2><p class="pc-note">How many Sample Problems, Problem Set and Trivia questions of this day follow each exact pattern (every formula in the chain and the variable each one finds, in order). Different patterns are never added together. Tap a pattern to see those problems.</p><div class="fpf-grid">';
+    cs.forEach((e, i) => {
+      html += '<button type="button" class="fpf-card' + (fpfSel === e.key ? ' sel' : '') + '" data-key="' + e.key.replace(/"/g, '&quot;') + '" onclick="fpfPick(this)"><span class="fpf-count"><span class="fpf-rank">#' + (i + 1) + '</span> ' + e.probs.length + (e.probs.length === 1 ? ' problem' : ' problems') + ' \u00b7 ' + e.chain.length + (e.chain.length === 1 ? ' formula' : ' formulas') + '</span>' +
+        e.chain.map((s, k) => (k ? '<span class="fpf-then">then</span>' : '') + fpfStepHtml(d, s)).join('') +
+        '<span class="fpf-probs">' + fpfProbsLabel(d, e.probs) + '</span></button>';
     });
     html += '</div>';
     body.innerHTML = html;
@@ -6824,9 +6818,7 @@ function fpfPick(btn) {
   const res = document.getElementById("fpf-results");
   res.innerHTML = "";
   if (!fpfSel) return;
-  const ent = fpfSel.indexOf("F:") === 0
-    ? { probs: fpfCounts(d).find(c => c.key === fpfSel.slice(2)).probs }
-    : fpfEntries(d).find(e => e.key === fpfSel);
+  const ent = fpfEntries(d).find(e => e.key === fpfSel);
   const hd = document.createElement("h2"); hd.className = "fpf-h"; hd.textContent = "Matching problems (" + ent.probs.length + ")"; res.appendChild(hd);
   const wrap = document.createElement("div"); wrap.className = "handout-content"; res.appendChild(wrap);
   const samples = document.getElementById(d.sources.s.root).querySelectorAll(d.sources.s.unit);
@@ -6859,8 +6851,7 @@ function fpfPick(btn) {
 
 const CHANGELOG = [
   { version: "1.3.93.1", date: "2026-11-07", changes: [
-    "Each problem shown by the Formula Pattern Filter now has a bar above it listing every formula used in that problem and what each one finds, so a problem that uses several formulas no longer looks like a single-formula one.",
-    "In the Formula Pattern Filter, the By how often a formula appears list now counts a formula together with the variable it finds, so the same formula finding a different variable is its own card with its own count and ranking (for example p = X/8 finding p and p = X/8 finding X are no longer lumped into one)."
+    "In the Formula Pattern Filter, the By how often list now ranks exact patterns (the whole chain of formulas and what each one finds, in order) instead of single formulas, so different patterns are never added together, and each problem shown has a bar listing every formula it uses.",
   ] },
   { version: "1.3.93.0", date: "2026-11-07", changes: [
     "The Formula Pattern Filter now has two filters you can switch between at the top: By pattern (the formulas used in a problem and what each one finds) and the new By how often a formula appears, which lists every formula of MD Day 5 with how many Sample Problems, Problem Set and Trivia questions use it, the most used at the top. Tap a formula to practice all the problems that use it."
