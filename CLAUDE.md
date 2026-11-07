@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.93.0.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.3.93.1.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -856,4 +856,4 @@ Changelog view.
 
 **Units on unknowns (v1.3.66.13, LAX 2026-10-26):** a substituted equation carries the unit on the unknown too (`1000 kN·m = (500 kN)(d m)`), with the full cancel marks; Formula Builder variant generators (`VG_SPECS`, `vgCylinder`) do the same. Pure algebra and empirical lines stay without units. Sample Problems hint buttons sit in one row under the question (`topSampleHints`, v1.3.66.12).
 
-**Formula Pattern Filter (v1.3.92.0, LAX 2026-11-06):** home card + `view-fpf`, data `FPF_DATA` (MD Day 5 only so far: Sample Problems, Problem Set and Trivia, v1.3.92.1; chains table `chains`, formula ids f1-f56). Each Sample Problem is a chain of `[formula, missing variable]`; a pattern is exclusive (one-formula chain never matches a problem with a second formula); formula+variable combos with no problem are listed as missing. Picking a pattern clones the matching `.sample-problem` blocks from `samples-md-5` and draws the matching Problem Set and Trivia questions in full with `renderQuizNow` on throwaway containers (v1.3.92.2, no hyperlinks, LAX; v1.3.92.3: `checkCompletion` skips `fpf-quiz-*` containers, so no score, confetti or scroll). Two filters (v1.3.93.0): By pattern, and By how often a formula appears (`fpfCounts`, problems per formula over Sample Problems + Problem Set + Trivia, most first). Other days (MD Day 2 next) wait for LAX's go-ahead.
+**Formula Pattern Filter (v1.3.92.0, LAX 2026-11-06):** home card + `view-fpf`, data `FPF_DATA` (MD Day 5 only so far: Sample Problems, Problem Set and Trivia, v1.3.92.1; chains table `chains`, formula ids f1-f56). Each Sample Problem is a chain of `[formula, missing variable]`; a pattern is exclusive (one-formula chain never matches a problem with a second formula); formula+variable combos with no problem are listed as missing. Picking a pattern clones the matching `.sample-problem` blocks from `samples-md-5` and draws the matching Problem Set and Trivia questions in full with `renderQuizNow` on throwaway containers (v1.3.92.2, no hyperlinks, LAX; v1.3.92.3: `checkCompletion` skips `fpf-quiz-*` containers, so no score, confetti or scroll). Two filters (v1.3.93.0): By pattern, and By how often a formula appears (`fpfCounts`, problems per formula + missing variable (v1.3.93.1) over Sample Problems + Problem Set + Trivia, most first). Other days (MD Day 2 next) wait for LAX's go-ahead.
