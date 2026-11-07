@@ -291,11 +291,12 @@
 <script>
 const entries = {
   "2026-11-07": {
-    stamp: "v1.3.92.3 – v1.3.94.1",
+    stamp: "v1.3.92.3 – v1.3.95.0",
     title: "Formula Pattern Filter: no score or scroll, second filter",
     body: [
       "v1.3.92.3: Formula Pattern Filter practice questions (`fpf-quiz-p`, `fpf-quiz-t`) no longer run the quiz completion logic: `checkCompletion` returns at once for container ids starting with `fpf-quiz-`, so there is no result banner, score, confetti, stats or scroll to the bottom (LAX: practice only, no results in the filter).",
       "v1.3.93.1 (cont.): LAX also said the page only showed '1 formula' although the problems use many, so every matched problem now has a `.fpf-chainbar` (`fpfChainBar`) above it listing its whole chain, 'n formulas used in this problem'.",
+      "v1.3.95.0: fourth filter By Topic (`fpfMode` top, `fpfTopic`, `fpfTopicMap`, `FPF_DATA.md5.outline`): problems grouped by their topic (Sample Problems `data-topic`, Problem Set/Trivia `topics[0]`) under the sections of `md5FormulaOutline`; selecting a topic uses key `T:<topic>`. Fifth filter By Topic + Frequency of Appearances (`topf`): same sections, topics sorted by problem count inside each section.",
       "v1.3.94.1: LAX renamed the second filter to By Pattern + Number of Formulas + Frequency of Appearances (label only).",
       "v1.3.94.0: three filters (`fpfMode` pat / cnt / all), renamed per LAX: By Pattern + Number of Formulas, Frequency of Appearances + Number of Formulas, and new By Pattern + Frequency of Appearances (flat list of exact patterns sorted by problem count only).",
       "v1.3.93.1 (groups): LAX wanted the 1 formula / 2 formulas groups kept, so the count view lists those groups and sorts by problem count only inside each group.",
