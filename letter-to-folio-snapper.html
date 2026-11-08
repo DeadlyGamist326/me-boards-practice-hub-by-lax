@@ -62,7 +62,7 @@
   <input type="file" id="f1" accept="image/*" hidden>
 
   <div class="bar">
-    <label><input type="checkbox" id="flip" checked> 1st page is upside down</label>
+    <label><input type="checkbox" id="flip"> 1st page is upside down</label>
     <button id="swap" disabled>Swap the two</button>
     <button id="reset" disabled>Reset to default position</button>
   </div>
@@ -74,6 +74,7 @@
       <button id="m0">1st page</button>
       <button id="m1">2nd page</button>
       <span id="read"></span>
+      <button id="copy">Copy default coordinates</button>
     </div>
     <div class="bar">
       <span style="font-size:13px;color:var(--muted)"><kbd>&larr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd><kbd>&rarr;</kbd> move 1 px, <kbd>Shift</kbd> 10 px, <kbd>1</kbd>/<kbd>2</kbd> pick the page, <kbd>+</kbd>/<kbd>-</kbd> zoom, drag or scroll to pan, <kbd>Ctrl</kbd>+wheel zooms at the pointer</span>
@@ -102,10 +103,14 @@
   var LETTER_H = 11, FOLIO_H = 13, PAGE_W = 8.5;
   // layers: 0 = 1st page (bottom layer, bottom of the folio), 1 = 2nd page (top layer, top of the folio)
   var slots = [null, null];
-  var off = [{ x: 0, y: 0 }, { x: 0, y: 0 }];   // calibration offsets in output pixels
+  // Default coordinates, in inches, added to the built-in placement (1st page bottom-aligned and turned, 2nd page at the top).
+  // "Copy default coordinates" gives the current values; send them to Claude to make them the new defaults.
+  var DEFAULTS = { first: { x: 0, y: 0 }, second: { x: 0, y: 0 }, flip: true };
+  var off = [{ x: DEFAULTS.first.x, y: DEFAULTS.first.y }, { x: DEFAULTS.second.x, y: DEFAULTS.second.y }];   // calibration offsets in inches
   var sel = 1;                                  // layer the arrow keys move
   var zoom = 1;                                 // 1 = fit to the width of the viewer
   var out = document.createElement("canvas");
+  $("flip").checked = DEFAULTS.flip;
 
   function say(t, err) { msg.textContent = t || ""; msg.className = err ? "err" : ""; }
 
@@ -121,9 +126,10 @@
     var s = await loadBlob(blob, name);
     if (!s) { say("That file is not a picture I can read. Use an image (PNG, JPG, WebP).", true); return; }
     if (slots[i]) URL.revokeObjectURL(slots[i].url);
-    slots[i] = s; off[i] = { x: 0, y: 0 };      // a new file starts at its default coordinates
+    slots[i] = s; off[i] = defaultOff(i);      // a new file starts at its default coordinates
     drawSlots(); update(true);
   }
+  function defaultOff(i) { var d = i === 0 ? DEFAULTS.first : DEFAULTS.second; return { x: d.x, y: d.y }; }
   function drawSlots() {
     [0, 1].forEach(function (i) {
       var el = $("s" + i), s = slots[i];
@@ -155,7 +161,7 @@
     if (a) {
       var as = W / a.img.naturalWidth, ah = a.img.naturalHeight * as;
       c.save();
-      c.translate(W / 2 + off[0].x, H - ah / 2 + off[0].y);
+      c.translate(W / 2 + off[0].x * g.dpi, H - ah / 2 + off[0].y * g.dpi);
       if ($("flip").checked) c.rotate(Math.PI);
       c.drawImage(a.img, -W / 2, -ah / 2, W, ah);
       c.restore();
@@ -164,7 +170,7 @@
       var bs = W / b.img.naturalWidth, bh = b.img.naturalHeight * bs;
       c.save();
       c.globalAlpha = forExport ? 1 : $("op").value / 100;
-      c.drawImage(b.img, off[1].x, off[1].y, W, bh);
+      c.drawImage(b.img, off[1].x * g.dpi, off[1].y * g.dpi, W, bh);
       c.restore();
     }
     return true;
@@ -196,7 +202,7 @@
   }
   function readout() {
     var g = slots[0] || slots[1] ? geometry() : { dpi: 100 };
-    function f(o) { return "x " + o.x + ", y " + o.y + " px (" + (o.x / g.dpi).toFixed(3) + ", " + (o.y / g.dpi).toFixed(3) + " in)"; }
+    function f(o) { return "x " + Math.round(o.x * g.dpi) + ", y " + Math.round(o.y * g.dpi) + " px (" + o.x.toFixed(3) + ", " + o.y.toFixed(3) + " in)"; }
     $("read").textContent = "1st: " + f(off[0]) + "   |   2nd: " + f(off[1]);
     $("m0").classList.toggle("on", sel === 0); $("m1").classList.toggle("on", sel === 1);
   }
@@ -222,7 +228,7 @@
   $("zjoin").onclick = function () {
     // the join is where the top layer ends (about 11 in from the top)
     var b = slots[1];
-    var g = geometry(), y = b ? b.img.naturalHeight * (g.W / b.img.naturalWidth) + off[1].y : FOLIO_H / 2 * g.dpi;
+    var g = geometry(), y = b ? b.img.naturalHeight * (g.W / b.img.naturalWidth) + off[1].y * g.dpi : FOLIO_H / 2 * g.dpi;
     setZoom(4);
     view.scrollTop = (y / out.height) * prev.clientHeight - view.clientHeight / 2;
   };
@@ -248,7 +254,8 @@
   function nudge(dx, dy) {
     if (!(slots[0] || slots[1])) return;
     var l = slots[sel] ? sel : (slots[0] ? 0 : 1);
-    off[l].x += dx; off[l].y += dy;
+    var dpi = geometry().dpi;
+    off[l].x += dx / dpi; off[l].y += dy / dpi;
     update(false);
   }
   document.addEventListener("keydown", function (e) {
@@ -270,7 +277,23 @@
   });
   $("m0").onclick = function () { sel = 0; readout(); };
   $("m1").onclick = function () { sel = 1; readout(); };
-  $("reset").onclick = function () { off = [{ x: 0, y: 0 }, { x: 0, y: 0 }]; update(false); };
+  $("reset").onclick = function () { off = [defaultOff(0), defaultOff(1)]; update(false); };
+  $("copy").onclick = function () {
+    var r = function (v) { return Math.round(v * 10000) / 10000; };
+    var text = "Letter to Folio Snapper default coordinates: " + JSON.stringify({
+      first: { x: r(off[0].x), y: r(off[0].y) }, second: { x: r(off[1].x), y: r(off[1].y) },
+      flip: $("flip").checked, unit: "inches", dpi: Math.round(geometry().dpi)
+    });
+    function done(ok) { say(ok ? "Copied. Paste it to Claude to save these as the new defaults." : "Could not copy. Select and copy this by hand: " + text, !ok); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(fallbackCopy(text)); });
+    else done(fallbackCopy(text));
+  };
+  function fallbackCopy(t) {
+    var ta = document.createElement("textarea"); ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    var ok = false; try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    ta.remove(); return ok;
+  }
   $("op").oninput = function () { $("opv").textContent = $("op").value + "%"; update(false); };
   $("flip").onchange = function () { drawSlots(); update(false); };
   $("swap").onclick = function () { slots.reverse(); off.reverse(); drawSlots(); update(true); };
