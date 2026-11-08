@@ -11,30 +11,34 @@
   }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:16px; }
-  main { max-width:980px; margin:0 auto; }
+  main { max-width:1100px; margin:0 auto; }
   h1 { font-size:22px; margin:8px 0 4px; }
   p.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
   .slots { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   @media (max-width:560px) { .slots { grid-template-columns:1fr; } }
-  .slot { border:2px dashed var(--line); border-radius:12px; background:var(--card); padding:14px; text-align:center; cursor:pointer; outline:none; min-height:210px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+  .slot { border:2px dashed var(--line); border-radius:12px; background:var(--card); padding:12px; text-align:center; cursor:pointer; outline:none; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; }
   .slot:focus, .slot.over { border-color:var(--accent); }
-  .slot.has { border-style:solid; }
+  .slot.has { border-style:solid; min-height:0; }
   .slot b { font-size:16px; }
-  .slot span { color:var(--muted); font-size:13px; }
-  .slot img { max-width:100%; max-height:170px; background:#fff; border-radius:6px; }
-  .slot .info { font-size:12px; color:var(--muted); }
-  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:16px 0; }
+  .slot span, .slot .info { color:var(--muted); font-size:13px; }
+  .slot img { max-width:100%; max-height:110px; background:#fff; border-radius:6px; }
+  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:12px 0; }
   .bar label { font-size:14px; color:var(--muted); display:flex; align-items:center; gap:6px; }
-  input[type=text], input[type=number] { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--text); }
-  button { font:inherit; padding:9px 16px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
+  input[type=text] { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--text); }
+  button { font:inherit; padding:8px 14px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
   button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  button.on { background:var(--accent); color:#fff; border-color:var(--accent); }
   button:disabled { opacity:.45; cursor:not-allowed; }
   .spacer { flex:1; }
   #msg { color:var(--muted); font-size:14px; min-height:1.3em; }
   #msg.err { color:var(--danger); }
-  #prev { display:block; max-width:100%; width:520px; height:auto; margin:12px auto 0; background:#fff; border:1px solid var(--line); box-shadow:0 2px 10px rgba(0,0,0,.15); }
-  #prevWrap { display:none; }
-  #prevWrap.show { display:block; }
+  .ctl { display:none; }
+  .ctl.show { display:block; }
+  #read { font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
+  #view { height:min(72vh, 900px); overflow:auto; background:#8884; border:1px solid var(--line); border-radius:10px; cursor:grab; touch-action:none; }
+  #view.drag { cursor:grabbing; }
+  #prev { display:block; background:#fff; }
+  kbd { font:inherit; font-size:12px; padding:1px 6px; border:1px solid var(--line); border-radius:5px; background:var(--card); }
 </style>
 </head>
 <body>
@@ -44,13 +48,13 @@
 
   <div class="slots">
     <div class="slot" id="s0" tabindex="0">
-      <b>Top part</b>
-      <span>Upright scan, the bottom is cut off</span>
+      <b>1st page: bottom of the folio</b>
+      <span>Scanned upside down, the top is cut off</span>
       <span>Press Ctrl+V, drop an image, or click to choose</span>
     </div>
     <div class="slot" id="s1" tabindex="0">
-      <b>Bottom part</b>
-      <span>Scanned upside down, the top is cut off</span>
+      <b>2nd page: top of the folio</b>
+      <span>Upright, the bottom is cut off (sits on top of the 1st)</span>
       <span>Press Ctrl+V, drop an image, or click to choose</span>
     </div>
   </div>
@@ -58,29 +62,49 @@
   <input type="file" id="f1" accept="image/*" hidden>
 
   <div class="bar">
-    <label><input type="checkbox" id="flip" checked> Bottom scan is upside down</label>
-    <label>Join line <input type="number" id="seam" min="2" max="11" step="0.1" value="6.5" style="width:80px"> in from the top</label>
+    <label><input type="checkbox" id="flip" checked> 1st page is upside down</label>
     <button id="swap" disabled>Swap the two</button>
-  </div>
-  <div class="bar">
-    <label>File name <input type="text" id="name" value="folio" size="14"></label>
-    <span class="spacer"></span>
-    <button id="png" disabled>Download PNG</button>
-    <button id="pdf" class="primary" disabled>Download PDF</button>
+    <button id="reset" disabled>Reset to default position</button>
   </div>
   <div id="msg" role="status"></div>
-  <div id="prevWrap"><canvas id="prev"></canvas></div>
+
+  <div class="ctl" id="ctl">
+    <div class="bar">
+      <span style="font-size:14px;color:var(--muted)">Move with the arrow keys:</span>
+      <button id="m0">1st page</button>
+      <button id="m1">2nd page</button>
+      <span id="read"></span>
+    </div>
+    <div class="bar">
+      <span style="font-size:13px;color:var(--muted)"><kbd>&larr;</kbd><kbd>&uarr;</kbd><kbd>&darr;</kbd><kbd>&rarr;</kbd> move 1 px, <kbd>Shift</kbd> 10 px, <kbd>1</kbd>/<kbd>2</kbd> pick the page, <kbd>+</kbd>/<kbd>-</kbd> zoom, drag or scroll to pan, <kbd>Ctrl</kbd>+wheel zooms at the pointer</span>
+    </div>
+    <div class="bar">
+      <button id="zout" title="Zoom out">&minus;</button>
+      <button id="zin" title="Zoom in">+</button>
+      <button id="zfit">Fit</button>
+      <button id="zjoin">Zoom to the join</button>
+      <span id="zread" style="font-size:13px;color:var(--muted)"></span>
+      <label>2nd page opacity <input type="range" id="op" min="0" max="100" value="100" style="width:120px"> <span id="opv">100%</span></label>
+      <span class="spacer"></span>
+      <label>File name <input type="text" id="name" value="folio" size="12"></label>
+      <button id="png">Download PNG</button>
+      <button id="pdf" class="primary">Download PDF</button>
+    </div>
+    <div id="view"><canvas id="prev"></canvas></div>
+  </div>
 </main>
 
 <script>
 (function () {
   "use strict";
   var $ = function (id) { return document.getElementById(id); };
-  var msg = $("msg");
+  var msg = $("msg"), view = $("view"), prev = $("prev");
   var LETTER_H = 11, FOLIO_H = 13, PAGE_W = 8.5;
-  var slots = [null, null]; // {img, name}
-  // Calibration offsets of the bottom scan, in inches (up/left/down/right nudges come later)
-  var offX = 0, offY = 0;
+  // layers: 0 = 1st page (bottom layer, bottom of the folio), 1 = 2nd page (top layer, top of the folio)
+  var slots = [null, null];
+  var off = [{ x: 0, y: 0 }, { x: 0, y: 0 }];   // calibration offsets in output pixels
+  var sel = 1;                                  // layer the arrow keys move
+  var zoom = 1;                                 // 1 = fit to the width of the viewer
   var out = document.createElement("canvas");
 
   function say(t, err) { msg.textContent = t || ""; msg.className = err ? "err" : ""; }
@@ -93,77 +117,166 @@
       img.src = url;
     });
   }
-
   async function setSlot(i, blob, name) {
     var s = await loadBlob(blob, name);
     if (!s) { say("That file is not a picture I can read. Use an image (PNG, JPG, WebP).", true); return; }
     if (slots[i]) URL.revokeObjectURL(slots[i].url);
-    slots[i] = s;
-    drawSlots();
-    update();
+    slots[i] = s; off[i] = { x: 0, y: 0 };      // a new file starts at its default coordinates
+    drawSlots(); update(true);
   }
-
   function drawSlots() {
     [0, 1].forEach(function (i) {
       var el = $("s" + i), s = slots[i];
-      if (!s) { el.classList.remove("has"); return; }
-      el.classList.add("has");
-      el.innerHTML = "";
+      if (!s) return;
+      el.classList.add("has"); el.innerHTML = "";
       var im = document.createElement("img"); im.src = s.url; im.alt = "";
-      if (i === 1 && $("flip").checked) im.style.transform = "rotate(180deg)";
-      var t = document.createElement("b"); t.textContent = i === 0 ? "Top part" : "Bottom part";
+      if (i === 0 && $("flip").checked) im.style.transform = "rotate(180deg)";
+      var t = document.createElement("b"); t.textContent = i === 0 ? "1st page: bottom of the folio" : "2nd page: top of the folio";
       var info = document.createElement("div"); info.className = "info";
       info.textContent = s.name + " (" + s.img.naturalWidth + " x " + s.img.naturalHeight + " px)";
       el.append(t, im, info);
     });
   }
 
-  // ---- compose: top scan at the top, bottom scan (turned 180 degrees) bottom-aligned, joined at the seam ----
-  function compose() {
-    var top = slots[0], bot = slots[1];
-    if (!top || !bot) return false;
-    var dpi = top.img.naturalWidth / PAGE_W;           // the scan width is the page width
-    var W = Math.round(PAGE_W * dpi), H = Math.round(FOLIO_H * dpi);
+  // ---- compose at the default coordinates plus the offsets ----
+  // 1st page: scaled to the page width, bottom-aligned, turned 180 degrees. 2nd page: scaled to the page width, at the top, drawn over the 1st.
+  function geometry() {
+    var ref = slots[1] || slots[0];
+    var W = ref.img.naturalWidth, dpi = W / PAGE_W, H = Math.round(FOLIO_H * dpi);
+    return { W: W, H: H, dpi: dpi };
+  }
+  function compose(forExport) {
+    if (!slots[0] && !slots[1]) return false;
+    var g = geometry(), W = g.W, H = g.H;
     out.width = W; out.height = H;
     var c = out.getContext("2d");
     c.fillStyle = "#fff"; c.fillRect(0, 0, W, H);
-    // top scan, scaled to the page width, starts at y = 0
-    var ts = W / top.img.naturalWidth;
-    c.drawImage(top.img, 0, 0, W, Math.round(top.img.naturalHeight * ts));
-    // bottom scan, scaled to the page width, ends at the bottom of the folio
-    var bs = W / bot.img.naturalWidth, bh = bot.img.naturalHeight * bs;
-    var seam = Math.max(0, Math.min(FOLIO_H, +$("seam").value || 0)) * dpi;
-    c.save();
-    c.beginPath(); c.rect(0, seam, W, H - seam); c.clip();
-    c.translate(W / 2 + offX * dpi, H - bh / 2 + offY * dpi);
-    if ($("flip").checked) c.rotate(Math.PI);
-    c.drawImage(bot.img, -W / 2, -bh / 2, W, bh);
-    c.restore();
+    var a = slots[0], b = slots[1];
+    if (a) {
+      var as = W / a.img.naturalWidth, ah = a.img.naturalHeight * as;
+      c.save();
+      c.translate(W / 2 + off[0].x, H - ah / 2 + off[0].y);
+      if ($("flip").checked) c.rotate(Math.PI);
+      c.drawImage(a.img, -W / 2, -ah / 2, W, ah);
+      c.restore();
+    }
+    if (b) {
+      var bs = W / b.img.naturalWidth, bh = b.img.naturalHeight * bs;
+      c.save();
+      c.globalAlpha = forExport ? 1 : $("op").value / 100;
+      c.drawImage(b.img, off[1].x, off[1].y, W, bh);
+      c.restore();
+    }
     return true;
   }
 
-  function update() {
-    var ok = compose();
-    $("png").disabled = $("pdf").disabled = !ok;
+  function update(reset) {
+    var ok = compose(false), both = !!(slots[0] && slots[1]);
     $("swap").disabled = !(slots[0] || slots[1]);
-    $("prevWrap").classList.toggle("show", ok);
-    if (ok) {
-      var p = $("prev"); p.width = out.width; p.height = out.height;
-      p.getContext("2d").drawImage(out, 0, 0);
-      var dpi = Math.round(out.width / PAGE_W);
-      var tH = slots[0].img.naturalHeight / (slots[0].img.naturalWidth / PAGE_W);
-      var bH = slots[1].img.naturalHeight / (slots[1].img.naturalWidth / PAGE_W);
-      var note = "Folio page ready (" + out.width + " x " + out.height + " px, about " + dpi + " dpi).";
+    $("reset").disabled = !ok;
+    $("ctl").classList.toggle("show", ok);
+    if (!ok) { say(""); return; }
+    prev.width = out.width; prev.height = out.height;
+    prev.getContext("2d").drawImage(out, 0, 0);
+    if (reset) setZoom(1);
+    else applyZoom();
+    var g = geometry();
+    var note = both ? "Folio page ready (" + out.width + " x " + out.height + " px, about " + Math.round(g.dpi) + " dpi). Nudge a page with the arrow keys if the join is off."
+                    : "Add the " + (slots[0] ? "2nd" : "1st") + " page to finish.";
+    if (both) {
+      var tH = slots[1].img.naturalHeight / (slots[1].img.naturalWidth / PAGE_W);
+      var bH = slots[0].img.naturalHeight / (slots[0].img.naturalWidth / PAGE_W);
       if (Math.abs(tH - LETTER_H) > 0.3 || Math.abs(bH - LETTER_H) > 0.3)
-        note += " Heads up: a scan is " + tH.toFixed(1) + " in and " + bH.toFixed(1) + " in tall, not about 11 in, so check the join.";
+        note += " Heads up: a scan is " + bH.toFixed(1) + " in and " + tH.toFixed(1) + " in tall, not about 11 in.";
       if (Math.abs(slots[0].img.naturalWidth / slots[1].img.naturalWidth - 1) > 0.02)
-        note += " The two scans have different widths; the second was resized to match.";
-      say(note);
-    } else if (slots[0] || slots[1]) say("Add the " + (slots[0] ? "bottom" : "top") + " part to finish.");
-    else say("");
+        note += " The two scans have different widths; the 1st was resized to match.";
+    }
+    say(note);
+    readout();
+  }
+  function readout() {
+    var g = slots[0] || slots[1] ? geometry() : { dpi: 100 };
+    function f(o) { return "x " + o.x + ", y " + o.y + " px (" + (o.x / g.dpi).toFixed(3) + ", " + (o.y / g.dpi).toFixed(3) + " in)"; }
+    $("read").textContent = "1st: " + f(off[0]) + "   |   2nd: " + f(off[1]);
+    $("m0").classList.toggle("on", sel === 0); $("m1").classList.toggle("on", sel === 1);
   }
 
-  // ---- inputs: click, drop, paste ----
+  // ---- zoom and pan ----
+  function applyZoom() {
+    prev.style.width = Math.round(view.clientWidth * zoom) + "px";
+    $("zread").textContent = Math.round(zoom * 100) + "%";
+  }
+  function setZoom(z, cx, cy) {
+    z = Math.max(1, Math.min(10, z));
+    var cw = prev.clientWidth || view.clientWidth, ch = prev.clientHeight || 1;
+    var fx = (view.scrollLeft + (cx == null ? view.clientWidth / 2 : cx)) / cw;
+    var fy = (view.scrollTop + (cy == null ? view.clientHeight / 2 : cy)) / ch;
+    zoom = z; applyZoom();
+    var nw = prev.clientWidth, nh = prev.clientHeight;
+    view.scrollLeft = fx * nw - (cx == null ? view.clientWidth / 2 : cx);
+    view.scrollTop = fy * nh - (cy == null ? view.clientHeight / 2 : cy);
+  }
+  $("zin").onclick = function () { setZoom(zoom * 1.5); };
+  $("zout").onclick = function () { setZoom(zoom / 1.5); };
+  $("zfit").onclick = function () { setZoom(1); view.scrollTop = 0; };
+  $("zjoin").onclick = function () {
+    // the join is where the top layer ends (about 11 in from the top)
+    var b = slots[1];
+    var g = geometry(), y = b ? b.img.naturalHeight * (g.W / b.img.naturalWidth) + off[1].y : FOLIO_H / 2 * g.dpi;
+    setZoom(4);
+    view.scrollTop = (y / out.height) * prev.clientHeight - view.clientHeight / 2;
+  };
+  view.addEventListener("wheel", function (e) {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    var r = view.getBoundingClientRect();
+    setZoom(zoom * (e.deltaY < 0 ? 1.15 : 1 / 1.15), e.clientX - r.left, e.clientY - r.top);
+  }, { passive: false });
+  var drag = null;
+  view.addEventListener("pointerdown", function (e) {
+    drag = { x: e.clientX, y: e.clientY, l: view.scrollLeft, t: view.scrollTop };
+    view.classList.add("drag"); view.setPointerCapture(e.pointerId);
+  });
+  view.addEventListener("pointermove", function (e) {
+    if (!drag) return;
+    view.scrollLeft = drag.l - (e.clientX - drag.x); view.scrollTop = drag.t - (e.clientY - drag.y);
+  });
+  ["pointerup", "pointercancel"].forEach(function (t) { view.addEventListener(t, function () { drag = null; view.classList.remove("drag"); }); });
+  window.addEventListener("resize", function () { if (slots[0] || slots[1]) applyZoom(); });
+
+  // ---- arrow keys move the selected page ----
+  function nudge(dx, dy) {
+    if (!(slots[0] || slots[1])) return;
+    var l = slots[sel] ? sel : (slots[0] ? 0 : 1);
+    off[l].x += dx; off[l].y += dy;
+    update(false);
+  }
+  document.addEventListener("keydown", function (e) {
+    var t = e.target;
+    if (t && (t.tagName === "INPUT" && t.type !== "checkbox" && t.type !== "range" || t.tagName === "TEXTAREA")) return;
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    var step = e.shiftKey ? 10 : 1;
+    var k = e.key;
+    if (k === "ArrowLeft") nudge(-step, 0);
+    else if (k === "ArrowRight") nudge(step, 0);
+    else if (k === "ArrowUp") nudge(0, -step);
+    else if (k === "ArrowDown") nudge(0, step);
+    else if (k === "1") { sel = 0; readout(); }
+    else if (k === "2") { sel = 1; readout(); }
+    else if (k === "+" || k === "=") setZoom(zoom * 1.5);
+    else if (k === "-" || k === "_") setZoom(zoom / 1.5);
+    else return;
+    e.preventDefault();
+  });
+  $("m0").onclick = function () { sel = 0; readout(); };
+  $("m1").onclick = function () { sel = 1; readout(); };
+  $("reset").onclick = function () { off = [{ x: 0, y: 0 }, { x: 0, y: 0 }]; update(false); };
+  $("op").oninput = function () { $("opv").textContent = $("op").value + "%"; update(false); };
+  $("flip").onchange = function () { drawSlots(); update(false); };
+  $("swap").onclick = function () { slots.reverse(); off.reverse(); drawSlots(); update(true); };
+
+  // ---- inputs: click, drop, paste (first one goes to the 1st page, second to the 2nd page) ----
+  function freeSlot() { return !slots[0] ? 0 : !slots[1] ? 1 : -1; }
   [0, 1].forEach(function (i) {
     var el = $("s" + i), f = $("f" + i);
     el.onclick = function () { f.click(); };
@@ -172,36 +285,31 @@
     el.addEventListener("dragover", function (e) { e.preventDefault(); el.classList.add("over"); });
     el.addEventListener("dragleave", function () { el.classList.remove("over"); });
     el.addEventListener("drop", function (e) {
-      e.preventDefault(); el.classList.remove("over");
+      e.preventDefault(); e.stopPropagation(); el.classList.remove("over");
       var fs = Array.prototype.filter.call(e.dataTransfer.files, function (x) { return /^image\//.test(x.type); });
       if (fs[0]) setSlot(i, fs[0], fs[0].name);
       if (fs[1] && i === 0) setSlot(1, fs[1], fs[1].name);
     });
   });
-  // a file dropped anywhere else: first one to the top part, second to the bottom part
   document.addEventListener("dragover", function (e) { e.preventDefault(); });
   document.addEventListener("drop", function (e) {
     e.preventDefault();
     var fs = Array.prototype.filter.call(e.dataTransfer.files, function (x) { return /^image\//.test(x.type); });
-    if (fs[0]) setSlot(slots[0] && !slots[1] ? 1 : 0, fs[0], fs[0].name);
-    if (fs[1]) setSlot(1, fs[1], fs[1].name);
+    fs.slice(0, 2).forEach(function (b, n) { var i = freeSlot(); setSlot(i < 0 ? n : i, b, b.name); });
   });
   document.addEventListener("paste", function (e) {
-    var items = e.clipboardData ? e.clipboardData.items : [];
-    var files = [];
+    var items = e.clipboardData ? e.clipboardData.items : [], files = [];
     for (var k = 0; k < items.length; k++)
       if (items[k].kind === "file" && /^image\//.test(items[k].type)) files.push(items[k].getAsFile());
-    files.forEach(function (b, n) {
-      var i = !slots[0] ? 0 : !slots[1] ? 1 : (n % 2);
-      setSlot(i, b, "pasted-" + (i === 0 ? "top" : "bottom"));
+    var pending = slots.slice();
+    files.slice(0, 2).forEach(function (b, n) {
+      var i = !pending[0] ? 0 : !pending[1] ? 1 : sel;
+      pending[i] = true;
+      setSlot(i, b, "pasted-" + (i === 0 ? "1st" : "2nd"));
     });
   });
 
-  $("flip").onchange = function () { drawSlots(); update(); };
-  $("seam").oninput = update;
-  $("swap").onclick = function () { slots.reverse(); drawSlots(); update(); };
-
-  // ---- output ----
+  // ---- output: always fully opaque, Folio size ----
   function fileName(ext) { return ($("name").value.trim() || "folio").replace(/[\\/:*?"<>|]+/g, "_") + "." + ext; }
   function save(blob, name) {
     var a = document.createElement("a");
@@ -210,10 +318,9 @@
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
   }
   $("png").onclick = function () {
-    if (!compose()) return;
-    out.toBlob(function (b) { save(b, fileName("png")); say("Saved " + fileName("png") + "."); }, "image/png");
+    if (!compose(true)) return;
+    out.toBlob(function (b) { save(b, fileName("png")); say("Saved " + fileName("png") + "."); update(false); }, "image/png");
   };
-
   function b64ToBytes(dataUrl) {
     var s = atob(dataUrl.split(",")[1]), u = new Uint8Array(s.length);
     for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i);
@@ -241,7 +348,7 @@
     return new Blob(parts, { type: "application/pdf" });
   }
   $("pdf").onclick = function () {
-    if (!compose()) return;
+    if (!compose(true)) return;
     say("Making PDF...");
     setTimeout(function () {
       try {
@@ -249,11 +356,9 @@
         save(blob, fileName("pdf"));
         say("Saved " + fileName("pdf") + " (Folio, " + (blob.size / 1048576).toFixed(2) + " MB).");
       } catch (err) { say("Could not make the PDF: " + err.message, true); }
+      update(false);
     }, 30);
   };
-
-  // exposed for the calibration step (nudge up, left, down, right)
-  window.snapper = { setOffset: function (x, y) { offX = x; offY = y; update(); }, offsets: function () { return [offX, offY]; } };
 })();
 </script>
 </body>
