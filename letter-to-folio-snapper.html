@@ -105,7 +105,7 @@
   var slots = [null, null];
   // Default coordinates, in inches, added to the built-in placement (1st page bottom-aligned and turned, 2nd page at the top).
   // "Copy default coordinates" gives the current values; send them to Claude to make them the new defaults.
-  var DEFAULTS = { first: { x: 0, y: 0 }, second: { x: 0, y: 0 }, flip: true };
+  var DEFAULTS = { first: { x: 0, y: 0 }, second: { x: -0.0185, y: -0.0151 }, flip: true };   // saved from LAX's calibration (594 dpi scans)
   var off = [{ x: DEFAULTS.first.x, y: DEFAULTS.first.y }, { x: DEFAULTS.second.x, y: DEFAULTS.second.y }];   // calibration offsets in inches
   var sel = 1;                                  // layer the arrow keys move
   var zoom = 1;                                 // 1 = fit to the width of the viewer
