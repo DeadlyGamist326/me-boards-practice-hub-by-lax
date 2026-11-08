@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Letter to Folio Snapper</title>
+<style>
+  :root { --bg:#f6f5f2; --card:#fff; --text:#1c1c1c; --muted:#6b6b6b; --line:#d9d6cf; --accent:#2563eb; --danger:#c2410c; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#161616; --card:#222; --text:#eee; --muted:#9a9a9a; --line:#3a3a3a; --accent:#60a5fa; --danger:#fb923c; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; padding:16px; }
+  main { max-width:980px; margin:0 auto; }
+  h1 { font-size:22px; margin:8px 0 4px; }
+  p.sub { color:var(--muted); margin:0 0 16px; font-size:14px; }
+  .slots { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  @media (max-width:560px) { .slots { grid-template-columns:1fr; } }
+  .slot { border:2px dashed var(--line); border-radius:12px; background:var(--card); padding:14px; text-align:center; cursor:pointer; outline:none; min-height:210px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+  .slot:focus, .slot.over { border-color:var(--accent); }
+  .slot.has { border-style:solid; }
+  .slot b { font-size:16px; }
+  .slot span { color:var(--muted); font-size:13px; }
+  .slot img { max-width:100%; max-height:170px; background:#fff; border-radius:6px; }
+  .slot .info { font-size:12px; color:var(--muted); }
+  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:16px 0; }
+  .bar label { font-size:14px; color:var(--muted); display:flex; align-items:center; gap:6px; }
+  input[type=text], input[type=number] { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--card); color:var(--text); }
+  button { font:inherit; padding:9px 16px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--text); cursor:pointer; }
+  button.primary { background:var(--accent); color:#fff; border-color:var(--accent); font-weight:600; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .spacer { flex:1; }
+  #msg { color:var(--muted); font-size:14px; min-height:1.3em; }
+  #msg.err { color:var(--danger); }
+  #prev { display:block; max-width:100%; width:520px; height:auto; margin:12px auto 0; background:#fff; border:1px solid var(--line); box-shadow:0 2px 10px rgba(0,0,0,.15); }
+  #prevWrap { display:none; }
+  #prevWrap.show { display:block; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Letter to Folio Snapper</h1>
+  <p class="sub">Join two Letter scans into one Folio page (8.5 x 13 in). Everything stays on your device, nothing is uploaded.</p>
+
+  <div class="slots">
+    <div class="slot" id="s0" tabindex="0">
+      <b>Top part</b>
+      <span>Upright scan, the bottom is cut off</span>
+      <span>Press Ctrl+V, drop an image, or click to choose</span>
+    </div>
+    <div class="slot" id="s1" tabindex="0">
+      <b>Bottom part</b>
+      <span>Scanned upside down, the top is cut off</span>
+      <span>Press Ctrl+V, drop an image, or click to choose</span>
+    </div>
+  </div>
+  <input type="file" id="f0" accept="image/*" hidden>
+  <input type="file" id="f1" accept="image/*" hidden>
+
+  <div class="bar">
+    <label><input type="checkbox" id="flip" checked> Bottom scan is upside down</label>
+    <label>Join line <input type="number" id="seam" min="2" max="11" step="0.1" value="6.5" style="width:80px"> in from the top</label>
+    <button id="swap" disabled>Swap the two</button>
+  </div>
+  <div class="bar">
+    <label>File name <input type="text" id="name" value="folio" size="14"></label>
+    <span class="spacer"></span>
+    <button id="png" disabled>Download PNG</button>
+    <button id="pdf" class="primary" disabled>Download PDF</button>
+  </div>
+  <div id="msg" role="status"></div>
+  <div id="prevWrap"><canvas id="prev"></canvas></div>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var msg = $("msg");
+  var LETTER_H = 11, FOLIO_H = 13, PAGE_W = 8.5;
+  var slots = [null, null]; // {img, name}
+  // Calibration offsets of the bottom scan, in inches (up/left/down/right nudges come later)
+  var offX = 0, offY = 0;
+  var out = document.createElement("canvas");
+
+  function say(t, err) { msg.textContent = t || ""; msg.className = err ? "err" : ""; }
+
+  function loadBlob(blob, name) {
+    return new Promise(function (resolve) {
+      var url = URL.createObjectURL(blob), img = new Image();
+      img.onload = function () { resolve({ img: img, name: name || "image", url: url }); };
+      img.onerror = function () { URL.revokeObjectURL(url); resolve(null); };
+      img.src = url;
+    });
+  }
+
+  async function setSlot(i, blob, name) {
+    var s = await loadBlob(blob, name);
+    if (!s) { say("That file is not a picture I can read. Use an image (PNG, JPG, WebP).", true); return; }
+    if (slots[i]) URL.revokeObjectURL(slots[i].url);
+    slots[i] = s;
+    drawSlots();
+    update();
+  }
+
+  function drawSlots() {
+    [0, 1].forEach(function (i) {
+      var el = $("s" + i), s = slots[i];
+      if (!s) { el.classList.remove("has"); return; }
+      el.classList.add("has");
+      el.innerHTML = "";
+      var im = document.createElement("img"); im.src = s.url; im.alt = "";
+      if (i === 1 && $("flip").checked) im.style.transform = "rotate(180deg)";
+      var t = document.createElement("b"); t.textContent = i === 0 ? "Top part" : "Bottom part";
+      var info = document.createElement("div"); info.className = "info";
+      info.textContent = s.name + " (" + s.img.naturalWidth + " x " + s.img.naturalHeight + " px)";
+      el.append(t, im, info);
+    });
+  }
+
+  // ---- compose: top scan at the top, bottom scan (turned 180 degrees) bottom-aligned, joined at the seam ----
+  function compose() {
+    var top = slots[0], bot = slots[1];
+    if (!top || !bot) return false;
+    var dpi = top.img.naturalWidth / PAGE_W;           // the scan width is the page width
+    var W = Math.round(PAGE_W * dpi), H = Math.round(FOLIO_H * dpi);
+    out.width = W; out.height = H;
+    var c = out.getContext("2d");
+    c.fillStyle = "#fff"; c.fillRect(0, 0, W, H);
+    // top scan, scaled to the page width, starts at y = 0
+    var ts = W / top.img.naturalWidth;
+    c.drawImage(top.img, 0, 0, W, Math.round(top.img.naturalHeight * ts));
+    // bottom scan, scaled to the page width, ends at the bottom of the folio
+    var bs = W / bot.img.naturalWidth, bh = bot.img.naturalHeight * bs;
+    var seam = Math.max(0, Math.min(FOLIO_H, +$("seam").value || 0)) * dpi;
+    c.save();
+    c.beginPath(); c.rect(0, seam, W, H - seam); c.clip();
+    c.translate(W / 2 + offX * dpi, H - bh / 2 + offY * dpi);
+    if ($("flip").checked) c.rotate(Math.PI);
+    c.drawImage(bot.img, -W / 2, -bh / 2, W, bh);
+    c.restore();
+    return true;
+  }
+
+  function update() {
+    var ok = compose();
+    $("png").disabled = $("pdf").disabled = !ok;
+    $("swap").disabled = !(slots[0] || slots[1]);
+    $("prevWrap").classList.toggle("show", ok);
+    if (ok) {
+      var p = $("prev"); p.width = out.width; p.height = out.height;
+      p.getContext("2d").drawImage(out, 0, 0);
+      var dpi = Math.round(out.width / PAGE_W);
+      var tH = slots[0].img.naturalHeight / (slots[0].img.naturalWidth / PAGE_W);
+      var bH = slots[1].img.naturalHeight / (slots[1].img.naturalWidth / PAGE_W);
+      var note = "Folio page ready (" + out.width + " x " + out.height + " px, about " + dpi + " dpi).";
+      if (Math.abs(tH - LETTER_H) > 0.3 || Math.abs(bH - LETTER_H) > 0.3)
+        note += " Heads up: a scan is " + tH.toFixed(1) + " in and " + bH.toFixed(1) + " in tall, not about 11 in, so check the join.";
+      if (Math.abs(slots[0].img.naturalWidth / slots[1].img.naturalWidth - 1) > 0.02)
+        note += " The two scans have different widths; the second was resized to match.";
+      say(note);
+    } else if (slots[0] || slots[1]) say("Add the " + (slots[0] ? "bottom" : "top") + " part to finish.");
+    else say("");
+  }
+
+  // ---- inputs: click, drop, paste ----
+  [0, 1].forEach(function (i) {
+    var el = $("s" + i), f = $("f" + i);
+    el.onclick = function () { f.click(); };
+    el.onkeydown = function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); f.click(); } };
+    f.onchange = function (e) { if (e.target.files[0]) setSlot(i, e.target.files[0], e.target.files[0].name); e.target.value = ""; };
+    el.addEventListener("dragover", function (e) { e.preventDefault(); el.classList.add("over"); });
+    el.addEventListener("dragleave", function () { el.classList.remove("over"); });
+    el.addEventListener("drop", function (e) {
+      e.preventDefault(); el.classList.remove("over");
+      var fs = Array.prototype.filter.call(e.dataTransfer.files, function (x) { return /^image\//.test(x.type); });
+      if (fs[0]) setSlot(i, fs[0], fs[0].name);
+      if (fs[1] && i === 0) setSlot(1, fs[1], fs[1].name);
+    });
+  });
+  // a file dropped anywhere else: first one to the top part, second to the bottom part
+  document.addEventListener("dragover", function (e) { e.preventDefault(); });
+  document.addEventListener("drop", function (e) {
+    e.preventDefault();
+    var fs = Array.prototype.filter.call(e.dataTransfer.files, function (x) { return /^image\//.test(x.type); });
+    if (fs[0]) setSlot(slots[0] && !slots[1] ? 1 : 0, fs[0], fs[0].name);
+    if (fs[1]) setSlot(1, fs[1], fs[1].name);
+  });
+  document.addEventListener("paste", function (e) {
+    var items = e.clipboardData ? e.clipboardData.items : [];
+    var files = [];
+    for (var k = 0; k < items.length; k++)
+      if (items[k].kind === "file" && /^image\//.test(items[k].type)) files.push(items[k].getAsFile());
+    files.forEach(function (b, n) {
+      var i = !slots[0] ? 0 : !slots[1] ? 1 : (n % 2);
+      setSlot(i, b, "pasted-" + (i === 0 ? "top" : "bottom"));
+    });
+  });
+
+  $("flip").onchange = function () { drawSlots(); update(); };
+  $("seam").oninput = update;
+  $("swap").onclick = function () { slots.reverse(); drawSlots(); update(); };
+
+  // ---- output ----
+  function fileName(ext) { return ($("name").value.trim() || "folio").replace(/[\\/:*?"<>|]+/g, "_") + "." + ext; }
+  function save(blob, name) {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+  }
+  $("png").onclick = function () {
+    if (!compose()) return;
+    out.toBlob(function (b) { save(b, fileName("png")); say("Saved " + fileName("png") + "."); }, "image/png");
+  };
+
+  function b64ToBytes(dataUrl) {
+    var s = atob(dataUrl.split(",")[1]), u = new Uint8Array(s.length);
+    for (var i = 0; i < s.length; i++) u[i] = s.charCodeAt(i);
+    return u;
+  }
+  // one-page PDF, Folio size (8.5 x 13 in = 612 x 936 pt), the picture fills the whole page
+  function buildPdf() {
+    var enc = new TextEncoder(), parts = [], offs = [], len = 0;
+    function push(x) { var u = typeof x === "string" ? enc.encode(x) : x; parts.push(u); len += u.length; }
+    function obj(n, body) { offs[n] = len; push(n + " 0 obj\n"); push(body); push("\nendobj\n"); }
+    var jpg = b64ToBytes(out.toDataURL("image/jpeg", 0.95)), W = 612, H = 936;
+    push("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n");
+    obj(1, "<< /Type /Catalog /Pages 2 0 R >>");
+    obj(2, "<< /Type /Pages /Kids [3 0 R] /Count 1 >>");
+    obj(3, "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 " + W + " " + H + "] /Contents 4 0 R /Resources << /XObject << /Im0 5 0 R >> >> >>");
+    var cs = "q " + W + " 0 0 " + H + " 0 0 cm /Im0 Do Q";
+    obj(4, "<< /Length " + cs.length + " >>\nstream\n" + cs + "\nendstream");
+    offs[5] = len;
+    push("5 0 obj\n<< /Type /XObject /Subtype /Image /Width " + out.width + " /Height " + out.height +
+      " /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length " + jpg.length + " >>\nstream\n");
+    push(jpg); push("\nendstream\nendobj\n");
+    var xref = len, x = "xref\n0 6\n0000000000 65535 f \n";
+    for (var n = 1; n < 6; n++) x += ("0000000000" + offs[n]).slice(-10) + " 00000 n \n";
+    push(x + "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" + xref + "\n%%EOF");
+    return new Blob(parts, { type: "application/pdf" });
+  }
+  $("pdf").onclick = function () {
+    if (!compose()) return;
+    say("Making PDF...");
+    setTimeout(function () {
+      try {
+        var blob = buildPdf();
+        save(blob, fileName("pdf"));
+        say("Saved " + fileName("pdf") + " (Folio, " + (blob.size / 1048576).toFixed(2) + " MB).");
+      } catch (err) { say("Could not make the PDF: " + err.message, true); }
+    }, 30);
+  };
+
+  // exposed for the calibration step (nudge up, left, down, right)
+  window.snapper = { setOffset: function (x, y) { offX = x; offY = y; update(); }, offsets: function () { return [offX, offY]; } };
+})();
+</script>
+</body>
+</html>
