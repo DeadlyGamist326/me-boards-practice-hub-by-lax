@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-12": {
-    stamp: "v1.4.3.1 – v1.4.4.0",
+    stamp: "v1.4.3.1 – v1.4.4.1",
     title: "Lecture note equations as formula boxes; AERC BOOK MAIN BUTTONS",
     body: [
+      "v1.4.4.1 (LAX 2026-11-12): the AERC section heading is now just \"AERC BOOK\" (eyebrow \"Book Chapters\"); the changelog 1.4.4.0 wording was adjusted to match. File renamed to v1.4.4.1.",
       "v1.4.4.0 (LAX 2026-11-12): new home section AERC BOOK MAIN BUTTONS (`#aerc-main-section`, `#aerc-main-grid`, one column) directly under the MD Day 1 to 6 table. 21 buttons in book order (`AERC_MAIN`, declared just before the home-version line): Engineering Mechanics ... Shafting. Each opens a placeholder view `view-aerc-book-N` (built at load by JS, matches the savepoint regex via `aerc`) saying the content is coming soon. Minor bump because it is a new feature; file renamed to v1.4.4.0.",
       "v1.4.3.1 (LAX 2026-11-12): in handout-md-5 and handout-md-6 every `Lecture note:` box was converted. Each non-derivation equation became its own `.formula-row` (em-dash unit column, label on the right, `fb-long` for long ones); derivation text (Petroff, pitch triangle, band thickness, sum of forces) stays as a plain `.note-box` without the label, text-only notes lost the label too. 19 boxes became rows, 3 text-only ones just lost the label. MD Day 1-4 handouts had no Lecture note boxes. `Lecture example:` boxes (Day 5) were left as is."
     ]
