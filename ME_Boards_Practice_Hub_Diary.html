@@ -290,6 +290,15 @@
 
 <script>
 const entries = {
+  "2026-11-13": {
+    stamp: "v1.4.12.0",
+    title: "Formula Pattern Filter: MD Day 1-4 and Math Day 18",
+    body: [
+      "v1.4.12.0 (LAX 2026-11-13): `FPF_DATA.md1..md4` and `FPF_DATA.math18` added (md1: 62 problems, md2: 84, md3: 80, md4: 68, math18: 101; sources s/p/t only, no AERC for these days). Day bar has MD Day 1-6 plus a Math Day 18 button (`fpfDayBar`); subtitle updated. Outlines: `md1..4FormulaOutline`, `math18FormulaOutline`. All seven filter modes build and pick without errors for every day.",
+      "v1.4.12.0 how the chains were made: no hand curation (LAX asked for the same filter, not new content), a throwaway script read each problem's Hint 2 formulas and full solution and wrote the chain (`formula,missing variable; ...`). MD: formulas are ordered as the solution uses them, the missing variable is the symbol of the result box after the formula (a derived or link formula without its own result takes the next result, or the problem's unknown from Hint 1). Math 18 (Hint 2 rows are base + derived + one combined equation, same as Formula Builder `fbPrep`): every Hint 2 row is a step, the missing variable is the result box symbol, the left side of the row if it has none, and the answer's symbol for the last row. Checked against the hand-curated MD Day 5/6 chains: about 77 percent identical (differences are mostly symbol naming, e.g. P vs P_b, and derived link steps). If LAX spots a wrong chain, edit its line in `chains` of that day (`s/p/t` + number).",
+      "v1.4.12.0: formula `vars` lists (used by the 'Missing, no problem yet' list) come from a tokenizer over each equation plus every missing symbol seen in the chains; multi-letter symbols VR, FS, DP, KE, TPI, BHN, LCM, BP, HP are kept as one symbol."
+    ]
+  },
   "2026-11-12": {
     stamp: "v1.4.3.1 – v1.4.11.0",
     title: "Lecture note equations as formula boxes; AERC BOOK MAIN BUTTONS",
