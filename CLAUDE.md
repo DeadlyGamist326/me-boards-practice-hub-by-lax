@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.4.14.0.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.4.15.0.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -863,3 +863,5 @@ Changelog view.
 **AERC BOOK full solutions + Formula Pattern Filter (v1.3.99.0, LAX 2026-11-08):** all 100 `aercMd5Data` items have the 4 hints (same format as Problem Set/Trivia, RULINGS 17, calculator displays on the right rail `RAILS`); where the book key does not reproduce, the solution shows the real value and keeps the key letter (listed in the diary). AERC BOOK is source `a` of the Formula Pattern Filter (chains `a1..a100` in display order, formulas f57-f93, `fpfMd5Outline()` merges `aerc5FormulaOutline` into the Handout outline). A new AERC question needs hints, a chain line and a topic in `aerc5FormulaOutline`.
 
 **AERC BOOK Key (v1.4.14.0, LAX 2026-11-14):** built from the uploaded "AERC KEY" PDF (photos of book pages 90-98, 23 problems on keys and splines): `aercKy7Data` (chapter page `view-aerc-book-7`, `AERC_QUIZ_VIEWS`) and the same items as `aercMd2Data` / `view-aerc-md-2` (AERC BOOK MD Day 2, `availableAercMd`), topics from `md2FormulaOutline`, source `a` and chains `a1..a23` in the MD Day 2 Formula Pattern Filter. The Shafting chapter will go first on Day 2 when its file arrives (the `a` numbers shift then). Disclosures (Problem 13, 17) are in the diary.
+
+**AERC BOOK Stresses (v1.4.15.0, LAX 2026-11-14):** built from the uploaded "AERC STRESSES" PDF (photos of book pages 56-89, 119 problems): `aercSt6Data` (chapter page `view-aerc-book-6`, `AERC_QUIZ_VIEWS`) and the same items as `aercMd1Data` / `view-aerc-md-1` (AERC BOOK MD Day 1, `availableAercMd`), topics from `md1FormulaOutline` (six extra topics appended to its section IV), `aercSt6Outline` for the filter, source `a` and chains `a1..a119` in the MD Day 1 Formula Pattern Filter (formulas f59-f138). Disclosures are in the diary.
