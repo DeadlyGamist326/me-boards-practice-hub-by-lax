@@ -8866,7 +8866,7 @@ function fpfPick(btn) {
 
 const CHANGELOG = [
   { version: "1.4.16.0", date: "2026-11-16", changes: [
-    "New Refresher Day # column for PPE (between Trivia and Exam Missed Questions). Refresher Day 7 is open with a hydroelectric turbine problem (water power, exit velocity of the water and friction torque) with the four hints and a full solution. The other days stay blurred until their problems arrive."
+    "New Refresher Day # column for PPE (between Trivia and Exam Missed Questions). Refresher Day 7 is open with a hydroelectric turbine problem (water power, entering velocity of the water and friction torque) with the four hints and a full solution. The other days stay blurred until their problems arrive."
   ] },
   { version: "1.4.15.0", date: "2026-11-14", changes: [
     "AERC BOOK: the Stresses chapter is open with 119 book problems (word problem, choices, four hints and a full solution), and AERC BOOK MD Day 1 now shows them too. It has the Practice by formula filter.",
@@ -84696,7 +84696,7 @@ document.getElementById("quiz-missed-ppe-11-subtitle").textContent =
 renderQuiz("quiz-missed-ppe-11", missedPpe11Data, "PPE Missed Questions Compilation Day 11", "timer-missed-ppe-11", handout11FormulaOutline);
 
 const refresherPpe7Data = [
-  { q: ["Water falls from a height of 55 m with a flow rate of 0.9 ", { frac: [{ base: "m", exp: "3" }, "s"] }, ", driving a turbine at 180 rpm. The resisting torque is 520 N\u00B7m, and the velocity of water leaving the blades is 5 ", { frac: ["m", "s"] }, ". Calculate turbine power output."],
+  { q: ["Water falls from a height of 55 m with a flow rate of 0.9 ", { frac: [{ base: "m", exp: "3" }, "s"] }, ", driving a turbine at 180 rpm. The resisting torque is 520 N\u00B7m, and the velocity of water entering the blades is 5 ", { frac: ["m", "s"] }, ". Calculate turbine power output."],
     choices: ["487.0 kW", "495.2 kW", "502.3 kW", "510.8 kW"], answer: 0,
     topics: ["Turbine Brake Power (with Friction Torque)"],
     hints: [
@@ -84705,7 +84705,7 @@ const refresherPpe7Data = [
         <div class="kw-row"><span class="kw-phrase">"flow rate of 0.9 m³/s"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( Q=0.9\\dfrac{\\text{m}^3}{\\text{s}} \\)</span></div>
         <div class="kw-row"><span class="kw-phrase">"turbine at 180 rpm"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( N=180\\text{ rpm} \\)</span></div>
         <div class="kw-row"><span class="kw-phrase">"resisting torque is 520 N·m"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( T=520\\text{ N}\\cdot\\text{m} \\) (friction power is lost)</span></div>
-        <div class="kw-row"><span class="kw-phrase">"velocity of water leaving the blades is 5 m/s"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( v=5\\dfrac{\\text{m}}{\\text{s}} \\) (kinetic power of the water is counted)</span></div>
+        <div class="kw-row"><span class="kw-phrase">"velocity of water entering the blades is 5 m/s"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( v=5\\dfrac{\\text{m}}{\\text{s}} \\) (kinetic power of the water is counted)</span></div>
         <div class="kw-row"><span class="kw-phrase">"turbine power output"</span><span class="kw-arrow">&rarr;</span><span class="kw-symbol">\\( P = \\text{?} \\)</span></div>
       </div>
       <span class="problem-type-tag">Turbine Brake Power (with Friction Torque)</span>`,
@@ -84713,7 +84713,7 @@ const refresherPpe7Data = [
       <div class="hint-formula">\\( P_k = \\dfrac{1}{2}\\rho Qv^2 \\)</div>
       <div class="hint-formula">\\( P_{friction} = 2\\pi TN \\)</div>
       <div class="hint-formula">\\( P = P_w+P_k-P_{friction} \\)</div>
-      <p class="hint-note">The velocity of the water leaving the blades is given, so the kinetic power of the stream is added to the water power, and the power lost to the friction torque is subtracted. Constants needed (not stated, assume): \\( \\gamma=9.81\\dfrac{\\text{kN}}{\\text{m}^3} \\), \\( \\rho=1000\\dfrac{\\text{kg}}{\\text{m}^3} \\)</p>`,
+      <p class="hint-note">The velocity of the water entering the blades is given, so the kinetic power of the entering stream is added to the water power, and the power lost to the friction torque is subtracted. Constants needed (not stated, assume): \\( \\gamma=9.81\\dfrac{\\text{kN}}{\\text{m}^3} \\), \\( \\rho=1000\\dfrac{\\text{kg}}{\\text{m}^3} \\)</p>`,
       `<div class="hint-formula">\\( h=55\\text{ m} \\), \\( Q=0.9\\dfrac{\\text{m}^3}{\\text{s}} \\), \\( N=180\\text{ rpm} \\), \\( T=520\\text{ N}\\cdot\\text{m} \\), \\( v=5\\dfrac{\\text{m}}{\\text{s}} \\)</div>`,
       `<p class="hint-given">Given:</p>
 <div class="formula-grid-3"><div class="formula-block">\\( h=55\\ \\text{m} \\)</div><div class="formula-block">\\( Q=0.9\\ \\dfrac{\\text{m}^3}{\\text{s}} \\)</div><div class="formula-block">\\( N=180\\ \\text{rpm} \\)</div></div>
@@ -84724,7 +84724,7 @@ const refresherPpe7Data = [
 <p class="hint-note">Substitute the known values.</p>
 <div class="calc-pair"><div class="formula-block fb-long">\\( P_w=\\left(9.81\\ \\dfrac{\\text{kN}}{\\cancel{\\text{m}^3}}\\right)\\left(0.9\\ \\dfrac{\\cancel{\\text{m}^3}}{\\text{s}}\\right)\\left(55\\ \\text{m}\\right)\\left(\\dfrac{1\\ \\text{kW}}{1\\ \\dfrac{\\text{kN}\\cdot\\text{m}}{\\text{s}}}\\right) \\)</div><div class="calc-side"><div class="calc-box"><div class="calc-lcd" data-expr="9.81×0.9×55" data-ans="485.595"></div><div class="calc-legend"><span class="calc-how">=</span></div></div></div></div>
 <div class="formula-block">\\( P_w=485.595\\ \\text{kW} \\)</div>
-<p class="hint-note">The velocity of the water leaving the blades is given, so the kinetic power of the stream (1 W = 1 kg&middot;m&sup2;/s&sup3;, 1 kW = 1000 W) is counted:</p>
+<p class="hint-note">The velocity of the water entering the blades is given, so the kinetic power of the entering stream (1 W = 1 kg&middot;m&sup2;/s&sup3;, 1 kW = 1000 W) is counted:</p>
 <div class="formula-block">\\( P_k=\\dfrac{1}{2}\\rho Qv^2 \\)</div>
 <p class="hint-note">Substitute the known values.</p>
 <div class="calc-pair"><div class="formula-block fb-long">\\( P_k=\\dfrac{1}{2}\\left(1000\\ \\dfrac{\\cancel{\\text{kg}}}{\\cancel{\\text{m}^3}}\\right)\\left(0.9\\ \\dfrac{\\cancel{\\text{m}^3}}{\\text{s}}\\right)\\left(5\\ \\dfrac{\\text{m}}{\\text{s}}\\right)^2\\left(\\dfrac{1\\ \\cancel{\\text{W}}}{1\\ \\dfrac{\\cancel{\\text{kg}}\\cdot\\text{m}^2}{\\text{s}^3}}\\right)\\left(\\dfrac{1\\ \\text{kW}}{1000\\ \\cancel{\\text{W}}}\\right) \\)</div><div class="calc-side"><div class="calc-box"><div class="calc-lcd" data-expr="\\frac{1}{2}×1000×0.9×5^{2}×\\frac{1}{1000}" data-ans="11.25"></div><div class="calc-legend"><span class="calc-how">=</span></div></div></div></div>
