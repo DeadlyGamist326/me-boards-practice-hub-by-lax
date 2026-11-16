@@ -6,7 +6,7 @@ a Mechanical Engineering board exam reviewer. It has grown very large
 session doesn't have to rediscover these conventions from scratch — read
 this fully before making any edits.
 
-**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.4.16.10.html` (note the
+**Current filename**: `MEBoards_ PracticeHub_by LAX_v1.4.16.11.html` (note the
 space after the underscore — it's part of the real filename). The filename
 is renamed to match the version number on every version bump (see the
 in-app Changelog view and the version comment near the top of the file for
@@ -866,4 +866,4 @@ Changelog view.
 
 **AERC BOOK Stresses (v1.4.15.0, LAX 2026-11-14):** built from the uploaded "AERC STRESSES" PDF (photos of book pages 56-89, 119 problems): `aercSt6Data` (chapter page `view-aerc-book-6`, `AERC_QUIZ_VIEWS`) and the same items as `aercMd1Data` / `view-aerc-md-1` (AERC BOOK MD Day 1, `availableAercMd`), topics from `md1FormulaOutline` (six extra topics appended to its section IV), `aercSt6Outline` for the filter, source `a` and chains `a1..a119` in the MD Day 1 Formula Pattern Filter (formulas f59-f138). Disclosures are in the diary.
 
-**PPE Refresher Day # column (v1.4.16.0, LAX 2026-11-16):** 6th column of the PPE subject browse table (`SUBJECT_CONFIG.ppe.refresher`, `availablePpeRefresher`, views `view-refresher-ppe-N`, data `refresherPpeNData`, quiz `quiz-refresher-ppe-N`, `RAILS` entry, shares `handoutNFormulaOutline`). Only Day 7 so far (10 problems, from the AERC lecture Refresher PPE Set 3 screenshots: headwater elevation, specific speed, hydro turbine, Pelton penstock, number of turbines, electrical output, specific speed generator output; kinetic power of the entering water added; the source said leaving, LAX corrected it to entering); other days stay blurred until a problem arrives. New problems use the 4-hint format of RULINGS 17.
+**PPE Refresher Day # column (v1.4.16.0, LAX 2026-11-16):** 6th column of the PPE subject browse table (`SUBJECT_CONFIG.ppe.refresher`, `availablePpeRefresher`, views `view-refresher-ppe-N`, data `refresherPpeNData`, quiz `quiz-refresher-ppe-N`, `RAILS` entry, shares `handoutNFormulaOutline`). Day 7 (10 problems) and Day 6 (1 problem: geothermal, a copy of Day 7 problem 10) so far; a problem is COPIED to the Day of its Handout topic and keeps its number in the set it came in (LAX 2026-11-16). Day 7 problems are from the AERC lecture Refresher PPE Set 3 screenshots: headwater elevation, specific speed, hydro turbine, Pelton penstock, number of turbines, electrical output, specific speed generator output; kinetic power of the entering water added; the source said leaving, LAX corrected it to entering); other days stay blurred until a problem arrives. New problems use the 4-hint format of RULINGS 17. Generator output is written GO (LAX 2026-11-16), overall efficiency e_o = GO/P_w.
