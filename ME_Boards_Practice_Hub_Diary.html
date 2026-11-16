@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-16": {
-    stamp: "v1.4.16.0 – v1.4.16.20",
+    stamp: "v1.4.16.0 – v1.4.16.21",
     title: "PPE Refresher Day # column",
     body: [
+      "v1.4.16.21 (LAX 2026-11-16): per LAX, a quality is not isolated: Refresher problem 13 (Day 7, D7-13 in Day 6) now writes h2 = hf + x2 hfg and s3 = sf + x4s sfg and solves x with Shift+Solve (same values 0.04975 and 0.8296).",
       "v1.4.16.20 (LAX 2026-11-16): Refresher Day 7 problem 13 (single-flash geothermal, 206 C water h1 = 872, separator 1.1 MPa, condenser 0.035 MPa, e_T 0.85, cycle output 42 MW, ground water mass) from a screenshot: h2 = h1, x2 = (h2-hf)/hfg = 0.04975, x4s from s3 = sg, h4s = 2234.21, e_T = W_T/(m_s(h3-h4s)) gives m_s = 90.20 kg/s, m_g = m_s/x2 = 1813.05 kg/s, choice A matches. The 42 MW cycle output is taken as the turbine output W_T since only the turbine efficiency is given. Topic Geothermal Flash Cycle; copied to Refresher Day 6 as D7-13. Question text keeps the printed data inline (the image had no separate table).",
       "v1.4.16.19 (LAX 2026-11-16): per LAX the geothermal well count shows the overall efficiency e_O = e_T x e_g (W_T cancels, e_O = GO/(m_s dh)) and ends with ONE equation GO/n = x m_well (h3 - h4) e_O (m_s = n x m_well), solved for n with one Shift+Solve (4.433, 5 wells). The two-step m_s then m_g route is gone. Day 6 D7-12 and Day 7 problem 12.",
       "v1.4.16.18 (LAX 2026-11-16): per LAX, in a geothermal plant problem the two efficiencies are derived into the product: e_T = W_T/(m_s dh), e_g = GO/W_T, multiplied (W_T cancels) to GO = m_s (h3 - h4)(e_T x e_g); m_s then comes from one Shift+Solve step (50.98 kg/s). Symbols e_T and e_g (were eta_T, eta_gen). Refresher Day 6 D7-12 and Day 7 problem 12; answer unchanged (5 wells).",
