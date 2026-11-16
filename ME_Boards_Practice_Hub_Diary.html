@@ -291,9 +291,11 @@
 <script>
 const entries = {
   "2026-11-16": {
-    stamp: "v1.4.16.0 – v1.4.16.10",
+    stamp: "v1.4.16.0 – v1.4.16.12",
     title: "PPE Refresher Day # column",
     body: [
+      "v1.4.16.12 (LAX 2026-11-16): special numbering for copied problems: an optional `num` (label, shown instead of the index) and `numNote` (tooltip) on a question in `renderQuizNow`. Convention D<day>-<number> = problem <number> of Refresher Day <day>; the Day 6 geothermal copy is D7-10. Day 7 numbering unchanged.",
+      "v1.4.16.11 (LAX 2026-11-16): per LAX, the generator output symbol is GO (replaces Gen. Output and Output_gen) in all Refresher Day 7 problems that use it (electrical output, specific speed generator output, annual energy net head, geothermal overall efficiency). Standing rule for new Refresher problems. Also per LAX each problem is copied (not moved, numbering stays) to its proper Day: the geothermal problem (Day 6 Handout topic) is also in Refresher Day 6 (`view-refresher-ppe-6`, `refresherPpe6Data`, `handout6FormulaOutline`, `availablePpeRefresher` = [6, 7]) and stays as problem 10 of Day 7 (`refresherPpe7Outline`); the nine hydro problems are Day 7 only.",
       "v1.4.16.10 (LAX 2026-11-16): Refresher Day 7 problem 10 (12 MW geothermal plant, steam 22 kg/s, quality after throttling 27%, ground water enthalpy 760 kJ/kg, overall efficiency) from a screenshot, topic Geothermal Overall Efficiency (a Day 6 Handout topic, so the refresher now has `refresherPpe7Outline` = `handout7FormulaOutline` + a Geothermal section). m_g = 22/0.27 = 81.48 kg/s, e_o = 12,000/(81.48 x 760) = 19.38%, choice C 19.4%, same method as the Day 6 Problem Set item.",
       "v1.4.16.9 (LAX 2026-11-16): per LAX, Refresher Day 7 problem 9 now uses e_o = GO/P_w with P_w = gamma Q h and shows the derivation to GO = e_o gamma Q h (GO = AL = E/T) in Hint 2 and the full solution; symbol e_o replaces eta there.",
       "v1.4.16.8 (LAX 2026-11-16): Refresher Day 7 problem 9 (50,000,000 kWh per year, 1600 m3/min, overall efficiency 66%, net head) from a screenshot, topic Annual Energy -> Average Power -> Head: AL = E/T = 5707.763 kW (T = 8760 hr, assumed, stated in Hint 2), AL = Q gamma h eta gives h = 33.06 m, choice A 33 m.",
