@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-16": {
-    stamp: "v1.4.16.0 – v1.4.16.22",
+    stamp: "v1.4.16.0 – v1.4.16.23",
     title: "PPE Refresher Day # column",
     body: [
+      "v1.4.16.23 (LAX 2026-11-16): per LAX, cycle output = BP and generator output = GO: W_T is replaced by BP in the geothermal well count (problem 12) and flash (problem 13) solutions, Day 7 and the Day 6 copies.",
       "v1.4.16.22 (LAX 2026-11-16): per LAX, saturation values carry the state number where they are used (h_f2, h_fg2 at 1.1 MPa; h_f4, h_fg4, s_f4, s_fg4 at 0.035 MPa; h_g3, s_g3) and the isentropic point is plain h_4 / x_4 (no 4s) in Refresher problem 13 (Day 7, D7-13 in Day 6).",
       "v1.4.16.21 (LAX 2026-11-16): per LAX, a quality is not isolated: Refresher problem 13 (Day 7, D7-13 in Day 6) now writes h2 = hf + x2 hfg and s3 = sf + x4s sfg and solves x with Shift+Solve (same values 0.04975 and 0.8296).",
       "v1.4.16.20 (LAX 2026-11-16): Refresher Day 7 problem 13 (single-flash geothermal, 206 C water h1 = 872, separator 1.1 MPa, condenser 0.035 MPa, e_T 0.85, cycle output 42 MW, ground water mass) from a screenshot: h2 = h1, x2 = (h2-hf)/hfg = 0.04975, x4s from s3 = sg, h4s = 2234.21, e_T = W_T/(m_s(h3-h4s)) gives m_s = 90.20 kg/s, m_g = m_s/x2 = 1813.05 kg/s, choice A matches. The 42 MW cycle output is taken as the turbine output W_T since only the turbine efficiency is given. Topic Geothermal Flash Cycle; copied to Refresher Day 6 as D7-13. Question text keeps the printed data inline (the image had no separate table).",
