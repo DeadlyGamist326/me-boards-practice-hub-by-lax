@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-16": {
-    stamp: "v1.4.16.0 – v1.4.16.17",
+    stamp: "v1.4.16.0 – v1.4.16.18",
     title: "PPE Refresher Day # column",
     body: [
+      "v1.4.16.18 (LAX 2026-11-16): per LAX, in a geothermal plant problem the two efficiencies are derived into the product: e_T = W_T/(m_s dh), e_g = GO/W_T, multiplied (W_T cancels) to GO = m_s (h3 - h4)(e_T x e_g); m_s then comes from one Shift+Solve step (50.98 kg/s). Symbols e_T and e_g (were eta_T, eta_gen). Refresher Day 6 D7-12 and Day 7 problem 12; answer unchanged (5 wells).",
       "v1.4.16.17 (LAX 2026-11-16): per LAX the efficiency-left rule is for the output-over-input (definition) equations only; Refresher Day 7 problem 9 gets its derivation into GO = e_o gamma Q h back (v1.4.16.9 ruling). The other efficiency equations stay as in v1.4.16.16.",
       "v1.4.16.16 (LAX 2026-11-16): per LAX, an equation with an efficiency shows the efficiency alone on the left side. Refresher Day 6/7 well count (eta_gen = GO/W_T, eta_T = W_T/(m_s dh)), problems 6 and 7 (e_G = GO/BP, e_G = GO/KW) and problem 9 (e_o = GO/(gamma Q h) solved for h directly; the separate GO = e_o gamma Q h line is gone) were rewritten, with the calculator displays solving the unknown in the denominator; answers unchanged.",
       "v1.4.16.15 (LAX 2026-11-16): Refresher Day 7 problem 12 (20,000 kW, generator 92%, turbine 82%, quality 18%, 230,000 kg/hr per well, enthalpy drop 520 kJ/kg, wells) from a screenshot: GO = W_T eta_gen (W_T = 21,739.13 kW), W_T = m_s dh eta_T (m_s = 50.98 kg/s), m_s = x m_g (m_g = 283.24 kg/s), n = m_g / m_well = 4.43, rounded up to 5 wells (B, matches). Topic Geothermal Well Count; copied to Refresher Day 6 as D7-12. Unlike the Handout well-count example, the generator efficiency is used because the given power is the generator output GO.",
