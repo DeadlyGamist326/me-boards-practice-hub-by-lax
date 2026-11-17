@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-17": {
-    stamp: "v1.4.17.0",
-    title: "AERC BOOK split into 4 subjects",
+    stamp: "v1.4.17.0 – v1.4.17.1",
+    title: "AERC BOOK split into 4 subjects, update notice",
     body: [
+      "v1.4.17.1 (LAX 2026-11-17): update notice. pages.yml now also writes _site/version.json ({\"version\":\"x.y.z.w\"}) from the highest MEBoards_ file name at deploy time, so it can never go stale. A new IIFE just before the Selectable Handout formulas script (after the Savepoint + Back block) polls version.json (cache-busting, no-store) 15 s after load, every 5 min and when the tab becomes visible; if it is newer than CHANGELOG[0].version it shows a small fixed bottom-left banner Update available v#.#.#.# + Refresh (+ dismiss x). No auto-reload; Refresh fires pagehide (saves mbLastPageV1 via the Savepoint block) then location.reload(), so the restore-last-page feature returns to the same screen. Skipped on file:// and any fetch error. Changelog entry added (student-visible).",
       "v1.4.17.0 (LAX 2026-11-17): the home AERC BOOK section lost its Book Chapters eyebrow and now has four subject buttons in one row (MATHEMATICS, ENGINEERING SCIENCES, POWER & INDUSTRIAL PLANT, MACHINE DESIGN; aercSubjectToggle, .aerc-subject-btn, same click-to-open/click-again-to-close pattern as the Full Course Library, collapsed by default). The existing 21-chapter grid (aerc-main-grid) sits in the MACHINE DESIGN panel; the other three panels show No chapters yet until files arrive. On phones the button text shrinks so all four stay on one row."
     ]
   },
