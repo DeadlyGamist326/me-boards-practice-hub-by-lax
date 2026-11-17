@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-17": {
-    stamp: "v1.4.17.0 – v1.4.17.6",
+    stamp: "v1.4.17.0 – v1.4.17.7",
     title: "AERC BOOK split into 4 subjects, update notice",
     body: [
+      "v1.4.17.7 (LAX 2026-11-17): Refresher Day 7 problem 2 (specific speed): the substituted line keeps units on every given, 0.2623(500 rpm)sqrt(2100 kW)/(28 m)^(5/4); the problem states 28 m (LAX typed 25 m as a units example), so values and answer C are unchanged. Calculator display stays numbers only.",
       "v1.4.17.6 (LAX 2026-11-17): Refresher Day 7 problem 1 (headwater elevation) rewritten with HWE and TWE (replacing H.W. Elev./T.W. Elev.): Hint 2 lists h_g = HWE - TWE and h = h_g - h_f; the full solution derives h = h_g - 0.06 h_g, then h = (HWE - TWE) - 0.06(HWE - TWE), and substitutes with one Shift Solve for HWE (display 32=(X-350)-0.06×(X-350), X = 384.04). Answer B unchanged. Problem 1 exists only in Refresher Day 7 (the Handout h_g row keeps its own H.W. Elev. wording).",
       "v1.4.17.5 (LAX 2026-11-17): Refresher Day 7 problem 30 (battery energy) now uses the base formula P_battery = E/t with E found by Shift Solve (display 10.5=X÷(8×3600)); the formula is not rearranged for E. Problem 30 exists only in Refresher Day 7 (no copy in another Day). Answer B unchanged.",
       "v1.4.17.4 (LAX 2026-11-17): pop-up animations. Calculator window (#calc-toggle IIFE): show() plays .calc-in (calcWinIn, fade + 14px slide, 260ms) once the iframe has reported its size (reveal and the fast path); hide() adds .calc-out (220ms) and sets display none after 230ms, visible() ignores a closing window so a quick re-click reopens it; no keys/layout code touched. .overlay (prep, retake, tm/pt ready) and .pause-overlay no longer toggle display: they are always display flex and fade via opacity/visibility (260ms), .prep-box scales in; dynamic overlays force a reflow before adding active. prefers-reduced-motion turns all of it off. Not changed: calc hint bubble (already animates in), side panels (already slide), access gate and admin login (hidden attribute, security-sensitive).",
