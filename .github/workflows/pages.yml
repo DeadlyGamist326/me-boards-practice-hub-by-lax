@@ -41,6 +41,10 @@ jobs:
           cp pdf-splitter.html _site/pdf-splitter.html
           cp letter-to-folio-snapper.html _site/letter-to-folio-snapper.html
           cp tools.html _site/tools.html
+          # version.json is generated from the file name, so it can never be stale (the app polls it for the update notice)
+          v="$(echo "$latest" | sed -E 's/.*_v([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\.html/\1/')"
+          echo "{\"version\":\"$v\"}" > _site/version.json
+          cat _site/version.json
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
