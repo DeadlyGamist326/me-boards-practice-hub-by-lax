@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-17": {
-    stamp: "v1.4.17.0 – v1.4.18.0",
+    stamp: "v1.4.17.0 – v1.4.18.1",
     title: "AERC BOOK split into 4 subjects, update notice",
     body: [
+      "v1.4.18.1 (LAX 2026-11-17): Refresher Day 7 problem 3 (turbine power output) rebuilt on LAX's equations: BP = P_w - P_f, P_w = gamma Q h, P_f = 2 pi T N, with h from Bernoulli z_1 + v_1^2/2g + p_1/gamma = z_2 + v_2^2/2g + p_2/gamma + h (p = 0, z_2 = 0, v_2 = 0, so h = 55 + 5^2/(2 x 9.81) = 56.274 m, stored in A). The old P_k term is gone (the velocity head is inside h); P_w = 496.845 kW, P_f = 9.802 kW (stored in B), BP = 487.04 kW, answer A unchanged. Reading used: the 5 m/s velocity is at the 55 m point and the outlet velocity is zero.",
       "v1.4.18.0 (LAX 2026-11-17): home page layout: the Full Course Library block (`.subject-browse`, Math/PPE/MD toggle buttons and `#subject-browse-panel`) was moved in the HTML to sit right after the Quick Access section and before the AERC BOOK section; no JS/CSS change, ids unchanged so the slide animation and toggles are untouched.",
       "v1.4.17.7 (LAX 2026-11-17): Refresher Day 7 problem 2 (specific speed): the substituted line keeps units on every given, 0.2623(500 rpm)sqrt(2100 kW)/(28 m)^(5/4); the problem states 28 m (LAX typed 25 m as a units example), so values and answer C are unchanged. Calculator display stays numbers only.",
       "v1.4.17.6 (LAX 2026-11-17): Refresher Day 7 problem 1 (headwater elevation) rewritten with HWE and TWE (replacing H.W. Elev./T.W. Elev.): Hint 2 lists h_g = HWE - TWE and h = h_g - h_f; the full solution derives h = h_g - 0.06 h_g, then h = (HWE - TWE) - 0.06(HWE - TWE), and substitutes with one Shift Solve for HWE (display 32=(X-350)-0.06×(X-350), X = 384.04). Answer B unchanged. Problem 1 exists only in Refresher Day 7 (the Handout h_g row keeps its own H.W. Elev. wording).",
