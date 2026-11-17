@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Paste to PDF</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
   :root { --bg:#f6f5f2; --card:#fff; --text:#1c1c1c; --muted:#6b6b6b; --line:#d9d6cf; --accent:#2563eb; --danger:#c2410c; }
   @media (prefers-color-scheme: dark) {
@@ -28,7 +29,9 @@
   #list { display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:12px; }
   .pg { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:8px; display:flex; flex-direction:column; gap:6px; }
   .pg.dragging { opacity:.4; }
-  .pg.target { outline:2px solid var(--accent); }
+  .pg.settle { animation:settle .35s ease-out; }
+  @keyframes settle { 0% { transform:scale(1.08); box-shadow:0 10px 24px rgba(0,0,0,.3); } 60% { transform:scale(.97); } 100% { transform:scale(1); box-shadow:none; } }
+  .pg.dragging { outline:2px dashed var(--accent); }
   .pg { cursor:grab; }
   .pg img { width:100%; height:150px; object-fit:contain; background:#fff; border-radius:6px; }
   .pg .row { display:flex; align-items:center; justify-content:space-between; gap:4px; font-size:13px; color:var(--muted); }
@@ -40,13 +43,13 @@
 <body>
 <main>
   <h1>Paste to PDF</h1>
-  <p class="sub">Paste pictures and download them as one PDF. Nothing is uploaded, so you do not need upload speed. Everything stays on your device.</p>
+  <p class="sub">Paste pictures or PDF files and download them as one PDF. Every page of a pasted PDF becomes its own page below, and you can delete pages you do not want. Nothing is uploaded, so you do not need upload speed. Everything stays on your device.</p>
 
   <div id="drop" tabindex="0">
-    <b>Press Ctrl+V to paste pictures</b>
-    <span>or drag and drop images here, or click to choose files</span>
+    <b>Press Ctrl+V to paste pictures or PDF files</b>
+    <span>or drag and drop images or PDFs here, or click to choose files</span>
   </div>
-  <input type="file" id="file" accept="image/*" multiple hidden>
+  <input type="file" id="file" accept="image/*,application/pdf,.pdf" multiple hidden>
 
   <div class="bar">
     <label>Page size
@@ -75,9 +78,34 @@
 <script>
 (function () {
   var pages = []; // {id, canvas, url}
-  var nextId = 1, dragFrom = -1;
+  var nextId = 1, dragFrom = -1, dragEl = null, settleId = 0;
   var $ = function (id) { return document.getElementById(id); };
   var list = $("list"), msg = $("msg");
+
+  var PDF_SCALE = 2; // render PDF pages at 2x for sharp text
+  if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  function isPdf(f) { return f.type === "application/pdf" || /\.pdf$/i.test(f.name || ""); }
+
+  async function addPdf(file) {
+    if (!window.pdfjsLib) throw new Error("PDF reader not loaded (check your internet connection)");
+    var doc = await pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+    var n = 0;
+    for (var i = 1; i <= doc.numPages; i++) {
+      say("Reading PDF page " + i + " of " + doc.numPages + "...");
+      var page = await doc.getPage(i);
+      var vp = page.getViewport({ scale: PDF_SCALE });
+      var c = document.createElement("canvas");
+      c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+      var x = c.getContext("2d");
+      x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+      await page.render({ canvasContext: x, viewport: vp }).promise;
+      pages.push({ id: nextId++, canvas: c, k: 1 / PDF_SCALE, thumb: c.toDataURL("image/jpeg", 0.5) });
+      n++;
+      page.cleanup();
+    }
+    doc.destroy();
+    return n;
+  }
 
   function say(t) { msg.textContent = t || ""; }
 
@@ -92,7 +120,7 @@
         x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
         x.drawImage(img, 0, 0);
         URL.revokeObjectURL(url);
-        pages.push({ id: nextId++, canvas: c, thumb: c.toDataURL("image/jpeg", 0.6) });
+        pages.push({ id: nextId++, canvas: c, k: 72 / 96, thumb: c.toDataURL("image/jpeg", 0.6) });
         resolve(true);
       };
       img.onerror = function () { URL.revokeObjectURL(url); resolve(false); };
@@ -102,13 +130,18 @@
 
   async function addFiles(files) {
     files = Array.prototype.slice.call(files); // copy: the file input list is cleared after choosing
-    var n = 0, bad = 0;
+    var n = 0, np = 0, bad = 0;
     for (var i = 0; i < files.length; i++) {
       var f = files[i];
-      if (!f.type || f.type.indexOf("image/") !== 0) { bad++; continue; }
-      if (await addBlob(f)) n++; else bad++;
+      if (isPdf(f)) {
+        try { np += await addPdf(f); } catch (err) { bad++; }
+      } else if (!f.type || f.type.indexOf("image/") !== 0) { bad++; }
+      else if (await addBlob(f)) n++; else bad++;
     }
-    say(n + " picture(s) added" + (bad ? ", " + bad + " skipped (not a readable image)" : "") + ".");
+    var parts = [];
+    if (n) parts.push(n + " picture(s)");
+    if (np) parts.push(np + " PDF page(s)");
+    say((parts.length ? parts.join(" and ") + " added" : "Nothing added") + (bad ? ", " + bad + " skipped (not a readable image or PDF)" : "") + ".");
     render();
   }
 
@@ -116,35 +149,65 @@
     list.innerHTML = "";
     pages.forEach(function (p, i) {
       var d = document.createElement("div");
-      d.className = "pg"; d.draggable = true;
+      d.className = "pg" + (p.id === settleId ? " settle" : ""); d.draggable = true;
       var img = document.createElement("img"); img.src = p.thumb; img.draggable = false; img.alt = "Page " + (i + 1);
       var row = document.createElement("div"); row.className = "row";
       var lab = document.createElement("span"); lab.textContent = "Page " + (i + 1);
+      lab.title = "Page " + (i + 1) + " of " + pages.length;
       var l = btn("◀", function () { move(i, i - 1); }, i === 0);
       var r = btn("▶", function () { move(i, i + 1); }, i === pages.length - 1);
-      var x = btn("✕", function () { pages.splice(i, 1); render(); }, false); x.className = "del";
+      var x = btn("✕", function () { pages.splice(i, 1); render(); }, false); x.className = "del"; x.title = "Delete this page";
       row.append(l, lab, r, x);
       d.append(img, row);
+      d.dataset.id = p.id;
       d.addEventListener("dragstart", function (e) {
-        dragFrom = i; d.classList.add("dragging");
+        dragFrom = i; dragEl = d;
+        setTimeout(function () { d.classList.add("dragging"); }, 0);
         e.dataTransfer.effectAllowed = "move";
         try { e.dataTransfer.setData("text/plain", String(i)); } catch (x) {}
       });
-      d.addEventListener("dragend", function () { dragFrom = -1; render(); });
-      d.addEventListener("dragover", function (e) {
+      d.addEventListener("dragend", function () {
         if (dragFrom < 0) return;
-        e.preventDefault(); e.dataTransfer.dropEffect = "move";
-        if (dragFrom !== i) d.classList.add("target");
+        var order = Array.prototype.map.call(list.children, function (el) { return +el.dataset.id; });
+        pages.sort(function (a, b) { return order.indexOf(a.id) - order.indexOf(b.id); });
+        var sid = dragEl.dataset.id; dragFrom = -1; dragEl = null; settleId = +sid; render(); settleId = 0;
       });
-      d.addEventListener("dragleave", function () { d.classList.remove("target"); });
+      d.addEventListener("dragover", function (e) {
+        if (dragFrom < 0 || !dragEl) return;
+        e.preventDefault(); e.dataTransfer.dropEffect = "move";
+        if (d === dragEl) return;
+        var kids = Array.prototype.slice.call(list.children);
+        var before = kids.indexOf(dragEl) > kids.indexOf(d); // dragged item is after target -> go before it
+        var first = rects();
+        list.insertBefore(dragEl, before ? d : d.nextSibling);
+        flip(first);
+      });
       d.addEventListener("drop", function (e) {
         if (dragFrom < 0) return;
         e.preventDefault(); e.stopPropagation();
-        var f = dragFrom; dragFrom = -1; move(f, i);
       });
       list.appendChild(d);
     });
     $("make").disabled = $("clear").disabled = pages.length === 0;
+  }
+  function rects() {
+    var m = new Map();
+    Array.prototype.forEach.call(list.children, function (el) { m.set(el, el.getBoundingClientRect()); });
+    return m;
+  }
+  // FLIP: slide every moved card from its old spot to its new one
+  function flip(first) {
+    Array.prototype.forEach.call(list.children, function (el) {
+      var a = first.get(el), b = el.getBoundingClientRect();
+      if (!a) return;
+      var dx = a.left - b.left, dy = a.top - b.top;
+      if (!dx && !dy) return;
+      el.style.transition = "none";
+      el.style.transform = "translate(" + dx + "px," + dy + "px)";
+      el.getBoundingClientRect(); // force reflow
+      el.style.transition = "transform .22s ease";
+      el.style.transform = "";
+    });
   }
   function btn(t, fn, dis) { var b = document.createElement("button"); b.textContent = t; b.onclick = fn; b.disabled = dis; return b; }
   function move(a, b) {
@@ -156,10 +219,12 @@
   document.addEventListener("paste", function (e) {
     var files = [], items = (e.clipboardData && e.clipboardData.items) || [];
     for (var i = 0; i < items.length; i++) {
-      if (items[i].kind === "file" && items[i].type.indexOf("image/") === 0) files.push(items[i].getAsFile());
+      if (items[i].kind === "file" && (items[i].type.indexOf("image/") === 0 || items[i].type === "application/pdf")) {
+        var gf = items[i].getAsFile(); if (gf) files.push(gf);
+      }
     }
     if (files.length) { e.preventDefault(); addFiles(files); }
-    else say("No picture found in the clipboard.");
+    else say("No picture or PDF found in the clipboard.");
   });
   // drop + pick
   var drop = $("drop");
@@ -196,7 +261,7 @@
       var iw = p.canvas.width, ih = p.canvas.height;
       var W, H, dw, dh, dx, dy;
       if (size === "fit") {
-        var k = 72 / 96; // px -> pt
+        var k = p.k; // canvas px -> pt
         W = iw * k + 2 * m; H = ih * k + 2 * m; dw = iw * k; dh = ih * k; dx = m; dy = m;
       } else {
         var base = size === "a4" ? [595.28, 841.89] : [612, 792];
