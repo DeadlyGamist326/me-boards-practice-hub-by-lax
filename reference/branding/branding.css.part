@@ -1,0 +1,107 @@
+/* 1. inside the existing :root { ... } block */
+    --credit-h: 48px;
+
+/* 2. desktop rules */
+  .made-by-credit {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 10px 16px;
+    font-size: 22px;
+    font-family: Cambria, Georgia, "Times New Roman", serif;
+    color: #d4af37;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(4px);
+    border-bottom: 1px solid var(--line);
+    z-index: 60;
+  }
+  .credit-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+  }
+  .header-title-slot {
+    flex: 1;
+    min-width: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .header-title-slot h1 {
+    margin: 0;
+    font-size: 17px;
+    white-space: normal;
+    overflow: visible;
+  }
+  .header-filter-slot {
+    width: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .header-filter-slot .topic-filter-wrap {
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    max-width: none;
+  }
+  .header-filter-slot .topic-filter-btn {
+    flex: 1;
+  }
+  .lax-brand {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .lax-img {
+    height: 0.95em;
+    width: auto;
+    vertical-align: -0.12em;
+  }
+  body.on-home .made-by-credit { display:none; }
+  .home-credit { text-align:center; font-family:Cambria, Georgia, "Times New Roman", serif; font-size:28px; color:#d4af37; margin:14px auto 8px; white-space:nowrap; }
+  .home-credit .lax-img { height:1.5em; vertical-align:-0.3em; }
+  .lax-img { touch-action: manipulation; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; -webkit-user-drag: none; }
+  .gate-card .gate-logo { height: 2.2em; width: auto; margin-bottom: 14px; }
+
+/* 3. phone overrides: wrap in @media (max-width: 480px) { ... } */
+@media (max-width: 480px) {
+    :root { --credit-h: 32px; }
+    .made-by-credit {
+      font-size: 15px;
+      padding: 6px 10px;
+      gap: 4px;
+    }
+    .credit-top-row {
+      gap: 8px;
+    }
+    .header-title-slot {
+      font-size: 12px;
+    }
+    .header-title-slot h1 {
+      font-size: 13px;
+    }
+    .header-filter-slot {
+      font-size: 12px;
+    }
+    .header-filter-slot .topic-filter-wrap {
+      gap: 6px;
+    }
+    .header-filter-slot .topic-filter-label {
+      font-size: 11px;
+    }
+    .header-filter-slot .topic-filter-btn {
+      font-size: 11px;
+      padding: 4px 6px;
+      min-width: 0;
+    }
+}

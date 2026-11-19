@@ -1,0 +1,19 @@
+/* Single tap on the LAX logo: a timer bar at the very top of the screen drains over 2 s, then goes Home. Tapping the logo again during the countdown cancels it (LAX 2026-11-08). */
+(function () {
+  let bar = null, tm = null, times = [];
+  function stop() { clearTimeout(tm); tm = null; if (bar) { bar.remove(); bar = null; } }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest || !e.target.closest('.lax-img')) return;
+    const now = Date.now();
+    times = times.filter((t) => now - t < 1500); times.push(now);
+    if (tm || times.length >= 5) { stop(); if (times.length >= 5) times = []; return; }
+    const v = document.querySelector('.view.active');
+    if (!v || v.id === 'view-home') return;
+    bar = document.createElement('div');
+    bar.style.cssText = 'position:fixed;top:0;left:0;height:6px;width:100%;background:#e53935;z-index:2147483647;transform-origin:left center;transition:transform 2s linear;pointer-events:none;';
+    document.body.appendChild(bar);
+    void bar.offsetWidth;
+    bar.style.transform = 'scaleX(0)';
+    tm = setTimeout(() => { stop(); showView('view-home'); window.scrollTo(0, 0); }, 2000);
+  });
+})();

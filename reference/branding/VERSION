@@ -1,0 +1,17 @@
+source_file: MEBoards_ PracticeHub_by LAX_v1.4.19.0.html
+source_version: 1.4.19.0
+generated: 2026-11-19
+
+# part | source lines | sha256 (first 12) | bytes
+head-icons.html.part | 7-8 | e09ac0fb19a9 | 33717
+credit-bar.html.part | 3698-3704 | 84d1e99457af | 17552
+home-credit.html.part | 3710-3710 | 2a1e2b3143d5 | 17342
+body-tag.html.part | 3680-3680 | ef024403b777 | 23
+branding.css.part | 3229-3438 | 887853fba155 | 2663
+header-slots.js.part | 5766-5817 | 5a6e05ac270f | 2678
+logo-tap-home.js.part | 1608-1626 | 003a66c5dbe7 | 1164
+logo-5tap-solutions.js.part | 1627-1646 | 7eca682474be | 889
+logo-10tap-admin.js.part | 117583-117591 | 2f9ca30a20f8 | 366
+gate-logo.js.part | 117308-117311 | 2b0010026133 | 225
+assets/header-logo.png | (decoded from base64 in the file) | 0a45fec430b8 | 12930
+assets/favicon-192.png | (decoded from base64 in the file) | 4dd2bbb9924b | 12597

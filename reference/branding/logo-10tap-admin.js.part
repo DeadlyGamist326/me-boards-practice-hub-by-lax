@@ -1,0 +1,9 @@
+  // ---- hidden admin entry: 10 consecutive taps on the LAX logo ----
+  var taps = 0, lastTap = 0;
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest || !e.target.closest(".lax-img")) return;
+    var now = Date.now();
+    taps = now - lastTap > 1500 ? 1 : taps + 1;
+    lastTap = now;
+    if (taps >= 10) { taps = 0; openAdmin(); }
+  });

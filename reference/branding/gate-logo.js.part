@@ -1,0 +1,4 @@
+  function logoEl() {
+    var src = document.querySelector(".made-by-credit .lax-img, .home-credit .lax-img");
+    return src ? h("img", { "class": "lax-img gate-logo", src: src.getAttribute("src"), alt: "LAX" }) : null;
+  }

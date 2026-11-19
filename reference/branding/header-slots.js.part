@@ -1,0 +1,52 @@
+// Moves the current view's <h1> title and "Practice by formula" filter
+// (if it has either) into the sticky top bar alongside "Made by LAX" —
+// the title next to "Made by LAX" on one row, and the filter on its own
+// full-width row below (it needs the whole row's width; squeezed next to
+// the title it kept overflowing its allotted space). Elements are MOVED
+// (not cloned) so the filter button keeps working normally; a cache keyed
+// by view id is used because after the first move, the element is no
+// longer a descendant of `el` for a fresh querySelector to find on later
+// visits.
+const viewHeaderCache = {};
+function syncHeaderContext(id, el) {
+  // The home page shows the big LAX logo itself, so the "Made by LAX" bar is hidden there.
+  document.body.classList.toggle('on-home', id === 'view-home');
+  const titleSlot = document.getElementById('header-title-slot');
+  const filterSlot = document.getElementById('header-filter-slot');
+  if (!titleSlot || !filterSlot) return;
+  if (id === 'view-home') {
+    // Home has its own page title in the normal content flow; don't pull
+    // it into the sticky bar too — only quiz/handout views get relocated.
+    titleSlot.querySelectorAll('h1').forEach(n => n.remove());
+    filterSlot.querySelectorAll('.topic-filter-wrap').forEach(n => n.remove());
+    updateCreditBarHeight();
+    return;
+  }
+  if (!viewHeaderCache[id]) viewHeaderCache[id] = {};
+  const cache = viewHeaderCache[id];
+  if (!cache.h1) cache.h1 = el.querySelector('h1');
+  if (!cache.filterWrap) {
+    const fw = el.querySelector('.topic-filter-wrap');
+    if (fw) cache.filterWrap = fw;
+  }
+  titleSlot.querySelectorAll('h1').forEach(n => n.remove());
+  filterSlot.querySelectorAll('.topic-filter-wrap').forEach(n => n.remove());
+  if (cache.h1) titleSlot.appendChild(cache.h1);
+  if (cache.filterWrap) filterSlot.appendChild(cache.filterWrap);
+  updateCreditBarHeight();
+}
+
+// Keeps --credit-h in sync with the ACTUAL rendered height of the top
+// "Made by LAX" bar, instead of a fixed guess — since that bar now also
+// holds the view's title + filter button, its height can vary (e.g. it
+// may wrap to two lines on a narrow screen), and the quiz-topbar row
+// right below it (back/pause/timer/retake) needs to sit exactly at that
+// height so the two sticky rows stack cleanly with no gap or overlap.
+function updateCreditBarHeight() {
+  const bar = document.querySelector('.made-by-credit');
+  if (!bar) return;
+  document.documentElement.style.setProperty('--credit-h', bar.offsetHeight + 'px');
+}
+window.addEventListener('resize', updateCreditBarHeight);
+window.addEventListener('load', updateCreditBarHeight);
+updateCreditBarHeight();
