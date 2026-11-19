@@ -291,12 +291,13 @@
 <script>
 const entries = {
   "2026-11-19": {
-    stamp: "v1.4.18.3 – v1.4.18.5",
+    stamp: "v1.4.18.3 – v1.4.18.6",
     title: "AERC REVIEW PHASE label",
     body: [
       "v1.4.18.3 (LAX 2026-11-19): home page, AERC Full Course Library block: added a second `.section-eyebrow.subject-phase-label` line reading AERC REVIEW PHASE between the library title and the Math/PPE/MD toggle buttons (same eyebrow style, margin-top 0 so it sits tight under the title).",
       "v1.4.18.4 (LAX 2026-11-19, correction): the AERC REVIEW PHASE label was in the wrong place. It moved from between the library title and the Math/PPE/MD toggle buttons to the top of `#subject-browse-panel` (header of the big button grid, above the column headers), same `.section-eyebrow.subject-phase-label` style. Changelog got its own v1.4.18.4 entry.",
-      "v1.4.18.5 (LAX 2026-11-19): new AERC REFRESHER PHASE header (`.section-eyebrow.subject-phase-label`) after the Full Course Library panel inside `.subject-browse`, with `#refresher-phase-rows` built by `buildRefresherPhase()`: one flex row per subject (PPE, Math, MD) of 8 compact `.refresher-set-btn` Set 1-8 buttons (nowrap, smaller font on mobile so the row never wraps). `REFRESHER_SETS[subj][n] = fn` wires a set; all are disabled for now because the Set-to-Day mapping of the existing Refresher Day 6/7 content (Day 7 came from the lecture Set 3) was not given. The old Refresher Day # column in the PPE panel is untouched."
+      "v1.4.18.5 (LAX 2026-11-19): new AERC REFRESHER PHASE header (`.section-eyebrow.subject-phase-label`) after the Full Course Library panel inside `.subject-browse`, with `#refresher-phase-rows` built by `buildRefresherPhase()`: one flex row per subject (PPE, Math, MD) of 8 compact `.refresher-set-btn` Set 1-8 buttons (nowrap, smaller font on mobile so the row never wraps). `REFRESHER_SETS[subj][n] = fn` wires a set; all are disabled for now because the Set-to-Day mapping of the existing Refresher Day 6/7 content (Day 7 came from the lecture Set 3) was not given. The old Refresher Day # column in the PPE panel is untouched.",
+      "v1.4.18.6 (LAX 2026-11-19): AERC REFRESHER PHASE moved into `#subject-browse-panel` (so it only shows after tapping Math/PPE/MD) and placed BEFORE the AERC REVIEW PHASE header. `buildRefresherPhase(subjectKey)` is called from `buildSubjectPanel` and draws one row of Set 1-8 plus a second row with one `Terms<br>Set 1` button (`.refresher-terms-btn`, one Set-button wide). `REFRESHER_SETS` / new `REFRESHER_TERMS` are keyed by math/ppe/md; all disabled until wired. The uploaded PIPE REFRESHER SET 6 PDF was not imported (no instruction)."
     ]
   },
   "2026-11-17": {
