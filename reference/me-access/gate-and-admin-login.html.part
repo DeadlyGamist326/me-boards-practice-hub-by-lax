@@ -1,0 +1,15 @@
+<!-- ACCESS GATE: visible from first paint so the app is never readable before the check finishes (fail-closed). Logic is in the last <script> of this file. -->
+<div id="access-gate" role="dialog" aria-live="polite">
+  <div class="gate-card" id="gate-card"><h2>Checking access&hellip;</h2><p>Please wait a moment.</p></div>
+</div>
+<div id="trial-banner" hidden></div>
+<div id="admin-login" hidden>
+  <div class="gate-card">
+    <h2>Admin sign in</h2>
+    <input type="text" id="adm-email" placeholder="Email" autocomplete="username" inputmode="email">
+    <input type="password" id="adm-pass" placeholder="Password" autocomplete="current-password" style="width:100%;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:8px;margin-bottom:10px;">
+    <div class="gate-err" id="adm-err"></div>
+    <button class="gate-btn" id="adm-go">Sign in</button>
+    <button class="gate-btn alt" id="adm-cancel">Cancel</button>
+  </div>
+</div>

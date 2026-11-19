@@ -1,0 +1,58 @@
+  /* Calculator display rail: for every problem of PPE Day 9-11 Sample Problems, Problem Sets and Trivia (and Day 1-8 Problem Sets and Trivia), each step's calculator display is shown just outside the right border of the
+     problems column, level with its own step (the equivalent of the boxed line it belongs to) and scrolling with the page. The inline copies stay
+     in the page and show again when there is no room. The solution layout never moves. */
+  (function () {
+    const RAILS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(n => ({ view: 'view-samples-ppe-' + n, root: 'samples-ppe-' + n, unit: '.sample-problem' }))
+      .concat([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(n => ({ view: 'view-ppe-ps-' + n, root: 'quiz-ppe-ps-' + n, unit: '.question' })))
+      .concat([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(n => ({ view: 'view-ppe-trivia-' + n, root: 'quiz-ppe-' + n, unit: '.question' })))
+      .concat([3, 6].map(n => ({ view: 'view-refresher-set-ppe-' + n, root: 'quiz-refresher-set-ppe-' + n, unit: '.question' })))
+      .concat([9, 10, 11].map(n => ({ view: 'view-missed-ppe-' + n, root: 'quiz-missed-ppe-' + n, unit: '.question' })))
+      .concat([{ view: 'view-missed-md-1', root: 'quiz-missed-md-1', unit: '.question' }, { view: 'view-samples-md-1', root: 'samples-md-1', unit: '.sample-problem' }, { view: 'view-md-ps-1', root: 'quiz-md-ps-1', unit: '.question' }, { view: 'view-md-trivia-1', root: 'quiz-md-1', unit: '.question' }, { view: 'view-samples-md-2', root: 'samples-md-2', unit: '.sample-problem' }, { view: 'view-md-ps-2', root: 'quiz-md-ps-2', unit: '.question' }, { view: 'view-md-trivia-2', root: 'quiz-md-2', unit: '.question' }, { view: 'view-samples-md-3', root: 'samples-md-3', unit: '.sample-problem' }, { view: 'view-samples-md-4', root: 'samples-md-4', unit: '.sample-problem' }, { view: 'view-md-ps-3', root: 'quiz-md-ps-3', unit: '.question' }, { view: 'view-md-trivia-3', root: 'quiz-md-3', unit: '.question' }, { view: 'view-md-trivia-4', root: 'quiz-md-4', unit: '.question' }, { view: 'view-md-ps-4', root: 'quiz-md-ps-4', unit: '.question' }, { view: 'view-samples-md-5', root: 'samples-md-5', unit: '.sample-problem' }, { view: 'view-samples-md-6', root: 'samples-md-6', unit: '.sample-problem' }, { view: 'view-md-trivia-5', root: 'quiz-md-5', unit: '.question' }, { view: 'view-md-trivia-6', root: 'quiz-md-6', unit: '.question' }, { view: 'view-md-ps-5', root: 'quiz-md-ps-5', unit: '.question' }, { view: 'view-md-ps-6', root: 'quiz-md-ps-6', unit: '.question' }, { view: 'view-aerc-md-1', root: 'quiz-aerc-md-1', unit: '.question' }, { view: 'view-aerc-book-6', root: 'quiz-aerc-book-6', unit: '.question' }, { view: 'view-aerc-md-2', root: 'quiz-aerc-md-2', unit: '.question' }, { view: 'view-aerc-book-7', root: 'quiz-aerc-book-7', unit: '.question' }, { view: 'view-aerc-md-5', root: 'quiz-aerc-md-5', unit: '.question' }, { view: 'view-aerc-md-6', root: 'quiz-aerc-md-6', unit: '.question' }, { view: 'view-aerc-book-17', root: 'quiz-aerc-book-17', unit: '.question' }, { view: 'view-aerc-book-16', root: 'quiz-aerc-book-16', unit: '.question' }, { view: 'view-aerc-book-15', root: 'quiz-aerc-book-15', unit: '.question' }, { view: 'view-aerc-book-4', root: 'quiz-aerc-book-4', unit: '.question' }, { view: 'view-aerc-book-18', root: 'quiz-aerc-book-18', unit: '.question' }, { view: 'view-aerc-book-19', root: 'quiz-aerc-book-19', unit: '.question' }, { view: 'view-aerc-book-20', root: 'quiz-aerc-book-20', unit: '.question' }, { view: 'view-builder', root: 'fb-stage', unit: '.idt-card' }]);
+    const rail = document.createElement('div'); rail.className = 'calc-rail';
+    let queued = false;
+    const items = new Map();
+    function room(sp) { const r = sp.getBoundingClientRect(); return window.innerWidth - r.right >= 340 ? r.right + window.scrollX + 12 : null; }
+    function copyOf(p) {
+      const src = p.querySelector('.calc-side'); if (!src) return null;
+      const copy = src.cloneNode(true);
+      copy.querySelectorAll('canvas').forEach(c => c.remove());
+      copy.querySelectorAll('.calc-lcd').forEach(l => l.removeAttribute('data-done'));
+      const box = document.createElement('div'); box.className = 'calc-rail-item'; box.appendChild(copy); return box;
+    }
+    function update() {
+      queued = false;
+      let any = false;
+      const live = new Set();
+      RAILS.forEach(cfg => {
+        const view = document.getElementById(cfg.view), root = document.getElementById(cfg.root);
+        if (!view || !root || !view.classList.contains('active')) return;
+        const sps = Array.from(root.querySelectorAll(cfg.unit));
+        const sp = sps.find(x => x.offsetParent);
+        const left = sp ? room(sp) : null;
+        let prevBottom = -1e9;
+        sps.forEach(q => q.querySelectorAll('.calc-pair').forEach(p => {
+          p.classList.add('fl'); live.add(p);
+          let it = items.get(p);
+          if (!it) { const box = copyOf(p); if (!box) return; it = {box}; items.set(p, it); rail.appendChild(box); }
+          if (left === null || !p.offsetParent) { it.box.style.display = 'none'; return; }
+          const r = p.getBoundingClientRect();
+          it.box.style.display = 'block'; it.box.style.left = left + 'px';
+          if (!it.drawn) { calcLcd(it.box); it.drawn = true; }
+          const top = Math.max(prevBottom + 6, r.top + window.scrollY + (r.height - it.box.offsetHeight) / 2);
+          it.box.style.top = top + 'px'; prevBottom = top + it.box.offsetHeight;
+          any = true;
+        }));
+      });
+      items.forEach((it, p) => { if (!p.isConnected) { it.box.remove(); items.delete(p); } else if (!live.has(p)) it.box.style.display = 'none'; });
+      document.body.classList.toggle('calc-dock-on', any);
+    }
+    function q() { if (!queued) { queued = true; requestAnimationFrame(update); } }
+    function start() {
+      document.body.appendChild(rail);
+      if (window.ResizeObserver) { const ro = new ResizeObserver(q); RAILS.forEach(cfg => { const root = document.getElementById(cfg.root); if (root) ro.observe(root); }); }
+    }
+    window.addEventListener('resize', q);
+    document.addEventListener('click', function () { setTimeout(q, 60); setTimeout(q, 600); });
+    if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
+    window.calcDockUpdate = q;
+  })();

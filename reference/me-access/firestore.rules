@@ -1,0 +1,68 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null && request.auth.uid == 'HMyGI5u3b5hwvhwWS8GpaalVsYa2';
+    }
+
+    // One document per IP address that has started a trial: the first account to use an IP claims it,
+    // and any later new account from the same IP is created as 'pending' (no free trial) by the app.
+    // The IP is reported by the browser, so this is a deterrent, not real enforcement.
+    match /ips/{ipId} {
+      allow get: if request.auth != null;
+      allow list: if isAdmin();
+      allow update: if isAdmin();
+      allow create: if isAdmin() || (request.auth != null
+        && request.resource.data.keys().hasOnly(['uid', 'ip', 'at'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.ip is string && request.resource.data.ip.size() <= 45
+        && request.resource.data.at == request.time);
+      allow delete: if isAdmin();
+    }
+
+    // One document per registered account (email/password user). The document
+    // id is the account's Firebase Auth uid, so a user can only touch their own.
+    match /users/{userId} {
+      allow read: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+
+      // A user may only create their own doc as a fresh trial, stamped with the SERVER time.
+      allow create: if request.auth != null && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['status', 'name', 'email', 'devices', 'firstSeen', 'lastSeen'])
+        && request.resource.data.status in ['trial', 'pending', 'blocked']
+        && request.resource.data.name is string && request.resource.data.name.size() <= 60
+        && (request.resource.data.email == request.auth.token.email
+            || (request.auth.token.firebase.sign_in_provider == 'anonymous' && request.resource.data.email == ''))
+        && request.resource.data.devices is map && request.resource.data.devices.size() <= 20
+        && request.resource.data.firstSeen == request.time
+        && request.resource.data.lastSeen == request.time;
+
+      // A user may only refresh lastSeen, record the browser they use (devices),
+      // or move trial -> pending when the trial ends. They can never approve
+      // themselves or change name/email/firstSeen.
+      allow update: if isAdmin() || (
+        request.auth != null && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['devices', 'status', 'lastSeen'])
+        && request.resource.data.lastSeen == request.time
+        && request.resource.data.devices is map && request.resource.data.devices.size() <= 20
+        && (request.resource.data.status == resource.data.status
+            || (request.resource.data.status == 'pending' && resource.data.status == 'trial'))
+      );
+
+      // Only the admin may delete an entry. (The deleted person's Firebase Auth user still exists;
+      // if they log in again they start as a new account with a fresh 30-minute trial.)
+      allow delete: if isAdmin();
+
+      // Visit log shown in the admin calendar: one doc per day (id YYYY-MM-DD), field v = map of visits.
+      // The visitor writes only their own log; the admin reads and deletes it.
+      match /log/{day} {
+        allow read: if isAdmin() || (request.auth != null && request.auth.uid == userId);
+        allow create, update: if request.auth != null && request.auth.uid == userId
+          && day.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+          && request.resource.data.keys().hasOnly(['v'])
+          && request.resource.data.v is map && request.resource.data.v.size() <= 100;
+        allow delete: if isAdmin();
+      }
+    }
+  }
+}

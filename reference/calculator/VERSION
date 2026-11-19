@@ -1,0 +1,12 @@
+source_file: MEBoards_ PracticeHub_by LAX_v1.4.19.0.html
+source_version: 1.4.19.0
+generated: 2026-11-19
+
+# part | source lines (in that file) | sha256 (first 12) | bytes
+calculator-core.html.part | 118307-119196 | 3cb6185676b0 | 485100
+calc-lcd-engine.js.part | 1324-1561 | e84278df7c77 | 21341
+calc-hint-bubble.js.part | 1562-1607 | af56cdf7f4b1 | 3055
+calc-floating-window.js.part | 1648-1786 | 90855e9c4886 | 9768
+calc-rail.js.part | 1787-1844 | c6f88a9ceb04 | 6325
+calc.css.part | 2659-2706 (6 unrelated lines dropped) | 61a878168d30 | 5240
+hooks.txt | scattered | c2cb4e6114e8 | 3139
