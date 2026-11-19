@@ -1,0 +1,65 @@
+// Informational only (not code to paste as one file): the places in the app that call the calculator code.
+
+// --- source line 1278 ---
+  let gamSeq = 0;
+  try { document.documentElement.style.setProperty('--gam-img', 'url(' + GAM_PNG + ')'); } catch (e) {}
+  function gammaizeText(root) {
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {
+      acceptNode(n) {
+
+// --- source line 1300 ---
+    });
+  }
+  function gammaizeSvg(root) {
+    const ns = 'http://www.w3.org/2000/svg';
+    root.querySelectorAll('mjx-assistive-mml mi').forEach(mi => { if (mi.textContent === '\u03b3') mi.setAttribute('mathvariant', 'normal'); });
+
+// --- source line 1826 ---
+          const r = p.getBoundingClientRect();
+          it.box.style.display = 'block'; it.box.style.left = left + 'px';
+          if (!it.drawn) { calcLcd(it.box); it.drawn = true; }
+          const top = Math.max(prevBottom + 6, r.top + window.scrollY + (r.height - it.box.offsetHeight) / 2);
+          it.box.style.top = top + 'px'; prevBottom = top + it.box.offsetHeight;
+
+// --- source line 1845 ---
+    window.calcDockUpdate = q;
+  })();
+  function gammaize(els) {
+    const list = !els ? [document.body] : (Array.isArray(els) ? els : [els]);
+    list.forEach(el => { if (el && el.querySelectorAll) { gammaizeSvg(el); gammaizeText(el); calcLcd(el); } });
+
+// --- source line 1847 ---
+  function gammaize(els) {
+    const list = !els ? [document.body] : (Array.isArray(els) ? els : [els]);
+    list.forEach(el => { if (el && el.querySelectorAll) { gammaizeSvg(el); gammaizeText(el); calcLcd(el); } });
+  }
+</script>
+
+// --- source line 5753 ---
+  try { topSampleHints(el); } catch (err) { console.error('topSampleHints failed:', err); }
+  // Draw any calculator displays (.calc-lcd) in this view; independent of MathJax.
+  try { calcLcd(el); } catch (err) { console.error('calcLcd failed:', err); }
+  if (window.calcDockUpdate) setTimeout(window.calcDockUpdate, 80);
+  // Typeset this view's LaTeX only now that it's actually being shown,
+
+// --- source line 5754 ---
+  // Draw any calculator displays (.calc-lcd) in this view; independent of MathJax.
+  try { calcLcd(el); } catch (err) { console.error('calcLcd failed:', err); }
+  if (window.calcDockUpdate) setTimeout(window.calcDockUpdate, 80);
+  // Typeset this view's LaTeX only now that it's actually being shown,
+  // instead of typesetting every quiz/handout eagerly at page load (which
+
+// --- source line 8962 ---
+  });
+  try { topSampleHints(res); } catch (e) { console.error(e); }
+  try { calcLcd(res); } catch (e) { console.error(e); }
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([res]).then(() => { try { adjustChoiceLayouts(res); } catch (e) {} });
+  if (!fpfRestoring) res.scrollIntoView({ behavior: "smooth", block: "start" });
+
+// --- source line 11124 ---
+            panelFilled = true;
+            panel.innerHTML = hintHtml;
+            try { calcLcd(panel); } catch (err) { console.error('calcLcd failed:', err); }
+            if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([panel]);
+          }
+

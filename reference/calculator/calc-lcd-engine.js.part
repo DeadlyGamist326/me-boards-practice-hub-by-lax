@@ -1,0 +1,238 @@
+  /* Calculator display: <div class="calc-lcd" data-expr="\\frac{1250\\sqrt{15710.10}}{39.37}" data-ans="9968.399315"> is drawn like LAX's
+     dot-matrix calculator: the typed expression (standing fractions, roots, exponents) on top, the answer right-aligned below.
+     Markup: \\frac{a}{b}  \\sqrt{a}  \\root{n}{a}  ^{a}  \\neg  \\ans  \\sin \\cos \\tan; everything else is a typed character. */
+  const calcLcdEngine = (function () {
+    const COLS = 16, DW0 = COLS * 6; let S = 6;
+    let ctx = null;
+    const G={"\u2192": "00000 00000 00100 00010 11111 00010 00100 00000 00000", "0": "01110 10001 10011 10011 10101 11001 11001 10001 01110", "1": "00100 01100 00100 00100 00100 00100 00100 00100 01110", "2": "01110 10001 10001 00001 00010 00100 01000 10000 11111", "3": "01110 10001 10001 00001 00110 00001 10001 10001 01110", "4": "00010 00110 00110 01010 01010 10010 11111 00010 00111", "5": "11111 10000 10000 11110 10001 00001 00001 10001 01110", "6": "01110 10001 10000 10000 11110 10001 10001 10001 01110", "7": "11111 10001 00001 00001 00010 00100 00100 00100 00100", "8": "01110 10001 10001 10001 01110 10001 10001 10001 01110", "9": "01110 10001 10001 10001 01111 00001 00001 10001 01110", "+": "00000 00000 00100 00100 11111 00100 00100 00000 00000", "-": "00000 00000 00000 00000 11111 00000 00000 00000 00000", "\u00d7": "00000 00000 10001 01010 00100 01010 10001 00000 00000", "\u00f7": "00000 00000 00100 00000 11111 00000 00100 00000 00000", ".": "00000 00000 00000 00000 00000 00000 00000 01100 01100", ",": "00000 00000 00000 00000 00000 01100 01100 00100 01000", "=": "00000 00000 00000 11111 00000 11111 00000 00000 00000", "(": "00010 00100 01000 01000 01000 01000 01000 00100 00010", ")": "01000 00100 00010 00010 00010 00010 00010 00100 01000", "\u03c0": "00000 00000 00000 11111 01010 01010 01010 01010 10011", "%": "00000 00000 11000 11001 00010 00100 01000 10011 00011", "E": "11111 10000 10000 10000 11110 10000 10000 10000 11111", "R": "11110 10010 10010 11110 00000 00000 00000 00000 00000", "X": "10001 10001 01010 00100 00100 01010 01010 10001 10001", "Y": "10001 10001 01010 01010 00100 00100 00100 00100 00100", "A": "00100 01010 01010 10001 10001 11111 10001 10001 10001", "B": "11110 10001 10001 10001 11110 10001 10001 10001 11110", "C": "01110 10001 10000 10000 10000 10000 10000 10001 01110", "D": "11100 10010 10001 10001 10001 10001 10001 10010 11100", "F": "11111 10000 10000 11110 10000 10000 10000 10000 10000", "e": "00000 00000 00110 01001 11010 11100 11000 11001 01110", "\ue001": "01110 11001 11000 11000 11000 11000 11000 11001 01110", "\ue002": "11110 11001 11001 11001 11110 11000 11000 11000 11000", "i": "00000 01100 00000 11100 01100 01100 01100 01100 11110", "\u2220": "00000 00010 00010 00100 00100 01000 01000 10000 11111", "\ue003": "00000 00000 00000 00000 01110 00000 00000 00000 00000"};
+    const GS={"0": "01110 10011 10101 11001 10001 01110", "1": "00100 01100 00100 00100 00100 01110", "2": "01110 10001 00010 00100 01000 11111", "3": "01110 10001 00110 00001 10001 01110", "4": "00010 00110 01010 10010 11111 00010", "5": "11111 10000 11110 00001 10001 01110", "6": "01110 10000 11110 10001 10001 01110", "7": "11111 00001 00010 00100 00100 00100", "8": "01110 10001 01110 10001 10001 01110", "9": "01110 10001 10001 01111 00001 01110", "+": "00000 00100 00100 11111 00100 00100", "-": "00000 00000 00000 11111 00000 00000", "\u00d7": "00000 10001 01010 00100 01010 10001", "\u00f7": "00000 00100 00000 11111 00000 00100", ".": "00000 00000 00000 00000 01100 01100", "=": "00000 00000 11111 00000 11111 00000", "(": "00100 01000 01000 01000 01000 00100", ")": "00100 00010 00010 00010 00010 00100", "\u03c0": "00000 11111 01010 01010 01010 10011", "e": "00110 01001 11010 11100 11001 01110", "X": "10001 01010 00100 01010 10001 10001", "i": "01100 00000 11100 01100 01100 11110", "A": "01110 10001 10001 11111 10001 10001", "B": "11110 10001 11110 10001 10001 11110", "C": "01110 10001 10000 10000 10001 01110", "D": "11110 10001 10001 10001 10001 11110", "E": "11111 10000 11110 10000 10000 11111", "F": "11111 10000 11110 10000 10000 10000", "Y": "10001 10001 01010 00100 00100 00100", "\ue003": "00000 00000 00000 01110 00000 00000"};
+/* menu words (LAX sheet, 2026-10-23): small 5x6 letters for the calculator menus; text e and text i are \ue030 and \ue031 so they stay apart from euler e and imaginary i */
+Object.assign(GS,{"O": "01110 10001 10001 10001 10001 01110", "P": "11110 10001 10001 11110 10000 10000", "L": "10000 10000 10000 10000 10000 11111", "S": "01110 10001 01100 00010 10001 01110", "T": "11111 00100 00100 00100 00100 00100", "Q": "01110 10001 10001 10101 10010 01101", "N": "10001 11001 10101 10011 10001 10001", "V": "10001 10001 10001 01010 01010 00100", "R": "11110 10001 10001 11110 10010 10001", "Π": "00000 11111 01010 01010 01010 01010", "∑": "11111 01001 00100 01000 10001 11111", "a": "00000 01110 00001 01111 10001 01111", "x": "00000 11001 00110 00100 01100 10011", "": "00100 00000 01100 00100 00100 01110", "n": "00000 10110 11001 10001 10001 10001", "r": "00000 10110 11001 10000 10000 10000", "...": "00000 00000 00000 00000 10101 10101", "o": "00000 01110 10001 10001 10001 01110", "d": "00001 01101 10011 10001 10001 01111", "G": "01110 10000 10000 10111 10001 01111", "t": "01000 11110 01000 01000 01001 00110", "h": "10000 10000 10110 11001 10001 10001", "s": "00000 01111 10000 01110 00001 11110", "": "00000 01110 10001 11111 10000 01111", "g": "00000 01111 10001 01111 00001 01110", "c": "00000 01110 10000 10000 10001 01110", "m": "00000 11010 10101 10101 10101 10101", "b": "10000 10110 11001 10001 10001 11110", "/": "00000 00001 00010 00100 01000 10000", "p": "00000 11110 10001 10001 11110 10000", "◀": "00000 00110 01110 11110 01110 00110", "▶": "00000 01100 01110 01111 01110 01100", "u": "00000 10001 10001 10001 10011 01101", "w": "00000 10001 10001 10101 11011 10001", "I": "01110 00100 00100 00100 00100 01110", "v": "00000 10001 10001 10001 01010 00100", "y": "00000 10001 01001 00110 00100 11000", "U": "10001 10001 10001 10001 10001 01110", "k": "01000 01001 01010 01100 01010 01001", "?": "01110 10001 00010 00100 00000 00100"});
+Object.assign(GS,{"∠": "00001 00010 00100 01000 10000 11111", "θ": "00110 01001 11111 10001 10010 01100", "j": "00010 00000 00010 10010 10010 01100", "l": "01100 00100 00100 00100 00100 01110"});
+/* normal 5x9 menu letters (LAX sheet, 2026-10-23); \ue031 = text i */
+Object.assign(G,{"H": "10001 10001 10001 10001 11111 10001 10001 10001 10001", "I": "01110 00100 00100 00100 00100 00100 00100 00100 01110", "N": "10001 11001 11001 10101 10101 10011 10011 10001 10001", "O": "01110 10001 10001 10001 10001 10001 10001 10001 01110", "T": "11111 00100 00100 00100 00100 00100 00100 00100 00100", "a": "00000 00000 01110 10001 00111 01001 10001 10011 01101", "t": "01000 01000 11110 01000 01000 01000 01000 01001 00110", "V": "10001 10001 10001 10001 10001 10001 10001 01010 00100", "c": "00000 00000 01110 10001 10000 10000 10000 10001 01110", "": "00100 00000 01100 00100 00100 00100 00100 00100 01110", "n": "00000 00000 10110 11001 10001 10001 10001 10001 10001", "Q": "01110 10001 10001 10001 10001 10001 10101 10010 01101", "...": "00000 00000 00000 00000 00000 00000 00000 10101 10101", "r": "00000 00000 10110 11001 10000 10000 10000 10000 10000", "o": "00000 00000 01110 10001 10001 10001 10001 10001 01110", "d": "00001 00001 01101 10011 10001 10001 10001 10011 01101", "G": "01110 10001 10000 10000 10111 10001 10001 10001 01111", "x": "00000 00000 11001 00110 00100 00100 00100 01100 10011"});
+    const FS='\ue010',FM='\ue011',FE='\ue012',XS='\ue013',XE='\ue014',RS='\ue015',RE='\ue016',NS='\ue017',NM='\ue018',NE='\ue019';
+    function parseTokens(t){
+  let i=0;
+  function seq(stop){
+    const items=[],start=i;
+    while(i<t.length&&!stop(t[i])){
+      const c=t[i];
+      if(c===FS){const s0=i;i++;const num=seq(x=>x===FM);const m=i;i++;const den=seq(x=>x===FE);const e=i;i++;items.push({t:'f',num,den,s:s0,m,e})}
+      else if(c===NS){const s0=i;i++;const ix=seq(x=>x===NM);const m=i;i++;const sq=seq(x=>x===NE);const e=i;i++;items.push({t:'n',idx:ix,seq:sq,s:s0,m,e})}
+      else if(c===RS){const s0=i;i++;const sq=seq(x=>x===RE);const e=i;i++;items.push({t:'r',seq:sq,s:s0,e})}
+      else if(c===XS){const s0=i;i++;const sq=seq(x=>x===XE);const e=i;i++;items.push({t:'x',seq:sq,s:s0,e})}
+      else if(c===FM||c===FE||c===XE||c===RE||c===NM||c===NE){i++}
+      else{items.push({t:'c',c,idx:i});i++}
+    }
+    return{items,start,end:i};
+  }
+  return seq(()=>false);
+}
+const FNG={"\ue020": {"s": ["00000 01111 10000 01110 00001 11110", "00100 00000 01100 00100 00100 01110", "00000 10110 11001 10001 10001 10001"], "n": ["00000 00000 01110 10001 10000 01110 00001 10001 01110", "00100 00000 01100 00100 00100 00100 00100 00100 01110", "00000 00000 10110 11001 10001 10001 10001 10001 10001"]}, "\ue021": {"s": ["00000 01110 10000 10000 10001 01110", "00000 01110 10001 10001 10001 01110", "00000 01111 10000 01110 00001 11110"], "n": ["00000 00000 01110 10001 10000 10000 10000 10001 01110", "00000 00000 01110 10001 10001 10001 10001 10001 01110", "00000 00000 01110 10001 10000 01110 00001 10001 01110"]}, "\ue022": {"s": ["01000 11110 01000 01000 01001 00110", "00000 01110 00001 01111 10001 01111", "00000 10110 11001 10001 10001 10001"], "n": ["01000 01000 11110 01000 01000 01000 01000 01001 00110", "00000 00000 01110 10001 00111 01001 10001 10011 01101", "00000 00000 10110 11001 10001 10001 10001 10001 10001"]}};
+const FNS=Object.keys(FNG),FNAME={'\ue020':'sin','\ue021':'cos','\ue022':'tan'};
+const ANS='\ue023';
+FNG[ANS]={n:["00100 01010 01010 10001 10001 11111 10001 10001 10001","00000 00000 10110 11001 10001 10001 10001 10001 10001","00000 00000 01110 10001 10000 01110 00001 10001 01110"],s:["01110 10001 10001 11111 10001 10001","00000 10110 11001 10001 10001 10001","00000 01111 10000 01110 00001 11110"]};
+const fnW=c=>(FNS.includes(c)||c===ANS)?18:6;
+const hasFrac=it=>it.t==='f'||((it.t==='r'||it.t==='n')&&it.seq.items.some(hasFrac))||(it.t==='x'&&it.seq.items.some(hasFrac));
+function parenRows(c,h,small){
+  const open=c==='(',top=small?[open?'00100':'00100']:(open?['00010','00100']:['01000','00100']),mid=open?'01000':'00010',bot=small?['00100']:(open?['00100','00010']:['00100','01000']);
+  return top.concat(Array(Math.max(0,h-top.length-bot.length)).fill(mid),bot).join(' ');
+}
+function measureSeq(q,small){
+  let w=0,up=0,dn=0,prev=null;
+  q.items.forEach(it=>{measureItem(it,small,prev);w+=it.w;up=Math.max(up,it.up);dn=Math.max(dn,it.dn);prev=it});
+  q.empty=!q.items.length;
+  /* every parenthesis stretches to the content on its inner side: open looks right, close looks left */
+  const stack=[],pairs=[];
+  q.items.forEach((it,i)=>{
+    if(it.t!=='c')return;
+    if(it.c==='(')stack.push(i);
+    else if(it.c===')'){
+      if(stack.length)pairs.push([stack.pop(),i]);
+      else pairs.push([-1,i]);
+    }
+  });
+  stack.forEach(o=>pairs.push([o,-1]));
+  const baseUp=small?3:4,baseDn=small?2:4;
+  pairs.forEach(([o,c])=>{
+    const stretch=(p,inner)=>{
+      if(!inner.length)return;
+      const U=Math.max(...inner.map(x=>x.up)),D=Math.max(...inner.map(x=>x.dn));
+      if(U>baseUp||D>baseDn){p.tall=true;p.up=Math.max(p.up,U);p.dn=Math.max(p.dn,D);up=Math.max(up,U);dn=Math.max(dn,D)}
+    };
+    if(o>=0&&c>=0){const inner=q.items.slice(o+1,c);stretch(q.items[o],inner);stretch(q.items[c],inner)}
+    else if(o>=0)stretch(q.items[o],q.items.slice(o+1));
+    else stretch(q.items[c],q.items.slice(0,c));
+  });
+  if(q.empty){w=6;up=small?3:4;dn=small?2:4}
+  q.w=w;q.up=up;q.dn=dn;
+}
+function measureItem(it,small,prev){
+  if(it.t==='c'){it.w=fnW(it.c);it.up=small?3:4;it.dn=small?2:4}
+  else if(it.t==='f'){
+    measureSeq(it.num,true);measureSeq(it.den,true);
+    it.wi=Math.max(it.num.w,it.den.w);it.w=it.wi+2;
+    it.up=it.num.up+it.num.dn+2;it.dn=it.den.up+it.den.dn+2;
+  }else if(it.t==='n'){
+    measureSeq(it.idx,true);measureSeq(it.seq,small);
+    it.lead=it.idx.w-3;
+    it.w=it.lead+5+it.seq.w+2;it.up=Math.max(it.seq.up+2,it.seq.up-1+it.idx.up+it.idx.dn);it.dn=it.seq.dn;
+  }else if(it.t==='r'){
+    measureSeq(it.seq,small);
+    it.w=5+it.seq.w+2;it.up=it.seq.up+2;it.dn=it.seq.dn;
+  }else{
+    measureSeq(it.seq,true);
+    const he=it.seq.up+1+it.seq.dn,baseUp=prev?prev.up:(small?3:4);
+    it.bottom=3-baseUp;const top=it.bottom-he+1;
+    it.w=it.seq.w;it.up=Math.max(0,-top);it.dn=Math.max(0,it.bottom);
+  }
+}
+function layoutAll(t){
+  const top=parseTokens(t);measureSeq(top,false);
+  /* one continuous line: the canvas widens to the right and the whole grid scales down to fit the view */
+  const DW=Math.max(DW0,top.items.reduce((n,i)=>n+i.w,0));
+  const gaps=new Array(t.length+1),ops=[],lines=[{items:[],up:0,dn:0}];
+  let x=0,ln=0;
+  top.items.forEach(it=>{
+    if(x>0&&x+it.w>DW){ln++;lines[ln]={items:[],up:0,dn:0};x=0}
+    lines[ln].items.push({it,x});x+=it.w;
+  });
+  let acc=0;
+  lines.forEach(L=>{
+    L.up=L.items.length?Math.max(...L.items.map(o=>o.it.up)):4;
+    L.dn=L.items.length?Math.max(...L.items.map(o=>o.it.dn)):4;
+    L.H=L.up+L.dn+2;L.top=acc;L.bar=1+L.up;acc+=L.H;
+  });
+  function seqPlace(q,x0,axis,small,lnI){
+    if(q.empty){gaps[q.start]={x:x0,axis,small,ln:lnI};ops.push({ph:1,x:x0+1,y:axis-3});return}
+    let cx=x0;
+    q.items.forEach(it=>{place(it,cx,axis,small,lnI);cx+=it.w});
+    gaps[q.end]={x:cx,axis,small,ln:lnI};
+  }
+  function place(it,x,axis,small,lnI){
+    if(it.t==='c'){
+      gaps[it.idx]={x,axis,small,ln:lnI};gaps[it.idx+1]={x:x+it.w,axis,small,ln:lnI};
+      if(FNS.includes(it.c)||it.c===ANS)ops.push({fn:it.c,x,y:axis-(small?3:4),small});
+      else if(it.tall)ops.push({par:1,c:it.c,x,y:axis-it.up,h:it.up+it.dn+1,small});
+      else ops.push({c:it.c,x,y:axis-(small?3:4),small});
+    }else if(it.t==='f'){
+      gaps[it.s]={x,axis,small,ln:lnI};
+      const bx=x+1;ops.push({bar:1,x:bx,y:axis,w:it.wi+1});
+      seqPlace(it.num,bx+Math.floor((it.wi-it.num.w)/2),axis-2-it.num.dn,true,lnI);
+      seqPlace(it.den,bx+Math.floor((it.wi-it.den.w)/2),axis+2+it.den.up,true,lnI);
+      gaps[it.e+1]={x:x+it.w,axis,small,ln:lnI};
+    }else if(it.t==='n'){
+      gaps[it.s]={x,axis,small,ln:lnI};
+      const xs=x+it.lead,x0=xs+5,cw=it.seq.w,B=axis-it.seq.up+1;
+      ops.push({sq:1,x:xs,y:axis-it.seq.up,h:it.seq.up+it.seq.dn+1});
+      ops.push({bar:1,x:x0-1,y:axis-it.seq.up-1,w:1});
+      ops.push({bar:1,x:x0-1,y:axis-it.seq.up-2,w:cw+3});
+      seqPlace(it.idx,x,B-it.idx.dn,true,lnI);
+      seqPlace(it.seq,x0,axis,small,lnI);
+      gaps[it.e+1]={x:x+it.w,axis,small,ln:lnI};
+    }else if(it.t==='r'){
+      gaps[it.s]={x,axis,small,ln:lnI};
+      const x0=x+5,cw=it.seq.w;
+      ops.push({sq:1,x,y:axis-it.seq.up,h:it.seq.up+it.seq.dn+1});
+      ops.push({bar:1,x:x0-1,y:axis-it.seq.up-1,w:1});
+      ops.push({bar:1,x:x0-1,y:axis-it.seq.up-2,w:cw+3});
+      seqPlace(it.seq,x0,axis,small,lnI);
+      gaps[it.e+1]={x:x+it.w,axis,small,ln:lnI};
+    }else{
+      gaps[it.s]={x,axis,small,ln:lnI};
+      seqPlace(it.seq,x,axis+it.bottom-it.seq.dn,true,lnI);
+      gaps[it.e+1]={x:x+it.w,axis,small,ln:lnI};
+    }
+  }
+  lines.forEach((L,li)=>L.items.forEach(o=>place(o.it,o.x,L.top+L.bar,false,li)));
+  if(!t.length)gaps[0]={x:0,axis:lines[0].top+lines[0].bar,small:false,ln:0};
+  for(let i=0;i<=t.length;i++)if(!gaps[i])gaps[i]=gaps[i-1]||gaps[0];
+  return{lines,gaps,ops,resTop:acc,DW};
+}
+    function glyph(rows, x, y) {
+      rows.split(' ').forEach((r, gy) => [...r].forEach((b, gx) => { if (b === '1') ctx.fillRect((x + 1 + gx) * S, (y + gy) * S, S, S); }));
+    }
+    function parseMarkup(src) {
+      let i = 0;
+      function seq() {
+        const out = [];
+        while (i < src.length && src[i] !== '}') {
+          const c = src[i];
+          if (c === '\\') {
+            const m = /^\\([a-z]+)/.exec(src.slice(i)); if (!m) { i++; continue; }
+            i += m[0].length;
+            if (m[1] === 'frac') { i++; const a = seq(); i += 2; const b = seq(); i++; out.push(FS, ...a, FM, ...b, FE); }
+            else if (m[1] === 'sqrt') { i++; const a = seq(); i++; out.push(RS, ...a, RE); }
+            else if (m[1] === 'root') { i++; const n = seq(); i += 2; const a = seq(); i++; out.push(NS, ...n, NM, ...a, NE); }
+            else if (m[1] === 'neg') out.push('\ue003');
+            else if (m[1] === 'ans') out.push(ANS);
+            else { const k = Object.keys(FNAME).find(q => FNAME[q] === m[1]); if (k) out.push(k); }
+          } else if (c === '^' && src[i + 1] === '{') { i += 2; const a = seq(); i++; out.push(XS, ...a, XE); }
+          else if (c === ' ') i++;
+          else { out.push(c); i++; }
+        }
+        return out;
+      }
+      return seq();
+    }
+    function draw(cv, markup, result, dot) {
+      if (dot) S = dot;
+      const t = parseMarkup(markup), r = [...String(result || '')].slice(-COLS * 2);
+      const {ops, resTop, DW} = layoutAll(t), DH = resTop + 10;
+      cv.width = DW * S; cv.height = DH * S;
+      ctx = cv.getContext('2d'); if (!ctx) return DW;
+      ctx.fillStyle = 'rgba(29,42,20,.09)';
+      for (let y = 0; y < DH; y++) for (let x = 0; x < DW; x++) ctx.fillRect(x * S, y * S, S - 1, S - 1);
+      ctx.fillStyle = '#1d2a14';
+      ops.forEach(o => {
+        if (o.bar) ctx.fillRect(o.x * S, o.y * S, o.w * S, S);
+        else if (o.sq) { const R = o.h - 3, mid = Math.floor(R / 2), top = R - mid; glyph(Array(top).fill('0001').concat(Array(mid).fill('0010'), ['1010', '0110', '0010']).join(' '), o.x, o.y); }
+        else if (o.fn) { const f = FNG[o.fn][o.small ? 's' : 'n']; if (f) f.forEach((g, k) => glyph(g, o.x + 6 * k, o.y)); }
+        else if (o.par) glyph(parenRows(o.c, o.h, o.small), o.x, o.y);
+        else if (o.ph) { ctx.save(); ctx.fillStyle = 'rgba(29,42,20,.15)'; ctx.fillRect(o.x * S, o.y * S, 5 * S, 6 * S); ctx.restore(); }
+        else { const g = (o.small ? GS : G)[o.c]; if (g) glyph(g, o.x, o.y); }
+      });
+      /* scientific notation: mantissa, a full-size x and 10 on the baseline, then the exponent in small glyphs on the top row of the answer grid (no e) */
+      const em = /^(.*?)e([+-]?)(\d+)$/.exec(r.join(''));
+      const rt = em ? [...em[1]].map(c => ({c})).concat([{c: '\u00d7', low: true}, {c: '\ue024', neg: em[2] === '-'}], [...em[3]].map(c => ({c, small: true}))) : r.map(c => ({c}));
+      rt.forEach((o, i) => { const g = o.low ? '00000 00000 00000 00000 10001 01010 00100 01010 10001' : o.c === '\ue024' ? '00000 00000 ' + (o.neg ? '01111' : '00000') + ' 00000 00000 10111 10101 10101 10111' : o.small ? GS[o.c] : G[o.c]; if (g) glyph(g, (DW / 6 - rt.length + i) * 6, resTop + 1); });
+      return DW;
+    }
+    return {draw};
+  })();
+  /* The dots are drawn a whole number of device pixels wide, so the grid lines are even at any zoom or screen: the canvas backing size is
+     dots x dot size and its CSS size is that divided by the pixel ratio. It is redrawn when the box width or the zoom changes. */
+  function calcLcdFit(box) {
+    const L = box._lcd; if (!L) return;
+    const cs = getComputedStyle(box), par = box.parentElement, dw0 = L.dw || 96;
+    const W = Math.min(par ? par.clientWidth : 0, Math.max(320, Math.round(dw0 / 96 * 320))) - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    if (!(W > 0)) return;
+    const dpr = window.devicePixelRatio || 1, key = Math.round(W * 100) + '|' + dpr;
+    if (L.key === key) return;
+    L.key = key;
+    const dw = L.dw || 96;
+    const side = !!box.closest('.calc-side');
+    let dot = side ? Math.max(1, Math.ceil(W * dpr / dw)) : Math.max(1, Math.round(W * dpr / dw));
+    while (!side && dot > 1 && dot * dw / dpr > W * 1.04) dot--;
+    const dwReal = calcLcdEngine.draw(L.cv, L.markup, L.ans, dot);
+    L.dw = dwReal;
+    /* beside the solutions every display is scaled (not stretched) to exactly the box width, so they are all the same width */
+    if (side) { L.cv.style.width = W + 'px'; L.cv.style.height = (L.cv.height * W / L.cv.width) + 'px'; }
+    else { L.cv.style.width = (dwReal * dot / dpr) + 'px'; L.cv.style.height = (L.cv.height / dpr) + 'px'; }
+    if (dwReal !== dw) { L.key = ''; calcLcdFit(box); }
+  }
+  const calcLcdRO = window.ResizeObserver ? new ResizeObserver(es => es.forEach(e => e.target.querySelectorAll(':scope > .calc-lcd[data-done], :scope > .calc-box > .calc-lcd[data-done]').forEach(calcLcdFit))) : null;
+  window.addEventListener('resize', function () { document.querySelectorAll('.calc-lcd[data-done]').forEach(b => { if (b._lcd) b._lcd.key = ''; calcLcdFit(b); }); });
+  function calcLcd(root) {
+    root.querySelectorAll('.calc-lcd[data-expr]:not([data-done])').forEach(box => {
+      const cv = document.createElement('canvas'), ans = box.getAttribute('data-ans') || '', markup = box.getAttribute('data-expr');
+      const DW = calcLcdEngine.draw(cv, markup, ans, 3);
+      box.style.maxWidth = 'min(100%, ' + Math.max(320, Math.round(DW / 96 * 320)) + 'px)';
+      cv.setAttribute('role', 'img'); cv.setAttribute('aria-label', 'Calculator display: ' + markup.replace(/\\[a-z]+|[{}^]/g, ' ') + ' = ' + ans);
+      box.setAttribute('title', 'Double-click to copy this equation into the calculator'); box.appendChild(cv); box.setAttribute('data-done', '1');
+      box._lcd = {cv, markup, ans, dw: DW, key: ''};
+      calcLcdFit(box);
+      if (calcLcdRO && box.parentElement) calcLcdRO.observe(box.parentElement);
+    });
+  }

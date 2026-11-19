@@ -1,0 +1,139 @@
+/* Floating calculator: a small toggle button (off by default) shows or hides a draggable calculator window.
+     The KEYPAD is the anchor: it has a fixed size and never moves when the display grows. The display keeps a fixed dot size, so a long
+     equation widens the display left and right (centred on the keypad) and extra lines grow it upward. The window may run past the screen
+     edge while it is in use; when it is shown again it snaps to the nearest position that is fully on screen. The anchor is remembered.
+     Double-clicking a .calc-lcd display copies its equation into the calculator, shows it if needed and presses = (Shift + Solve when the display is an equation with X). */
+  (function () {
+    const POS_KEY = 'calcFloatPosV2', BAR = 26, PW = 785, PH = 1053;
+    let win = null, frame = null, ready = false, pending = null, pos = null;
+    let sz = null;
+    try { pos = JSON.parse(localStorage.getItem(POS_KEY) || 'null'); } catch (e) { pos = null; }
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.id = 'calc-toggle'; btn.setAttribute('aria-pressed', 'false'); btn.setAttribute('aria-label', 'Calculator');
+    btn.title = 'Calculator';
+    btn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2"/><rect x="8" y="5.5" width="8" height="3.5" fill="currentColor" stroke="none"/><path d="M8.5 13h.01M12 13h.01M15.5 13h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01"/></svg>';
+    const kw = function () { return Math.max(200, Math.min(340, innerWidth - 8)); };
+    function kph() { return Math.round(kw() * PH / PW); }
+    function dims() { const k = kw(); return sz || { w: k, h: kph() + 120, kpH: kph() }; }
+    function anchor() { const k = kw(); return pos || { l: innerWidth - k - 10, t: innerHeight - kph() - 60 }; }
+    /* the keypad is the anchor (its top-left corner); the display sits above it and the window is centred on the keypad,
+       so the keypad's bottom edge is the window's bottom edge */
+    function geom() {
+      const d = dims(), a = anchor(), k = kw();
+      const l = Math.round(a.l + k / 2 - d.w / 2), bottom = Math.round(a.t + d.kpH), top = bottom - d.h;
+      return { d: d, l: l, top: top - BAR, w: d.w, h: d.h + BAR };
+    }
+    function layout() {
+      const g = geom();
+      win.style.left = g.l + 'px'; win.style.top = g.top + 'px'; win.style.width = g.w + 'px'; frame.style.height = g.d.h + 'px';
+    }
+    /* move the anchor the least distance so the whole window is on screen (only on the axes that overflow) */
+    function snap() {
+      const g = geom(), a = anchor();
+      let dx = 0, dy = 0;
+      if (g.w > innerWidth || g.l < 0) dx = -g.l; else if (g.l + g.w > innerWidth) dx = innerWidth - (g.l + g.w);
+      if (g.h > innerHeight || g.top < 0) dy = -g.top; else if (g.top + g.h > innerHeight) dy = innerHeight - (g.top + g.h);
+      pos = { l: Math.round(a.l + dx), t: Math.round(a.t + dy) };
+    }
+    function savePos() { try { localStorage.setItem(POS_KEY, JSON.stringify(pos)); } catch (e) {} }
+    function setTitle() { const el = win && win.querySelector('.calc-win-title'); if (el) el.textContent = skin ? 'Canon F-789SGA-White' : 'Canon F-789SGA-TBK'; }
+    let seq = 0, waitId = 0, waitTimer = 0;
+    const SKIN_KEY = 'calcSkinV1'; let skin = 0; try { skin = +localStorage.getItem(SKIN_KEY) ? 1 : 0; } catch (e) {}
+    function post(m) { m.id = ++seq; frame.contentWindow.postMessage(m, '*'); return m.id; }
+    function sendCfg() { return ready && frame.contentWindow ? post({ calcCfg: { kw: kw() } }) : 0; }
+    function send(expr) {
+      if (ready && frame.contentWindow) return post({ calcLoad: expr });
+      pending = expr; return 0;
+    }
+    /* show the window only once the iframe has answered with its real size, so nothing is ever seen moving */
+    function reveal() {
+      clearTimeout(waitTimer); waitId = 0;
+      if (!win) return;
+      layout(); snap(); layout(); win.style.visibility = 'visible'; animIn();
+    }
+    function hold(id) {
+      win.style.visibility = 'hidden';
+      waitId = id || -1;
+      clearTimeout(waitTimer); waitTimer = setTimeout(reveal, 900);
+    }
+    function build() {
+      win = document.createElement('div'); win.className = 'calc-win';
+      win.innerHTML = '<div class="calc-win-bar"><span class="calc-win-title">Canon F-789SGA-TBK</span><span class="calc-win-btns"><button type="button" class="calc-win-skin" aria-label="Change calculator" title="Change calculator">↺</button><button type="button" class="calc-win-min" aria-label="Minimize calculator" title="Minimize">−</button></span></div><iframe title="Calculator"></iframe>';
+      frame = win.querySelector('iframe');
+      frame.addEventListener('load', function () { ready = true; if (skin) post({ calcSkin: skin }); const c = sendCfg(); let id = c; if (pending !== null) { id = send(pending); pending = null; } if (waitId) waitId = id; });
+      frame.srcdoc = document.getElementById('calc-float-src').textContent.replace(/<\\\/script/g, '</script');
+      let drag = null;
+      const bar = win.querySelector('.calc-win-bar');
+      setTitle();
+      win.querySelector('.calc-win-min').onclick = hide;
+      win.querySelector('.calc-win-skin').onclick = function () { skin = skin ? 0 : 1; setTitle(); try { localStorage.setItem(SKIN_KEY, String(skin)); } catch (e) {} post({ calcSkin: skin }); };
+      /* two drag handles: the title bar, and the transparent gap between display and keypad (inside the iframe, reported by message).
+         The bar must stay on screen; the gap handle lets the display run past the top edge. */
+      function dragStart(x, y, gap) { const a = anchor(); drag = { x: x, y: y, l: a.l, t: a.t, gap: gap }; }
+      function dragMove(x, y) {
+        const d = dims(), k = kw(), off = k / 2 - d.w / 2, up = d.h - d.kpH + BAR;
+        let l = drag.l + x - drag.x, t = drag.t + y - drag.y;
+        l = Math.min(Math.max(l, 60 - d.w - off), innerWidth - 60 - off);
+        t = drag.gap ? Math.min(Math.max(t, 0), innerHeight - 30) : Math.min(Math.max(t, up), innerHeight - BAR + up);
+        pos = { l: l, t: t }; layout();
+      }
+      function dragEnd() { if (!drag) return; drag = null; bar.classList.remove('dragging'); savePos(); }
+      bar.addEventListener('pointerdown', function (e) {
+        if (e.target.closest('button')) return;
+        dragStart(e.clientX, e.clientY, false);
+        bar.setPointerCapture(e.pointerId); bar.classList.add('dragging'); e.preventDefault();
+      });
+      bar.addEventListener('pointermove', function (e) { if (drag && !drag.gap) dragMove(e.clientX, e.clientY); });
+      bar.addEventListener('pointerup', dragEnd); bar.addEventListener('pointercancel', dragEnd);
+      window.addEventListener('message', function (e) {
+        const m = e.data;
+        if (!frame || e.source !== frame.contentWindow || !m || !m.calcDrag) return;
+        if (m.calcDrag === 'down') dragStart(m.x, m.y, true);
+        else if (m.calcDrag === 'move') { if (drag && drag.gap) dragMove(m.x, m.y); }
+        else if (drag && drag.gap) dragEnd();
+      });
+      document.body.appendChild(win);
+    }
+    window.addEventListener('message', function (e) {
+      if (!frame || e.source !== frame.contentWindow || !e.data || !e.data.calcSize) return;
+      if (!visible() || !(e.data.calcSize.w > 50)) return;
+      sz = e.data.calcSize;
+      if (waitId && (e.data.ack === waitId || (e.data.ack && e.data.ack >= waitId))) { reveal(); return; }
+      if (!waitId) layout();
+    });
+    function visible() { return !!win && win.style.display === 'flex' && !win.classList.contains('calc-out'); }
+    /* open/close animation (v1.4.17.4): fade + small slide; closing keeps the window on screen until the fade ends */
+    let closeT = 0;
+    function still() { return !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches); }
+    function animIn() {
+      if (!win || still()) return;
+      win.classList.remove('calc-in'); void win.offsetWidth; win.classList.add('calc-in');
+    }
+    function show(expr) {
+      if (!win) build();
+      clearTimeout(closeT); win.classList.remove('calc-out');
+      win.style.display = 'flex'; btn.setAttribute('aria-pressed', 'true');
+      if (expr === undefined && sz && ready) { snap(); layout(); win.style.visibility = 'visible'; animIn(); return; }
+      layout(); hold(0);
+      if (expr !== undefined) { const id = send(expr); if (id) waitId = id; } else { const id = sendCfg(); if (id) waitId = id; }
+    }
+    function hide() {
+      if (!win) return;
+      savePos();
+      clearTimeout(waitTimer); waitId = 0;
+      btn.setAttribute('aria-pressed', 'false');
+      if (still() || win.style.visibility === 'hidden') { win.style.display = 'none'; return; }
+      win.classList.remove('calc-in'); win.classList.add('calc-out');
+      clearTimeout(closeT);
+      closeT = setTimeout(function () { win.classList.remove('calc-out'); win.style.display = 'none'; }, 230);
+    }
+    btn.onclick = function () { if (visible()) hide(); else show(); };
+    window.addEventListener('resize', function () { if (visible()) { sendCfg(); snap(); layout(); } });
+    if (document.body) document.body.appendChild(btn); else document.addEventListener('DOMContentLoaded', function () { document.body.appendChild(btn); });
+    document.addEventListener('dblclick', function (e) {
+      const box = e.target.closest && e.target.closest('.calc-lcd[data-expr]');
+      if (!box) return;
+      if (!visible()) show(box.getAttribute('data-expr')); else send(box.getAttribute('data-expr'));
+      const sel = window.getSelection && window.getSelection(); if (sel) sel.removeAllRanges();
+    });
+  })();

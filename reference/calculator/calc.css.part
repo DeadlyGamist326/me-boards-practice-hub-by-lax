@@ -1,0 +1,42 @@
+  /* calculator display (dot-matrix LCD) shown in solutions just before the final answer */
+  .calc-lcd { background: #c9d4b4; border-radius: 8px; padding: 8px; box-shadow: inset 0 2px 5px rgba(0,0,0,.2); max-width: 320px; width: fit-content; margin: 8px 0; box-sizing: border-box; }
+  .calc-lcd canvas { display: block; image-rendering: pixelated; }
+  .calc-hint-bubble { position: fixed; z-index: 9000; max-width: min(260px, calc(100vw - 16px)); display: flex; align-items: flex-start; gap: 8px; background: #1f2937; color: #fff; font-size: 13px; line-height: 1.35; padding: 8px 10px; border-radius: 10px; box-shadow: 0 4px 14px rgba(0,0,0,.3); animation: calcHintIn .2s ease-out; }
+  .calc-hint-bubble::after { content: ""; position: absolute; top: 100%; left: var(--tail, 20px); margin-left: -7px; border: 7px solid transparent; border-top-color: #1f2937; }
+  .calc-hint-x { position: absolute; top: -9px; right: -9px; width: 20px; height: 20px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; background: #fff; border: 1.5px solid #1f2937; border-radius: 50%; color: #1f2937; font: 700 14px/1 system-ui, sans-serif; padding: 0 0 1px; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,.3); }
+  .calc-hint-x:hover { background: #e5e7eb; }
+  @keyframes calcHintIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+  .calc-lcd[data-done] { cursor: pointer; touch-action: manipulation; }
+  /* Calculator steps beside a solution step: the boxed substituted line on the left, the calculator display (letters A to F) and its letter values on the right; wraps below on a narrow screen */
+  .calc-pair { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; margin: 8px 0; }
+  .calc-pair > .formula-block { flex: 1 1 320px; min-width: 0; margin: 0; }
+  .handout-content .calc-pair > .formula-block.fb-long { flex: 1 1 100%; } /* long equation = one full row, the display drops below it (LAX ruling) */
+  .calc-side { flex: 0 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+  .calc-side .calc-lcd { margin: 0 0 4px; max-width: 100% !important; width: 100%; }
+  .calc-side .calc-lcd canvas { margin: 0 auto; image-rendering: auto; }
+  .calc-legend { display: flex; flex-wrap: wrap; gap: 4px 6px; font-size: 12px; }
+  .calc-how { font-weight: 700; color: var(--muted, #6b7280); margin-right: 2px; }
+  .calc-chip { background: #eef1f6; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; white-space: nowrap; }
+  .calc-chip i { font-style: normal; font-weight: 700; color: #2b7fc4; }
+  .calc-store { font-size: 12px; font-weight: 700; color: #2b7fc4; margin-top: 2px; }
+  /* Calculator displays level with their steps, just outside the right border of the problems column (PPE Day 10 Sample Problems; only when there is room) */
+  .calc-rail { position: absolute; top: 0; left: 0; width: 0; height: 0; z-index: 20; }
+  .calc-rail-item { position: absolute; width: 320px; display: none; background: var(--card, #fff); border: 1px solid var(--line); border-radius: 10px; padding: 6px 8px; box-shadow: 0 2px 8px rgba(0,0,0,.15); box-sizing: border-box; }
+  .calc-rail-item .calc-side { flex: none; width: 100%; }
+  .calc-rail-item .calc-lcd { margin: 0 0 4px; max-width: 100% !important; }
+  body.calc-dock-on .calc-pair.fl > .calc-side { display: none; }
+  /* displays on the rail: the solution goes back to one full-width column like any other step */
+  body.calc-dock-on .calc-pair.fl { display: block; }
+  body.calc-dock-on .calc-pair.fl > .formula-block { margin: 8px 0; }
+  .calc-win { position: fixed; z-index: 9400; display: none; flex-direction: column; filter: drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
+  .calc-win-bar { flex: 0 0 26px; display: flex; align-items: center; justify-content: space-between; padding: 0 4px 0 10px; background: rgba(29,35,24,.88); color: #fff; font: 600 12px/1 system-ui, sans-serif; border-radius: 8px 8px 0 0; cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+  .calc-win-bar.dragging { cursor: grabbing; }
+  .calc-win-btns { display: flex; gap: 4px; }
+  .calc-win-skin, .calc-win-min { width: 24px; height: 20px; border: 0; border-radius: 5px; background: rgba(255,255,255,.18); color: #fff; font: 700 15px/1 system-ui, sans-serif; cursor: pointer; padding: 0; }
+  .calc-win iframe { flex: none; width: 100%; border: 0; background: transparent; }
+  .calc-win.calc-in { animation: calcWinIn 260ms ease-out; }
+  .calc-win.calc-out { animation: calcWinOut 220ms ease-in forwards; pointer-events: none; }
+  @keyframes calcWinIn { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+  @keyframes calcWinOut { from { opacity: 1; transform: none; } to { opacity: 0; transform: translateY(14px) scale(.97); } }
+  #calc-toggle { position: fixed; right: 10px; bottom: 14px; z-index: 9500; width: 44px; height: 44px; border-radius: 50%; border: 2px solid #1d2a14; background: #c9d4b4; color: #1d2a14; padding: 0; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.3); display: flex; align-items: center; justify-content: center; }
+  #calc-toggle[aria-pressed="true"] { background: #1d2a14; color: #c9d4b4; }

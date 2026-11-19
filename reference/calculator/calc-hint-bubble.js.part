@@ -1,0 +1,46 @@
+  /* Hint bubble above a calculator display (LAX, 2026-10-23): once the screen has stayed still for 5 seconds with a display fully in view, a small chat bubble
+     "Double-click me to use this on the calculator" shows above it for 10 seconds. After it hides (or after the X is pressed) it stays away for 1 minute.
+     Scrolling, resizing or double-clicking a display hides it at once (no 1 minute wait). */
+  (function () {
+    const IDLE = 5000, SHOW = 10000, AWAY = 60000;
+    const bub = document.createElement('div'); bub.className = 'calc-hint-bubble'; bub.setAttribute('role', 'status'); bub.style.display = 'none';
+    const msg = document.createElement('span'); msg.textContent = 'Double-click me to use this on the calculator';
+    const x = document.createElement('button'); x.type = 'button'; x.className = 'calc-hint-x'; x.setAttribute('aria-label', 'Close hint'); x.textContent = '\u00d7';
+    bub.appendChild(msg); bub.appendChild(x);
+    let awayUntil = 0, idleT = null, hideT = null;
+    function hide(away) {
+      clearTimeout(hideT); bub.style.display = 'none';
+      if (away) awayUntil = Date.now() + AWAY;
+    }
+    function pick() {
+      const vh = window.innerHeight, vw = window.innerWidth; let best = null, bd = 1e9;
+      document.querySelectorAll('.calc-lcd[data-done]').forEach(b => {
+        if (!b.getClientRects().length) return;
+        const r = b.getBoundingClientRect();
+        if (r.top < 56 || r.bottom > vh || r.left < 0 || r.right > vw || r.height < 8) return;
+        const d = Math.abs((r.top + r.bottom) / 2 - vh / 2);
+        if (d < bd) { bd = d; best = r; }
+      });
+      return best;
+    }
+    function tryShow() {
+      idleT = null;
+      const wait = awayUntil - Date.now();
+      if (wait > 0) { idleT = setTimeout(tryShow, wait + 50); return; }
+      const r = pick(); if (!r) return;
+      bub.style.display = 'block'; bub.style.visibility = 'hidden';
+      const w = bub.offsetWidth, h = bub.offsetHeight;
+      const left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
+      bub.style.left = left + 'px'; bub.style.top = Math.max(4, r.top - h - 10) + 'px';
+      bub.style.setProperty('--tail', Math.min(Math.max(14, r.left + r.width / 2 - left), w - 14) + 'px');
+      bub.style.visibility = 'visible';
+      hideT = setTimeout(() => { hide(true); arm(); }, SHOW);
+    }
+    function arm() { clearTimeout(idleT); idleT = setTimeout(tryShow, IDLE); }
+    function moved() { if (bub.style.display !== 'none') hide(false); arm(); }
+    x.addEventListener('click', e => { e.stopPropagation(); hide(true); arm(); });
+    ['scroll', 'resize', 'wheel', 'touchmove', 'keydown'].forEach(ev => window.addEventListener(ev, moved, { passive: true, capture: ev === 'scroll' }));
+    document.addEventListener('dblclick', e => { if (e.target.closest && e.target.closest('.calc-lcd')) { hide(false); arm(); } });
+    function init() { document.body.appendChild(bub); arm(); }
+    if (document.body) init(); else document.addEventListener('DOMContentLoaded', init);
+  })();
