@@ -1,0 +1,616 @@
+<script>
+/* ===== ACCESS GATE + ADMIN TRACKER =====
+   Regular users register/log in with email + password (Firebase Auth). A new
+   account gets 30 free minutes (server clock) and then must be approved by
+   LAX, who sees every account (name, email, devices used) in the hidden
+   tracker and approves/revokes it with a checkbox. Backend: Firebase (Auth +
+   Firestore), SDK loaded lazily from the CDN. The first login needs
+   internet; after that the last known status is cached on the device, so an
+   approved or in-trial account keeps working offline (a revoke only takes
+   effect once the device is online again). With no cached status the app stays
+   covered (fail-closed).
+   No admin password is in this file: LAX signs in with a Firebase Auth
+   account and firebase/firestore.rules only lets that UID read/approve.
+   The tracker opens by tapping the LAX logo 10x in a row.
+   NOTE: a static page cannot be tamper-proof client-side; this stops normal
+   users, not someone who edits the page in dev tools. */
+(function () {
+  var CFG = {
+    apiKey: "AIzaSyDIPvciRveT5QBFRSPvt5shA1x2lSFJOnY",
+    authDomain: "me-boards-practice-hub-db.firebaseapp.com",
+    projectId: "me-boards-practice-hub-db",
+    storageBucket: "me-boards-practice-hub-db.firebasestorage.app",
+    messagingSenderId: "64031137463",
+    appId: "1:64031137463:web:c8a282e883591369607732"
+  };
+  var ADMIN_UID = "HMyGI5u3b5hwvhwWS8GpaalVsYa2"; // public id, not a secret
+  var TRIAL_MS = 30 * 60 * 1000;
+  var LAX_LINK = "https://m.me/mj.d.laxamana/";
+  var SDK = "https://www.gstatic.com/firebasejs/10.12.2/";
+
+  var $ = function (id) { return document.getElementById(id); };
+  var gate = $("access-gate"), card = $("gate-card"), banner = $("trial-banner");
+  var fb = null, uid = null, ref = null, offset = 0, lastData = null;
+  var unsubSelf = null, unsubAdmin = null, tickTimer = null, touchTimer = null;
+  var isAdmin = false, booting = false, renderedKey = "", authMode = "login", pendingSet = false, offTimer = null;
+  var CACHE_KEY = "meb_gate_cache";
+
+  // last status seen from the server, so a returning approved/trial user is not locked out by a weak connection
+  function saveCache(d, r) {
+    try {
+      var first = d && d.firstSeen && d.firstSeen.toMillis ? d.firstSeen.toMillis() : null;
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ uid: uid, status: d.status, first: first, offset: offset }));
+      localStorage.setItem(SESSION_KEY, "1");
+    } catch (e) {}
+  }
+  function cacheDecision() {
+    try {
+      var c = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+      if (!c || !c.status) return null;
+      var r = decide({ status: c.status, firstSeen: c.first === null ? null : { toMillis: function () { return c.first; } } }, Date.now() + (c.offset || 0));
+      return r.state === "approved" || r.state === "trial" ? r : null;
+    } catch (e) { return null; }
+  }
+  function clearCache() { try { localStorage.removeItem(CACHE_KEY); localStorage.removeItem(SESSION_KEY); } catch (e) {} }
+  // remembers that this browser has logged in before, so a brand-new visitor sees the login form straight away
+  var SESSION_KEY = "meb_has_session";
+  function markSession() { try { localStorage.setItem(SESSION_KEY, "1"); } catch (e) {} }
+  function hasSession() { try { return !!localStorage.getItem(SESSION_KEY); } catch (e) { return false; } }
+  function onAuthScreen() { return renderedKey.indexOf("auth:") === 0; }
+
+  // ---- pure logic (unit-tested) ----
+  function decide(data, now) {
+    if (!data) return { state: "checking" };
+    if (data.status === "approved") return { state: "approved" };
+    if (data.status === "revoked") return { state: "revoked" };
+    if (data.status === "blocked") return { state: "blocked" };
+    if (data.status === "pending") return { state: "pending" };
+    var first = data.firstSeen && data.firstSeen.toMillis ? data.firstSeen.toMillis() : null;
+    var left = first === null ? TRIAL_MS : TRIAL_MS - (now - first);
+    return left > 0 ? { state: "trial", msLeft: left } : { state: "expired" };
+  }
+  function uaSummary(ua) {
+    ua = ua || "";
+    var b = /Edg\//.test(ua) ? "Edge" : /OPR\/|Opera/.test(ua) ? "Opera" : /Firefox\//.test(ua) ? "Firefox" :
+      /Chrome\//.test(ua) ? "Chrome" : /Safari\//.test(ua) ? "Safari" : "Browser";
+    var o = /Android/.test(ua) ? "Android" : /iPhone|iPad|iPod/.test(ua) ? "iOS" : /Windows/.test(ua) ? "Windows" :
+      /Mac OS X/.test(ua) ? "macOS" : /Linux/.test(ua) ? "Linux" : "Unknown OS";
+    return b + " · " + o;
+  }
+  function code(id) { return "ACC-" + String(id || "").slice(0, 6).toUpperCase(); }
+  function authMsg(e) {
+    var c = (e && e.code) || "";
+    if (/invalid-credential|wrong-password|user-not-found|invalid-login/.test(c)) return "Wrong email or password.";
+    if (/email-already-in-use/.test(c)) return "That email is already registered. Use Log in instead.";
+    if (/weak-password/.test(c)) return "Password must be at least 6 characters.";
+    if (/invalid-email/.test(c)) return "Please enter a valid email address.";
+    if (/admin-restricted-operation|operation-not-allowed/.test(c)) return "Trying without an account isn't available right now. Please register instead.";
+    if (/too-many-requests/.test(c)) return "Too many attempts. Please wait a few minutes and try again.";
+    if (/network|unavailable|timeout/.test(c + " " + ((e && e.message) || ""))) return "Connection problem. Please try again.";
+    return "Could not continue" + (c ? " (" + c + ")" : "") + ".";
+  }
+  window.__gateLogic = { decide: decide, uaSummary: uaSummary, code: code, authMsg: authMsg, TRIAL_MS: TRIAL_MS };
+
+  // ---- this browser's device id (the tracker lists every browser an account used) ----
+  function deviceId() {
+    try {
+      var d = localStorage.getItem("meb_device");
+      if (!d) {
+        d = Array.prototype.map.call(crypto.getRandomValues(new Uint8Array(4)), function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+        localStorage.setItem("meb_device", d);
+      }
+      return d;
+    } catch (e) { return "tmp" + Math.random().toString(16).slice(2, 8); }
+  }
+  var DEV = deviceId();
+
+  // ---- tiny DOM helper ----
+  function h(tag, props) {
+    var e = document.createElement(tag);
+    Object.keys(props || {}).forEach(function (k) {
+      if (k === "text") e.textContent = props[k];
+      else if (k === "class") e.className = props[k];
+      else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), props[k]);
+      else e.setAttribute(k, props[k]);
+    });
+    for (var i = 2; i < arguments.length; i++) if (arguments[i]) e.appendChild(arguments[i]);
+    return e;
+  }
+  function lock(on) {
+    gate.hidden = !on;
+    document.body.classList.toggle("gate-locked", on);
+    if (on) banner.hidden = true;
+  }
+  function logoEl() {
+    var src = document.querySelector(".made-by-credit .lax-img, .home-credit .lax-img");
+    return src ? h("img", { "class": "lax-img gate-logo", src: src.getAttribute("src"), alt: "LAX" }) : null;
+  }
+  function screen(key, title, lines, extra) {
+    if (renderedKey === key) return;
+    renderedKey = key;
+    card.textContent = "";
+    var logo = logoEl(); if (logo) card.appendChild(logo);
+    card.appendChild(h("h2", { text: title }));
+    lines.forEach(function (t) { card.appendChild(h("p", { text: t })); });
+    if (extra) extra(card);
+  }
+  function msgLaxBtn(label) {
+    return h("a", { "class": "gate-btn alt", href: LAX_LINK, target: "_blank", rel: "noopener", text: label || "Message LAX" });
+  }
+  function logoutBtn() {
+    return h("button", { "class": "gate-btn alt", text: "Log out", onclick: function () {
+      stopVisitor(); fb.au.signOut(fb.auth).then(function () { clearCache(); authMode = "login"; uid = null; lastData = null; renderedKey = ""; boot(); });
+    } });
+  }
+
+  // ---- screens ----
+  function showChecking() { screen("checking", "Checking access…", ["Please wait a moment."]); lock(true); }
+  function offlineMode(r) {
+    // weak/no connection but this device was approved (or still in its trial) the last time it was online: keep the app open
+    stopVisitor(); clearInterval(offTimer);
+    lock(false);
+    function paint() {
+      var c = cacheDecision();
+      if (!c) { clearInterval(offTimer); renderedKey = ""; showOffline("offline mode ended"); return; }
+      if (c.state === "trial") { banner.hidden = false; banner.textContent = "Offline · free trial: " + Math.max(1, Math.ceil(c.msLeft / 60000)) + " min left"; }
+      else banner.hidden = true;
+    }
+    paint();
+    offTimer = setInterval(function () { paint(); if (navigator.onLine && !booting) { clearInterval(offTimer); boot(); } }, 15000);
+  }
+  function showOffline(why) {
+    var cr = cacheDecision();
+    if (cr && !isAdmin) { offlineMode(cr); return; }
+    stopVisitor();
+    var netErr = !why || typeof why === "string" || /network|unavailable|timeout|offline/i.test((why.code || "") + " " + (why.message || ""));
+    screen("offline:" + netErr, netErr ? "Internet connection required" : "Could not verify access",
+      [netErr ? "Please connect to the internet once to log in. After that the app also works with a weak or no connection." : "Your connection looks fine, but the access check could not finish. Please tell LAX the error code below."], function (c) {
+      c.appendChild(h("button", { "class": "gate-btn", text: "Try again", onclick: function () { renderedKey = ""; boot(); } }));
+      if (why && why.code) c.appendChild(h("p", { "class": "gate-code", text: "Error: " + why.code }));
+      else if (why && why.message) c.appendChild(h("p", { "class": "gate-code", text: "Error: " + String(why.message).slice(0, 80) }));
+    });
+    lock(true);
+    if (why) console.warn("gate offline:", why);
+  }
+  function showAuth(msg) {
+    var reg = authMode === "register";
+    renderedKey = ""; // always rebuild so the error line and inputs reset cleanly
+    screen("auth:" + authMode + ":" + (msg || ""), reg ? "Create your account" : "Log in",
+      [reg ? "Register to get 30 free minutes. After that, LAX approves your account." : "Welcome back. Log in with your email and password."], function (c) {
+      var name = reg ? h("input", { type: "text", maxlength: "60", placeholder: "Your full name", autocomplete: "name" }) : null;
+      var email = h("input", { type: "email", placeholder: "Email", autocomplete: "email", inputmode: "email" });
+      var pass = h("input", { type: "password", placeholder: reg ? "Password (6+ characters)" : "Password", autocomplete: reg ? "new-password" : "current-password" });
+      var err = h("div", { "class": "gate-err", text: msg || "" });
+      var go = h("button", { "class": "gate-btn", text: reg ? "Register" : "Log in" });
+      var wn = document.querySelector("#view-home .welcome-note"); // same welcome text as the homepage
+      if (wn) c.appendChild(wn.cloneNode(true));
+      function submit() {
+        var n = name ? name.value.trim() : "", em = email.value.trim(), pw = pass.value;
+        if (reg && n.length < 2) { err.textContent = "Please enter your name."; return; }
+        if (!em || !pw) { err.textContent = "Please enter your email and password."; return; }
+        err.textContent = ""; go.disabled = true;
+        var p = withTimeout(loadFb(), 20000, "loading Firebase").then(function () {
+          return reg
+            ? fb.au.createUserWithEmailAndPassword(fb.auth, em, pw).then(function (cred) {
+                return fb.au.updateProfile(cred.user, { displayName: n }).then(function () { return cred.user; });
+              })
+            : fb.au.signInWithEmailAndPassword(fb.auth, em, pw).then(function (cred) { return cred.user; });
+        });
+        p.then(function (user) {
+          renderedKey = ""; showChecking();
+          return startSession(user).catch(function (e) { showOffline(e); });
+        }, function (e) {
+          go.disabled = false;
+          showAuth(e && /^auth\//.test(e.code || "") ? authMsg(e) : "Could not connect. Please check your internet and try again.");
+        });
+      }
+      go.addEventListener("click", submit);
+      pass.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+      if (name) c.appendChild(name);
+      c.appendChild(email); c.appendChild(pass); c.appendChild(err); c.appendChild(go);
+      // no sign-up: an anonymous account gets the same 30-minute trial (and the same one-trial-per-IP rule)
+      var guest = h("button", { "class": "gate-btn alt", text: "Try free for 30 minutes (no sign-up)" });
+      guest.addEventListener("click", function () {
+        err.textContent = ""; guest.disabled = true; go.disabled = true;
+        withTimeout(loadFb(), 20000, "loading Firebase").then(function () { return fb.au.signInAnonymously(fb.auth); }).then(function (cred) {
+          renderedKey = ""; showChecking();
+          return startSession(cred.user).catch(function (e) { showOffline(e); });
+        }, function (e) {
+          guest.disabled = false; go.disabled = false;
+          showAuth(e && /^auth\//.test(e.code || "") ? authMsg(e) : "Could not connect. Please check your internet and try again.");
+        });
+      });
+      c.appendChild(guest);
+      c.appendChild(h("p", {}, h("a", { href: "#", text: reg ? "Already registered? Log in" : "No account yet? Register", onclick: function (e) {
+        e.preventDefault(); authMode = reg ? "login" : "register"; showAuth();
+      } })));
+      if (!reg) c.appendChild(h("p", {}, h("a", { href: "#", text: "Forgot password?", onclick: function (e) {
+        e.preventDefault();
+        var em = email.value.trim();
+        if (!em) { err.textContent = "Type your email above first."; return; }
+        fb.au.sendPasswordResetEmail(fb.auth, em).then(function () { err.style.color = "#2e7d32"; err.textContent = "Reset link sent. Check your email."; })
+          .catch(function (e2) { err.style.color = ""; err.textContent = authMsg(e2); });
+      } })));
+    });
+    lock(true);
+  }
+  function infoLines(d) {
+    return [d.email ? (d.name ? d.name + " · " : "") + d.email : (d.name || "Guest") + " (no sign-up)", "Account code: " + code(uid)];
+  }
+  function render(d) {
+    var r = decide(d, Date.now() + offset);
+    saveCache(d, r);
+    if (r.state === "approved") { banner.hidden = true; lock(false); return; }
+    if (r.state === "trial") {
+      lock(false);
+      banner.hidden = false;
+      banner.textContent = "Free trial: " + Math.max(1, Math.ceil(r.msLeft / 60000)) + " min left";
+      return;
+    }
+    if (r.state === "expired") {
+      // trial over: move the account to "pending" so LAX sees it in the tracker's Pending tab
+      if (!pendingSet && ref) {
+        pendingSet = true;
+        fb.fs.updateDoc(ref, { status: "pending", lastSeen: fb.fs.serverTimestamp() }).catch(function () { pendingSet = false; });
+      }
+      r = { state: "pending" };
+    }
+    if (r.state === "pending") {
+      var isGuest = !d.email;
+      screen("pending:" + uid, "Free trial ended", [isGuest ? "Register with your name and email, then message LAX so your account can be approved." : "Message LAX so your account can be approved. This page unlocks by itself once approved."].concat(infoLines(d)), function (c) {
+        if (isGuest) c.appendChild(h("button", { "class": "gate-btn", text: "Register", onclick: function () {
+          stopVisitor(); fb.au.signOut(fb.auth).then(function () { clearCache(); authMode = "register"; uid = null; lastData = null; renderedKey = ""; boot(); });
+        } }));
+        c.appendChild(msgLaxBtn()); c.appendChild(logoutBtn());
+      });
+    } else if (r.state === "blocked") {
+      screen("blocked:" + uid, "Access blocked", ["This account has been blocked. Message LAX if you think this is a mistake."].concat(infoLines(d)), function (c) {
+        c.appendChild(msgLaxBtn()); c.appendChild(logoutBtn());
+      });
+    } else {
+      screen("revoked:" + uid, "Access turned off", ["Access for this account is turned off. Message LAX if you think this is a mistake."].concat(infoLines(d)), function (c) {
+        c.appendChild(msgLaxBtn()); c.appendChild(logoutBtn());
+      });
+    }
+    lock(true);
+  }
+
+  // ---- firebase plumbing ----
+  function withTimeout(p, ms, label) {
+    return new Promise(function (res, rej) {
+      var t = setTimeout(function () { rej(new Error("timeout at " + (label || "?"))); }, ms);
+      p.then(function (v) { clearTimeout(t); res(v); }, function (e) { clearTimeout(t); rej(e); });
+    });
+  }
+  function loadFb() {
+    if (fb) return Promise.resolve(fb);
+    return withTimeout(Promise.all([import(SDK + "firebase-app.js"), import(SDK + "firebase-auth.js"), import(SDK + "firebase-firestore.js")]), 15000, "loading Firebase")
+      .then(function (m) {
+        var a = m[0], au = m[1], fs = m[2];
+        var app = a.initializeApp(CFG);
+        var adminApp = a.initializeApp(CFG, "admin"); // separate auth session so signing in as admin never replaces a visitor session on this browser
+        fb = { au: au, fs: fs, auth: au.getAuth(app), db: fs.initializeFirestore(app, { experimentalAutoDetectLongPolling: true }),
+          adminAuth: au.getAuth(adminApp), adminDb: fs.initializeFirestore(adminApp, { experimentalAutoDetectLongPolling: true }) };
+        return fb;
+      });
+  }
+  function stopVisitor() {
+    if (unsubSelf) { unsubSelf(); unsubSelf = null; }
+    clearInterval(tickTimer); clearInterval(touchTimer);
+    pendingSet = false; ipCache = null; ipClaimed = false;
+  }
+  var ipCache = null, ipClaimed = false;
+  function getIp() {
+    // client-reported public IP (no server to read it); null when the lookup is blocked or offline
+    if (ipCache) return Promise.resolve(ipCache);
+    return withTimeout(fetch("https://api.ipify.org?format=json").then(function (r) { return r.json(); }), 4000, "ip lookup")
+      .then(function (j) { var v = j && typeof j.ip === "string" && j.ip.length <= 45 ? j.ip : null; if (v) ipCache = v; return v; }, function () { return null; });
+  }
+  function ipKey(ip) { return ip.replace(/[^0-9a-fA-F.:]/g, "").replace(/:/g, "_"); }
+  function ipAlreadyUsed(user, ip) {
+    // "blocked" when LAX blocked this IP, true when ANOTHER account already used a trial from it. Fails open (false) on any error so a failed lookup never locks real users out.
+    if (!ip) return Promise.resolve(false);
+    var fs = fb.fs, iref = fs.doc(fb.db, "ips", ipKey(ip));
+    return fs.getDoc(iref).then(function (s) {
+      if (s.exists()) return s.data().blocked ? "blocked" : s.data().uid !== user.uid;
+      return fs.setDoc(iref, { uid: user.uid, ip: ip, at: fs.serverTimestamp() }).then(function () { return false; });
+    }).catch(function () { return false; });
+  }
+  var sessionIn = null; // this visit's server-stamped start time (reset by startSession)
+  // Visit log for the admin calendar: users/<uid>/log/<YYYY-MM-DD> holds v.<device>_<startMs> = {dev, in, out} (ms). "out" is the latest heartbeat.
+  var sessionStartMs = null;
+  function dayKey(t) { var d = new Date(t), p = function (n) { return (n < 10 ? "0" : "") + n; }; return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()); }
+  function logVisit(user) {
+    var now = Date.now() + offset;
+    if (sessionStartMs === null) sessionStartMs = now;
+    var v = {}; v[DEV + "_" + sessionStartMs] = { dev: DEV, "in": sessionStartMs, out: now };
+    fb.fs.setDoc(fb.fs.doc(fb.db, "users", user.uid, "log", dayKey(sessionStartMs)), { v: v }, { merge: true }).catch(function () {});
+  }
+  function touch(user) {
+    var fs = fb.fs, ts = fs.serverTimestamp();
+    return getIp().then(function (ip) {
+      var entry = { ua: uaSummary(navigator.userAgent), at: ts };
+      if (ip) entry.ip = ip;
+      return fs.getDoc(ref).then(function (snap) {
+        if (!snap.exists()) {
+          return ipAlreadyUsed(user, ip).then(function (used) {
+            entry["in"] = ts;
+            var devices = {}; devices[DEV] = entry;
+            // an IP that already used its trial gets no new trial: the account starts as pending until LAX approves it
+            return fs.setDoc(ref, { status: used === "blocked" ? "blocked" : used ? "pending" : "trial", name: user.displayName || (user.isAnonymous ? "Guest" : ""), email: user.email || "", devices: devices, firstSeen: ts, lastSeen: ts });
+          });
+        }
+        // session log: "in" is when this visit started (kept on every heartbeat); "at" is the last heartbeat, shown as the quit time.
+        // When a new visit starts, the previous visit's in/at is pushed into "hist" (newest last, max 10).
+        var old = (snap.data().devices || {})[DEV] || {};
+        if (sessionIn) entry["in"] = sessionIn;
+        else { entry["in"] = ts; if (old["in"] && old.at) entry.hist = (old.hist || []).concat([{ "in": old["in"], out: old.at }]).slice(-10); else if (old.hist) entry.hist = old.hist; }
+        var u = { lastSeen: ts }; u["devices." + DEV] = entry;
+        // accounts made before the IP rule: record their IP in the device entry (above) and claim it once per session, so new accounts from the same IP are limited too
+        if (ip && !ipClaimed) { ipClaimed = true; ipAlreadyUsed(user, ip); }
+        return fs.updateDoc(ref, u);
+      });
+    }).then(function () { return fs.getDocFromServer(ref); })
+      .then(function (snap) {
+        var d = snap.data();
+        if (d && d.lastSeen && d.lastSeen.toMillis) offset = d.lastSeen.toMillis() - Date.now();
+        if (d && d.devices && d.devices[DEV] && d.devices[DEV]["in"]) sessionIn = d.devices[DEV]["in"];
+        logVisit(user);
+        lastData = d; render(d);
+      });
+  }
+  function startSession(user) {
+    stopVisitor(); sessionIn = null; sessionStartMs = null;
+    uid = user.uid; ref = fb.fs.doc(fb.db, "users", uid);
+    return withTimeout(touch(user), 20000, "reaching database").then(function () {
+      unsubSelf = fb.fs.onSnapshot(ref, function (snap) {
+        if (snap.exists()) { lastData = snap.data(); render(lastData); }
+      }, function (e) { showOffline(e); });
+      tickTimer = setInterval(function () { if (lastData) render(lastData); }, 1000);
+      touchTimer = setInterval(function () { touch(user).catch(function (e) { showOffline(e); }); }, 30000);
+    });
+  }
+  function boot() {
+    if (booting || isAdmin) return;
+    booting = true;
+    clearInterval(offTimer);
+    var cr = cacheDecision();
+    if (!cr && !hasSession()) {
+      // never logged in on this browser: show the login form right away, load Firebase in the background
+      booting = false; showAuth(); loadFb().catch(function () {}); return;
+    }
+    if (cr) { lock(false); if (cr.state === "trial") { banner.hidden = false; banner.textContent = "Free trial: " + Math.max(1, Math.ceil(cr.msLeft / 60000)) + " min left"; } else banner.hidden = true; }
+    else showChecking();
+    if (!navigator.onLine) { booting = false; showOffline("navigator offline"); return; }
+    loadFb().then(function () { return withTimeout(fb.adminAuth.authStateReady(), 10000, "auth start"); }).then(function () {
+      if (fb.adminAuth.currentUser && fb.adminAuth.currentUser.uid === ADMIN_UID) {
+        isAdmin = true; banner.hidden = true; lock(false); return;
+      }
+      return withTimeout(fb.auth.authStateReady(), 10000, "auth start").then(function () {
+        var u = fb.auth.currentUser;
+        if (u) return startSession(u);
+        showAuth();
+      });
+    }).catch(function (e) { showOffline(e); }).then(function () { booting = false; });
+  }
+  window.addEventListener("offline", function () { if (!isAdmin && !onAuthScreen()) { renderedKey = ""; showOffline("offline event"); } });
+  window.addEventListener("online", function () { if (!isAdmin && !onAuthScreen()) { renderedKey = ""; boot(); } });
+
+  // ---- hidden admin entry: 10 consecutive taps on the LAX logo ----
+  var taps = 0, lastTap = 0;
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest || !e.target.closest(".lax-img")) return;
+    var now = Date.now();
+    taps = now - lastTap > 1500 ? 1 : taps + 1;
+    lastTap = now;
+    if (taps >= 10) { taps = 0; openAdmin(); }
+  });
+  function openAdmin() {
+    loadFb().then(function () { return fb.adminAuth.authStateReady(); }).then(function () {
+      var u = fb.adminAuth.currentUser;
+      if (u && u.uid === ADMIN_UID) { becomeAdmin(); } else { $("adm-err").textContent = ""; $("admin-login").hidden = false; $("adm-email").focus(); }
+    }).catch(function () { alert("Internet connection required."); });
+  }
+  $("adm-cancel").addEventListener("click", function () { $("admin-login").hidden = true; });
+  $("adm-go").addEventListener("click", function () {
+    $("adm-err").textContent = "";
+    fb.au.signInWithEmailAndPassword(fb.adminAuth, $("adm-email").value.trim(), $("adm-pass").value).then(function (cred) {
+      if (cred.user.uid !== ADMIN_UID) { return fb.au.signOut(fb.adminAuth).then(function () { $("adm-err").textContent = "This account is not an admin."; }); }
+      $("adm-pass").value = ""; $("admin-login").hidden = true; becomeAdmin();
+    }).catch(function (e) { $("adm-err").textContent = "Sign in failed" + (e && e.code ? " (" + e.code + ")" : "") + ". Check email and password."; });
+  });
+  $("adm-pass").addEventListener("keydown", function (e) { if (e.key === "Enter") $("adm-go").click(); });
+
+  function becomeAdmin() {
+    isAdmin = true; markSession(); stopVisitor(); banner.hidden = true; lock(false);
+    showView("view-admin");
+    startTracker();
+  }
+  $("adm-logout").addEventListener("click", function () {
+    if (unsubAdmin) { unsubAdmin(); unsubAdmin = null; }
+    fb.au.signOut(fb.adminAuth).then(function () {
+      isAdmin = false; renderedKey = ""; if (!uid) { try { localStorage.removeItem(SESSION_KEY); } catch (e) {} } showView("view-home"); boot();
+    });
+  });
+
+  // ---- tracker ----
+  var items = [], filter = null, query = "";
+  function startTracker() {
+    var fs = fb.fs;
+    if (unsubAdmin) unsubAdmin();
+    unsubAdmin = fs.onSnapshot(fs.collection(fb.adminDb, "users"), function (qs) {
+      items = qs.docs.map(function (d) { var x = d.data(); x.id = d.id; return x; });
+      if (filter === null) filter = items.some(function (x) { return x.status === "pending"; }) ? "pending" : "all";
+      drawTracker();
+    }, function () { $("adm-summary").textContent = "Could not load. Check your connection and admin sign-in."; });
+  }
+  function ms(ts) { return ts && ts.toMillis ? ts.toMillis() : 0; }
+  function fmt(ts) { return ts && ts.toDate ? ts.toDate().toLocaleString() : "—"; }
+  function setStatus(id, status) { return fb.fs.updateDoc(fb.fs.doc(fb.adminDb, "users", id), { status: status }); }
+  function fmtHist(h) {
+    return (h || []).slice().reverse().map(function (e) { return fmt(e["in"]) + " → " + fmt(e.out); }).join("; ");
+  }
+  // one rounded chip per field so the tracker lines are easy to scan
+  function chipRow(parent, chips) {
+    var row = h("div", { "class": "adm-chips" });
+    chips.forEach(function (c) {
+      row.appendChild(h("span", { "class": "adm-pill " + (c[2] || "") }, h("small", { text: c[0] + " " }), document.createTextNode(c[1])));
+    });
+    parent.appendChild(row);
+  }
+  function deviceList(x) {
+    var dv = x.devices || {};
+    return Object.keys(dv).sort(function (a, b) { return ms(dv[b].at) - ms(dv[a].at); }).map(function (k) {
+      var note = x.deviceNotes && x.deviceNotes[k] ? x.deviceNotes[k] : "";
+      var live = Date.now() + offset - ms(dv[k].at) < 75000;
+      var inMs = ms(dv[k]["in"]), atMs = ms(dv[k].at);
+      // two rows of exactly 4: identity, then times
+      var chips = [["Device", k.toUpperCase(), "c-dev"], ["Name", note || "—", "c-name"], ["Browser", dv[k].ua || "?", "c-browser"], ["IP", dv[k].ip || "—", "c-ip"],
+        ["In", fmt(dv[k]["in"]), "c-in"], ["Quit", live ? "—" : "~" + fmt(dv[k].at), "c-quit"], ["Duration", inMs && atMs ? dur(inMs, atMs) : "—", "c-dur"], ["Status", live ? "ONLINE now" : "Offline", live ? "c-live" : "c-off"]];
+      return { key: k, note: note, hist: fmtHist(dv[k].hist), chips: chips };
+    });
+  }
+  // ---- visit calendar (admin): month grid of the days an account was online, click a day for every in -> out ----
+  var cal = { id: null, y: 0, m: 0, sel: null, days: {}, msg: "" };
+  function loadCal(x) {
+    cal.msg = "Loading..."; cal.days = {}; drawTracker();
+    fb.fs.getDocs(fb.fs.collection(fb.adminDb, "users", x.id, "log")).then(function (qs) {
+      qs.forEach(function (d) { cal.days[d.id] = d.data().v || {}; });
+      cal.msg = Object.keys(cal.days).length ? "" : "No visits logged yet. Visits are logged from v1.3.59.81 on, as people open the app.";
+      drawTracker();
+    }).catch(function () { cal.msg = "Could not load. Make sure the latest Firestore rules are published."; drawTracker(); });
+  }
+  function toggleCal(x) {
+    if (cal.id === x.id) { cal.id = null; drawTracker(); return; }
+    var n = new Date(); cal.id = x.id; cal.y = n.getFullYear(); cal.m = n.getMonth(); cal.sel = null; loadCal(x);
+  }
+  function tm(t) { return new Date(t).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); }
+  function dur(a, b) { var m = Math.max(0, Math.round((b - a) / 60000)); return m >= 60 ? Math.floor(m / 60) + "h " + (m % 60) + "m" : m + "m"; }
+  function calPanel(x) {
+    var box = h("div", { "class": "adm-cal" });
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var go = function (d) { cal.m += d; if (cal.m < 0) { cal.m = 11; cal.y--; } if (cal.m > 11) { cal.m = 0; cal.y++; } cal.sel = null; drawTracker(); };
+    box.appendChild(h("div", { "class": "adm-cal-head" },
+      h("button", { "class": "adm-ren", text: "‹", onclick: function () { go(-1); } }),
+      h("b", { text: months[cal.m] + " " + cal.y }),
+      h("button", { "class": "adm-ren", text: "›", onclick: function () { go(1); } }),
+      h("button", { "class": "adm-ren", text: "Refresh", onclick: function () { loadCal(x); } })));
+    if (cal.msg) box.appendChild(h("small", { text: cal.msg }));
+    var grid = h("div", { "class": "adm-cal-grid" });
+    ["S", "M", "T", "W", "T", "F", "S"].forEach(function (d) { grid.appendChild(h("span", { "class": "adm-cal-dow", text: d })); });
+    var first = new Date(cal.y, cal.m, 1).getDay(), n = new Date(cal.y, cal.m + 1, 0).getDate();
+    for (var i = 0; i < first; i++) grid.appendChild(h("span"));
+    var p = function (v) { return (v < 10 ? "0" : "") + v; };
+    for (var d = 1; d <= n; d++) (function (d) {
+      var key = cal.y + "-" + p(cal.m + 1) + "-" + p(d), vs = cal.days[key] ? Object.keys(cal.days[key]) : [];
+      grid.appendChild(h("button", { "class": "adm-cal-day" + (vs.length ? " on" : "") + (cal.sel === key ? " sel" : ""), text: d + (vs.length ? " · " + vs.length : ""), onclick: function () { cal.sel = key; drawTracker(); } }));
+    })(d);
+    box.appendChild(grid);
+    if (cal.sel) {
+      var v = cal.days[cal.sel] || {}, ks = Object.keys(v).sort(function (a, b) { return v[a]["in"] - v[b]["in"]; });
+      box.appendChild(h("div", { "class": "adm-cal-title", text: cal.sel + ": " + (ks.length ? ks.length + " visit(s)" : "not online") }));
+      ks.forEach(function (k) {
+        var e = v[k], note = x.deviceNotes && x.deviceNotes[e.dev] ? "“" + x.deviceNotes[e.dev] + "”" : "";
+        var live = Date.now() + offset - e.out < 75000;
+        box.appendChild(h("div", { "class": "adm-cal-visit", text: tm(e["in"]) + " → " + (live ? "ONLINE now" : tm(e.out)) + " (" + dur(e["in"], e.out) + ") · Device " + String(e.dev).toUpperCase() + " " + note }));
+      });
+    }
+    return box;
+  }
+  function deleteAccount(x) {
+    // removes the whole entry from the database (it disappears from every list)
+    if (!confirm("Delete " + (x.name || x.email || "this entry") + " completely from the database?\n\nIf this person logs in again they will start as a new account with a fresh 30-minute trial. To stop them for good, also delete their email under Firebase > Authentication > Users.")) return;
+    // also free the IPs this account had claimed, so the entry really is gone
+    var dv = x.devices || {};
+    Object.keys(dv).forEach(function (k) { if (dv[k].ip) fb.fs.deleteDoc(fb.fs.doc(fb.adminDb, "ips", ipKey(dv[k].ip))).catch(function () {}); });
+    fb.fs.deleteDoc(fb.fs.doc(fb.adminDb, "users", x.id)).catch(function () { alert("Could not delete. Make sure the latest Firestore rules are published."); });
+  }
+  function blockAccount(x) {
+    // blocks the account and every IP it used: new accounts from those IPs start blocked too
+    if (!confirm("Block " + (x.adminName || x.name || x.email || "this account") + "?\n\nThey will be locked out on every device, and new accounts from the IP addresses they used will start blocked too. You can unblock them later.")) return;
+    var dv = x.devices || {};
+    fb.fs.updateDoc(fb.fs.doc(fb.adminDb, "users", x.id), { status: "blocked" }).then(function () {
+      Object.keys(dv).forEach(function (k) { if (dv[k].ip) fb.fs.setDoc(fb.fs.doc(fb.adminDb, "ips", ipKey(dv[k].ip)), { uid: x.id, ip: dv[k].ip, at: fb.fs.serverTimestamp(), blocked: true }).catch(function () {}); });
+    }).catch(function () { alert("Could not block. Make sure the latest Firestore rules are published."); });
+  }
+  function unblockAccount(x) {
+    // back to pending (LAX approves again if wanted); the IPs are released too
+    var dv = x.devices || {};
+    fb.fs.updateDoc(fb.fs.doc(fb.adminDb, "users", x.id), { status: "pending" }).then(function () {
+      Object.keys(dv).forEach(function (k) { if (dv[k].ip) fb.fs.updateDoc(fb.fs.doc(fb.adminDb, "ips", ipKey(dv[k].ip)), { blocked: fb.fs.deleteField() }).catch(function () {}); });
+    }).catch(function () { alert("Could not unblock."); });
+  }
+  function renameAccount(x) {
+    // admin-only display name; kept in adminName, which regular users cannot write, so it survives whatever they type at registration
+    var n = prompt("Name for this account (leave empty to clear):", x.adminName || x.name || "");
+    if (n === null) return;
+    n = n.trim().slice(0, 40);
+    fb.fs.updateDoc(fb.fs.doc(fb.adminDb, "users", x.id), { adminName: n ? n : fb.fs.deleteField() }).catch(function () { alert("Could not save the name."); });
+  }
+  function renameDevice(x, d) {
+    // admin-only label for a device ("Juan's phone"); kept in a separate deviceNotes map that regular users cannot write
+    var n = prompt("Name / note for device " + d.key.toUpperCase() + " (leave empty to clear):", d.note);
+    if (n === null) return;
+    n = n.trim().slice(0, 40);
+    var u = {}; u["deviceNotes." + d.key] = n ? n : fb.fs.deleteField();
+    fb.fs.updateDoc(fb.fs.doc(fb.adminDb, "users", x.id), u).catch(function () { alert("Could not save the name."); });
+  }
+  function deleteDevice(x, d) {
+    // removes only this device's entry from the account; the account itself (and its trial/approval) is untouched
+    if (!confirm("Delete " + "Device " + d.key.toUpperCase() + " from " + (x.name || x.email || "this account") + "?\nIt will be listed again the next time that browser opens the app while logged in.")) return;
+    var u = {}; u["devices." + d.key] = fb.fs.deleteField(); u["deviceNotes." + d.key] = fb.fs.deleteField();
+    fb.fs.updateDoc(fb.fs.doc(fb.adminDb, "users", x.id), u).catch(function () { alert("Could not delete."); });
+  }
+  function drawTracker() {
+    var counts = { all: items.length, pending: 0, trial: 0, approved: 0, revoked: 0, blocked: 0 };
+    items.forEach(function (x) { if (counts[x.status] !== undefined) counts[x.status]++; });
+    $("adm-summary").textContent = items.length + " account(s) registered · " + counts.pending + " waiting for approval";
+    var fl = $("adm-filters"); fl.textContent = "";
+    ["pending", "trial", "approved", "revoked", "blocked", "all"].forEach(function (k) {
+      fl.appendChild(h("button", { "class": "adm-chip" + (filter === k ? " on" : ""), text: k.charAt(0).toUpperCase() + k.slice(1) + " (" + counts[k] + ")", onclick: function () { filter = k; drawTracker(); } }));
+    });
+    var q = query.toLowerCase();
+    var rows = items.filter(function (x) {
+      return (filter === "all" || x.status === filter) && (!q || (x.name || "").toLowerCase().indexOf(q) >= 0 || (x.adminName || "").toLowerCase().indexOf(q) >= 0 ||
+        Object.keys(x.devices || {}).some(function (k) { return String((x.devices[k] || {}).ip || "").indexOf(q) >= 0; }) ||
+        (x.email || "").toLowerCase().indexOf(q) >= 0 || code(x.id).toLowerCase().indexOf(q) >= 0 ||
+        Object.keys(x.deviceNotes || {}).some(function (k) { return String(x.deviceNotes[k]).toLowerCase().indexOf(q) >= 0; }));
+    }).sort(function (a, b) { return ms(b.lastSeen) - ms(a.lastSeen); });
+    var list = $("adm-list"); list.textContent = "";
+    if (!rows.length) list.appendChild(h("p", { "class": "subtitle", text: "Nothing here." }));
+    rows.forEach(function (x) {
+      var cb = h("input", { type: "checkbox" });
+      cb.checked = x.status === "approved";
+      cb.disabled = x.status === "blocked"; // unblock first
+      cb.addEventListener("change", function () {
+        // checked = approved; unchecking an approved account turns its access off (revoked)
+        setStatus(x.id, cb.checked ? "approved" : "revoked").catch(function () { cb.checked = !cb.checked; alert("Could not update."); });
+      });
+      var meta = h("span", { "class": "adm-meta" });
+      chipRow(meta, [["Email", x.email || "(no email)", "c-email"], ["ID", code(x.id), "c-id"], ["Registered", fmt(x.firstSeen), "c-reg"], ["Last seen", fmt(x.lastSeen), "c-seen"]]);
+      deviceList(x).forEach(function (d) {
+        chipRow(meta, d.chips);
+        if (d.hist) { meta.appendChild(h("br")); meta.appendChild(h("small", { text: "Earlier visits: " + d.hist })); }
+        meta.appendChild(h("button", { "class": "adm-ren", text: "Rename", onclick: function () { renameDevice(x, d); } }));
+        meta.appendChild(h("button", { "class": "adm-del", text: "Delete device", onclick: function () { deleteDevice(x, d); } }));
+      });
+      list.appendChild(h("div", { "class": "adm-row" },
+        h("span", { "class": "adm-name", text: x.adminName || x.name || "(no name)" }),
+        h("button", { "class": "adm-ren", text: "Rename", onclick: function () { renameAccount(x); } }),
+        h("span", { "class": "adm-badge " + x.status, text: x.status }),
+        h("label", { "class": "adm-ok" }, cb, document.createTextNode("Approved")),
+        x.status === "blocked"
+          ? h("button", { "class": "adm-ren adm-unblock", text: "Unblock", onclick: function () { unblockAccount(x); } })
+          : h("button", { "class": "adm-blk", text: "Block", onclick: function () { blockAccount(x); } }),
+        h("button", { "class": "adm-ren", text: cal.id === x.id ? "Hide calendar" : "Calendar", onclick: function () { toggleCal(x); } }),
+        h("button", { "class": "adm-del adm-del-acc", text: "Delete", onclick: function () { deleteAccount(x); } }),
+        meta,
+        cal.id === x.id ? calPanel(x) : document.createTextNode("")
+      ));
+    });
+  }
+  $("adm-search").addEventListener("input", function (e) { query = e.target.value; drawTracker(); });
+
+  boot();
+})();
+</script>

@@ -1,0 +1,13 @@
+<!-- ADMIN TRACKER VIEW (hidden; opened by tapping the LAX logo 10 times, then signing in) -->
+<div id="view-admin" class="view">
+  <div class="quiz-topbar">
+    <button class="back-link" onclick="showView('view-home')">&larr; Back</button>
+    <button class="back-link" id="adm-logout" style="margin-left:auto">Sign out</button>
+  </div>
+  <h1>Device Tracker</h1>
+  <div class="subtitle" id="adm-summary">Loading&hellip;</div>
+  <div style="margin:0 0 10px"><a class="back-link" href="diary.html" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">Open the dev diary &rarr;</a></div>
+  <div class="adm-counts" id="adm-filters"></div>
+  <input type="text" id="adm-search" placeholder="Search name or device code">
+  <div id="adm-list"></div>
+</div>
