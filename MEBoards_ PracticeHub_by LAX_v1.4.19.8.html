@@ -2031,6 +2031,12 @@ function layoutAll(t){
     margin-bottom: 8px;
   }
   .refresher-set-row { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
+  /* private status view (LAX only): red = not verified, green = verified */
+  .subject-phase-label { -webkit-user-select: none; user-select: none; }
+  .menu-item.st-red, .refresher-set-btn.st-red:not(:disabled) { background: #c62828; border-color: #c62828; }
+  .menu-item.st-red:hover, .refresher-set-btn.st-red:hover:not(:disabled) { background: #9e1f1f; }
+  .menu-item.st-green, .refresher-set-btn.st-green:not(:disabled) { background: #2e7d32; border-color: #2e7d32; }
+  .menu-item.st-green:hover, .refresher-set-btn.st-green:hover:not(:disabled) { background: #1f5c23; }
   .refresher-set-btn { flex: 1 1 0; min-width: 0; font-size: 12px; font-weight: 600; line-height: 1.2; padding: 8px 2px; border: 1px solid var(--line); border-radius: 6px; background: var(--accent); border-color: var(--accent); color: #fff; box-sizing: border-box; min-height: calc(2.4em + 18px); display: flex; align-items: center; justify-content: center; text-align: center; font-family: inherit; cursor: pointer; white-space: nowrap; }
   .refresher-set-btn:hover:not(:disabled) { background: var(--accent-dark); }
   .refresher-set-btn:disabled { opacity: 0.45; cursor: default; }
@@ -6971,6 +6977,56 @@ function buildRefresherPhase(subjectKey, hostId) {
 }
 // Quick Access shows the PPE refresher rows too (same buttons as the library panel).
 buildRefresherPhase("ppe", "quick-refresher-rows");
+
+// ---- Private status view (admin only, no visible hint): click the AERC REFRESHER PHASE / AERC REVIEW PHASE heading twice (two clicks or taps within 0.6 s) to switch the home buttons to red/green; again to switch back. ----
+(function () {
+  const KEY = "meHomeStatusV1";
+  const HOSTS = ["quick-refresher-rows", "featured-math-grid", "refresher-phase-rows", "subject-browse-grid"];
+  let on = false, last = 0, applying = false, st;
+  try { st = JSON.parse(localStorage.getItem(KEY)); } catch (e) {}
+  if (!st || typeof st !== "object") st = { "ppe:set:3": 1 };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+  function keyOf(btn) {
+    const host = btn.closest("#" + HOSTS.join(", #")); if (!host) return null;
+    if (btn.disabled || btn.classList.contains("disabled") || btn.classList.contains("menu-item-pending")) return null;
+    const subj = host.id === "quick-refresher-rows" || host.id === "featured-math-grid" ? "ppe" : activeSubjectKey;
+    if (!subj) return null;
+    const t = btn.textContent.replace(/\s+/g, " ").trim();
+    let m = /^(Terms )?Set (\d+)$/.exec(t);
+    if (m) return subj + ":" + (m[1] ? "terms" : "set") + ":" + m[2];
+    return subj + ":" + t.replace(/^(\w[\w ]*?) PPE Day /, "$1 Day ");
+  }
+  function apply() {
+    applying = true;
+    HOSTS.forEach((id) => { const h = document.getElementById(id); if (!h) return;
+      h.querySelectorAll("button").forEach((b) => {
+        b.classList.remove("st-red", "st-green");
+        if (!on) return;
+        const k = keyOf(b); if (k) b.classList.add(st[k] ? "st-green" : "st-red");
+      }); });
+    applying = false;
+  }
+  const mo = new MutationObserver(() => { if (on && !applying) apply(); });
+  HOSTS.forEach((id) => { const h = document.getElementById(id); if (h) mo.observe(h, { childList: true, subtree: true }); });
+  document.addEventListener("click", (e) => {
+    const isAdm = !!(window.__meAdm && window.__meAdm());
+    if (on && !isAdm) { on = false; apply(); }
+    if (!isAdm) return;
+    const lab = e.target.closest && e.target.closest(".subject-phase-label");
+    if (lab) {
+      const now = Date.now();
+      if (now - last <= 600) { last = 0; on = !on; apply(); } else last = now;
+      return;
+    }
+    if (!on) return;
+    const b = e.target.closest && e.target.closest("button");
+    const k = b && keyOf(b);
+    if (!k) { if (b && b.closest("#" + HOSTS.join(", #"))) { e.preventDefault(); e.stopImmediatePropagation(); } return; }
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (st[k]) delete st[k]; else st[k] = 1;
+    save(); apply();
+  }, true);
+})();
 
 // ---- Changelog ----
 // Add a new entry to the TOP of this array whenever a meaningful change is
@@ -120220,6 +120276,7 @@ renderQuiz("quiz-md-ps-6", mdPs6Data, "MD Problem Set Day 6", "timer-md-ps-6", m
   var fb = null, uid = null, ref = null, offset = 0, lastData = null;
   var unsubSelf = null, unsubAdmin = null, tickTimer = null, touchTimer = null;
   var isAdmin = false, booting = false, renderedKey = "", authMode = "login", pendingSet = false, offTimer = null;
+  window.__meAdm = function () { return isAdmin === true; };
   var CACHE_KEY = "meb_gate_cache";
 
   // last status seen from the server, so a returning approved/trial user is not locked out by a weak connection
