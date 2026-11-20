@@ -47,6 +47,11 @@
     <label>Max size per part (MB) <input id="mb" type="number" min="0.1" step="0.5" value="30"></label>
     <button id="go" class="primary" disabled>Split</button>
   </div>
+  <div class="bar">
+    <label>Number of files <input id="nf" type="number" min="2" step="1" value="2"></label>
+    <button id="eqsize" disabled>Split into equal file sizes</button>
+    <button id="eqpages" disabled>Split by number of pages</button>
+  </div>
   <div id="msg" role="status"></div>
   <div class="bar" id="acts" hidden>
     <button id="all">Download all parts</button>
@@ -64,6 +69,7 @@ const MB = 1024 * 1024;
 let src = null, fileName = "", fileSize = 0, parts = [], DIR = null, busy = false;
 const fmt = b => b >= MB ? (b / MB).toFixed(2) + " MB" : Math.max(1, Math.round(b / 1024)) + " KB";
 const say = (t, c) => { $("msg").textContent = t; $("msg").className = c || ""; };
+const setBtns = d => { $("go").disabled = d; $("eqsize").disabled = d; $("eqpages").disabled = d; };
 const tick = () => new Promise(r => setTimeout(r, 0));
 
 const drop = $("drop"), f = $("f");
@@ -86,8 +92,8 @@ async function load(file) {
     fileName = file.name.replace(/\.pdf$/i, ""); fileSize = file.size;
     parts = []; $("list").innerHTML = ""; $("acts").hidden = true;
     $("info").textContent = file.name + ": " + src.getPageCount() + " pages, " + fmt(file.size);
-    $("go").disabled = false; say("");
-  } catch (e) { src = null; $("go").disabled = true; say("Could not read this PDF: " + e.message, "bad"); }
+    setBtns(false); say("");
+  } catch (e) { src = null; setBtns(true); say("Could not read this PDF: " + e.message, "bad"); }
 }
 
 async function build(from, to) {
@@ -100,7 +106,7 @@ async function build(from, to) {
 $("go").onclick = async () => {
   const max = parseFloat($("mb").value) * MB;
   if (!(max > 0)) { say("Type a max size in MB first.", "bad"); return; }
-  busy = true; $("go").disabled = true; parts = []; $("list").innerHTML = ""; $("acts").hidden = true;
+  busy = true; setBtns(true); parts = []; $("list").innerHTML = ""; $("acts").hidden = true;
   const n = src.getPageCount(), cache = new Map();
   const sz = async (a, b) => { const k = a + "-" + b; if (!cache.has(k)) cache.set(k, (await build(a, b)).length); return cache.get(k); };
   try {
@@ -124,7 +130,69 @@ $("go").onclick = async () => {
     }
     showParts(max);
   } catch (e) { say("Could not split this PDF: " + e.message, "bad"); }
-  busy = false; $("go").disabled = false;
+  busy = false; setBtns(false);
+};
+
+function readCount() {
+  const n = parseInt($("nf").value, 10), pc = src.getPageCount();
+  if (!(n >= 2)) { say("Type how many files you want (2 or more).", "bad"); return 0; }
+  if (n > pc) { say("This PDF has only " + pc + " pages, so it cannot make " + n + " files.", "bad"); return 0; }
+  return n;
+}
+function showEqual(label) {
+  showParts(0);
+  const sizes = parts.map(p => p.bytes.length), pages = parts.map(p => p.to - p.from);
+  say(parts.length + " files (" + label + "). Pages: " + pages.join(" / ") + ". Sizes: " + sizes.map(fmt).join(" / ") + ". Original " + fmt(fileSize) + ".", "ok");
+}
+// Equal pages: earlier files get one extra page when it does not divide evenly.
+$("eqpages").onclick = async () => {
+  const n = readCount(); if (!n) return;
+  busy = true; setBtns(true); parts = []; $("list").innerHTML = ""; $("acts").hidden = true;
+  try {
+    const pc = src.getPageCount(), base = Math.floor(pc / n), extra = pc % n;
+    let s = 0;
+    for (let i = 0; i < n; i++) {
+      say("Building file " + (i + 1) + " of " + n + "..."); await tick();
+      const take = base + (i < extra ? 1 : 0);
+      parts.push({ from: s, to: s + take, bytes: await build(s, s + take) });
+      s += take;
+    }
+    showEqual("equal page counts");
+  } catch (e) { say("Could not split this PDF: " + e.message, "bad"); }
+  busy = false; setBtns(false);
+};
+// Equal sizes: weigh each page, then cut so every file has about the same weight.
+$("eqsize").onclick = async () => {
+  const n = readCount(); if (!n) return;
+  busy = true; setBtns(true); parts = []; $("list").innerHTML = ""; $("acts").hidden = true;
+  try {
+    const pc = src.getPageCount(), w = [];
+    for (let i = 0; i < pc; i++) {
+      if (i % 5 === 0) { say("Measuring page " + (i + 1) + " of " + pc + "..."); await tick(); }
+      w.push((await build(i, i + 1)).length);
+    }
+    const cut = cap => { // greedy cuts with max weight cap, always leaving 1 page per remaining file
+      const out = []; let s = 0;
+      for (let k = 0; k < n; k++) {
+        let e = s + 1, sum = w[s];
+        const left = n - k - 1;
+        while (e < pc - left && (k === n - 1 || sum + w[e] <= cap)) { sum += w[e]; e++; }
+        if (k === n - 1) e = pc;
+        out.push([s, e]); s = e;
+      }
+      return out;
+    };
+    const wt = r => { let t = 0; for (let i = r[0]; i < r[1]; i++) t += w[i]; return t; };
+    let lo = Math.max(...w), hi = w.reduce((a, b) => a + b, 0);
+    while (lo < hi) { const mid = Math.floor((lo + hi) / 2); if (Math.max(...cut(mid).map(wt)) <= mid) hi = mid; else lo = mid + 1; }
+    const ranges = cut(lo);
+    for (let i = 0; i < ranges.length; i++) {
+      say("Building file " + (i + 1) + " of " + n + "..."); await tick();
+      parts.push({ from: ranges[i][0], to: ranges[i][1], bytes: await build(ranges[i][0], ranges[i][1]) });
+    }
+    showEqual("about equal file sizes");
+  } catch (e) { say("Could not split this PDF: " + e.message, "bad"); }
+  busy = false; setBtns(false);
 };
 
 const pad = (i) => String(i + 1).padStart(String(parts.length).length < 2 ? 2 : String(parts.length).length, "0");
