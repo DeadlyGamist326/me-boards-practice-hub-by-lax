@@ -9109,7 +9109,7 @@ function fpfPick(btn) {
 
 const CHANGELOG = [
   { version: "1.4.19.10", date: "2026-11-20", changes: [
-    "Handout PPE Day 1 (Conservation of Mass and Energy, Laws of Thermodynamics, Ideal Gas) now uses the full lecture handout's symbols too: mass flow rate m, specific heats C, C_p and C_v, and R = R-bar/MW. Added the sensible heat form Q_s = mC\u0394T, the heat engine and heat pump relations (W_net = Q_A \u2212 Q_R, W = Q_H \u2212 Q_L) with Q_A, Q_R, Q_H and Q_L, and a note that flow work is written W_f in the First Law equations."
+    "Handout PPE Day 1 (Conservation of Mass and Energy, Laws of Thermodynamics, Ideal Gas) now uses the full lecture handout's symbols too: mass flow rate m, specific heats C, C_p and C_v, and R = R-bar/MW. Specific weight stays written with the gamma symbol. Added the sensible heat form Q_s = mC\u0394T, the heat engine and heat pump relations (W_net = Q_A \u2212 Q_R, W = Q_H \u2212 Q_L) with Q_A, Q_R, Q_H and Q_L, and a note that flow work is written W_f in the First Law equations."
   ] },
   { version: "1.4.19.9", date: "2026-11-20", changes: [
     "Handout PPE Day 1 now follows the new lecture handout's symbols: specific weight is written w (P = wh, w = SG \u00d7 w water, w = \u03c1g), flow work is W = P \u00d7 V, mass flow rate is m (m = Q\u03c1, m = Av\u03c1) and the specific gravity of a mixture uses \u03c1 mixture. The reciprocal relations v = 1/\u03c1 and \u03c1 = 1/v were added to the density section."
@@ -17436,12 +17436,12 @@ document.getElementById("handout-ppe-1").innerHTML = `
 <div class="concept-card">
   <div class="cc-title">1. Pressure · B. Hydrostatic Pressure, \\(P\\)</div>
   <div class="formula-grid-2">
-    <div class="formula-block">\\( P = wh \\)</div>
+    <div class="formula-block">\\( P = \\gamma h \\)</div>
     <div class="formula-block">\\( P = \\rho g h \\)</div>
   </div>
-  <div class="var-def-grid"><div class="var-chip">\\( w \\) = specific weight of fluid</div><div class="var-chip">\\( w = SG_f \\times w_{\\text{water}} \\)</div><div class="var-chip">\\( w = \\rho g \\)</div><div class="var-chip">\\( h \\) = fluid height</div></div>
+  <div class="var-def-grid"><div class="var-chip">\\( \\gamma \\) = specific weight of fluid</div><div class="var-chip">\\( \\gamma = SG_f \\times \\gamma_{\\text{water}} \\)</div><div class="var-chip">\\( \\gamma = \\rho g \\)</div><div class="var-chip">\\( h \\) = fluid height</div></div>
   <div class="cc-desc">Standard values:</div>
-  <div class="formula-block">\\( w_{\\text{water}} = 9.81\\dfrac{\\text{kN}}{\\text{m}^3} = 62.4\\dfrac{\\text{lb}}{\\text{ft}^3} \\)</div>
+  <div class="formula-block">\\( \\gamma_{\\text{water}} = 9.81\\dfrac{\\text{kN}}{\\text{m}^3} = 62.4\\dfrac{\\text{lb}}{\\text{ft}^3} \\)</div>
   <div class="formula-block">\\( \\rho_{\\text{water}} = 1000\\dfrac{\\text{kg}}{\\text{m}^3} = 1\\dfrac{\\text{kg}}{\\text{L}} \\)</div>
 </div>
 <div class="concept-card">
