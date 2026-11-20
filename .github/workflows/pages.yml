@@ -43,6 +43,7 @@ jobs:
           cp pdf-white-box-cover.html _site/pdf-white-box-cover.html
           cp diagram-grid-canvas.html _site/diagram-grid-canvas.html
           cp tools.html _site/tools.html
+          cp tasks.html _site/tasks.html
           # version.json is generated from the file name, so it can never be stale (the app polls it for the update notice)
           v="$(echo "$latest" | sed -E 's/.*_v([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)\.html/\1/')"
           echo "{\"version\":\"$v\"}" > _site/version.json
