@@ -87265,7 +87265,7 @@ document.getElementById("quiz-refresher-terms-ppe-6-subtitle").textContent =
   `${refresherTermsPpe6Data.length} questions · click a choice to check your answer`;
 renderQuiz("quiz-refresher-terms-ppe-6", refresherTermsPpe6Data, "PPE Refresher Terms Set 6", "timer-refresher-terms-ppe-6", refresherTerms6Outline);
 
-// ===== PPE Refresher Set 7 (LAX 2026-11-20): built from the uploaded "PIPE REFRESHER SET 7" PDF (4 scanned pages, 95 items, Refrigeration Engineering). Items 1-30 are problems (4-hint solutions per RULINGS 17; the handwritten key on the scan is kept as the key; where it does not reproduce the real value is shown and the key letter kept: problem 17; problems 11, 24 and 27 use the nearest printed choice), items 31-95 are Terms (Terms Set 7, numbering kept 31-95; the scan has no key for them, answers by engineering knowledge). =====
+// ===== PPE Refresher Set 7 (LAX 2026-11-20): built from the uploaded "PIPE REFRESHER SET 7" PDF (4 scanned pages, 95 items, Refrigeration Engineering). Items 1-30 are problems (4-hint solutions per RULINGS 17; the handwritten key on the scan is kept as the key; where it does not reproduce the real value is shown and the key letter kept: problem 17 (pressures 150.7 and 743.7 kPa added to the question per LAX); problems 11, 24 and 27 use the nearest printed choice), items 31-95 are Terms (Terms Set 7, numbering kept 31-95; the scan has no key for them, answers by engineering knowledge). =====
 const refresherSet7Outline = [
   { section: "I. The Vapor Compression Cycle", subsections: [ { name: null, items: ["Refrigeration — Compressor Work from Enthalpies"] } ] },
   { section: "II. Performance of Refrigeration System", subsections: [ { name: null, items: ["Refrigeration — COP and Work", "Refrigeration — EER", "Refrigerator — Energy Use and Cost", "Refrigeration — Tons from Energy Consumption"] } ] },
@@ -87708,7 +87708,7 @@ const refresherSetPpe7Data = [
 <div class="formula-block">\\( W_c=33.43\\ \\text{kW} \\)</div>
 <div class="hint-answer">Answer: A. 33.43 kW</div>`
     ] },
-  { q: ["An R-12 reciprocating compressor operates between a condensing temperature of 30°C and an evaporator temperature of –20°C. The clearance volume ratio of the compressor is 0.03. The specific heat ratio of the vapor is 1.15 and the specific volume at suction is 0.1089 ", { frac: ["m³", "kg"] }, ". If the refrigerating effect is 111 ", { frac: ["kJ", "kg"] }, ", what is the actual volume displacement rate required to produce 2 tons of refrigeration, considering the effect of clearance?"],
+  { q: ["An R-12 reciprocating compressor operates between a condensing temperature of 30°C and an evaporator temperature of –20°C. The clearance volume ratio of the compressor is 0.03. The specific heat ratio of the vapor is 1.15 and the specific volume at suction is 0.1089 ", { frac: ["m³", "kg"] }, ". If the refrigerating effect is 111 ", { frac: ["kJ", "kg"] }, ", what is the actual volume displacement rate required to produce 2 tons of refrigeration, considering the effect of clearance? Pressures at the points: P1 = 150.7 kPa and P2 = 743.7 kPa."],
     choices: [["6.26 × 10⁻³ ", { frac: ["m³", "s"] }], ["63.5 × 10⁻³ ", { frac: ["m³", "s"] }], ["635 × 10⁻³ ", { frac: ["m³", "s"] }], ["4.88 × 10⁻³ ", { frac: ["m³", "s"] }]], answer: 0,
     topics: ["Refrigeration Compressor — Displacement with Clearance"],
     hints: [
@@ -87720,11 +87720,11 @@ const refresherSetPpe7Data = [
       <div class="hint-formula">\\( V_1=\\dot{m}\\,v_1 \\)</div>
       <div class="hint-formula">\\( \\eta_v=1+c-c\\left(\\dfrac{P_2}{P_1}\\right)^{\\frac{1}{n}} \\)</div>
       <div class="hint-formula">\\( \\eta_v=\\dfrac{V_1}{V_D} \\)</div>
-      <p class="hint-note">Constants (not stated, assume): R-12 saturation pressures P<sub>1</sub> = 150.9 kPa at −20°C and P<sub>2</sub> = 744.9 kPa at 30°C; 1 TR = 3.516 kW.</p>`,
+      <p class="hint-note">Constants: 1 TR = 3.516 kW. The pressures P<sub>1</sub> and P<sub>2</sub> are given in the problem.</p>`,
       `<div class="hint-formula">\\( c=0.03,\\ n=1.15,\\ v_1=0.1089,\\ q_{RE}=111,\\ RE=2\\text{ TR} \\)</div>`,
       `<p class="hint-given">Given:</p>
-<div class="formula-grid-4"><div class="formula-block">\\( c=0.03 \\)</div><div class="formula-block">\\( n=1.15 \\)</div><div class="formula-block">\\( v_1=0.1089\\ \\dfrac{\\text{m}^3}{\\text{kg}} \\)</div><div class="formula-block">\\( q_{RE}=111\\ \\dfrac{\\text{kJ}}{\\text{kg}} \\)</div><div class="formula-block">\\( RE=2\\ \\text{TR} \\)</div><div class="formula-block">\\( P_1=150.9\\ \\text{kPa} \\)</div><div class="formula-block">\\( P_2=744.9\\ \\text{kPa} \\)</div></div>
-<p class="hint-note">The suction and discharge pressures are the R-12 saturation pressures at −20°C and 30°C (from the R-12 table). Refrigerant flow from the refrigerating effect:</p>
+<div class="formula-grid-4"><div class="formula-block">\\( c=0.03 \\)</div><div class="formula-block">\\( n=1.15 \\)</div><div class="formula-block">\\( v_1=0.1089\\ \\dfrac{\\text{m}^3}{\\text{kg}} \\)</div><div class="formula-block">\\( q_{RE}=111\\ \\dfrac{\\text{kJ}}{\\text{kg}} \\)</div><div class="formula-block">\\( RE=2\\ \\text{TR} \\)</div><div class="formula-block">\\( P_1=150.7\\ \\text{kPa} \\)</div><div class="formula-block">\\( P_2=743.7\\ \\text{kPa} \\)</div></div>
+<p class="hint-note">The suction and discharge pressures P<sub>1</sub> and P<sub>2</sub> are given at the end of the problem. Refrigerant flow from the refrigerating effect:</p>
 <div class="formula-block">\\( RE=\\dot{m}\\,q_{RE} \\)</div>
 <p class="hint-note">Substitute the known values, with the conversion to kW inside the formula.</p>
 <div class="calc-pair"><div class="formula-block">\\( 2\\ \\cancel{\\text{TR}}\\left(\\dfrac{3.516\\ \\text{kW}}{1\\ \\cancel{\\text{TR}}}\\right)=\\left(\\dot{m}\\ \\dfrac{\\cancel{\\text{kg}}}{\\text{s}}\\right)\\left(111\\ \\dfrac{\\text{kJ}}{\\cancel{\\text{kg}}}\\right) \\)</div><div class="calc-side"><div class="calc-box"><div class="calc-lcd" data-expr="2×3.516=X×111" data-ans="X=0.06335135135"></div><div class="calc-legend"><span class="calc-how">Shift + Solve</span></div><div class="calc-store">Ans &rarr; STO &rarr; A</div></div></div></div>
@@ -87737,12 +87737,12 @@ const refresherSetPpe7Data = [
 <p class="hint-note">Volumetric efficiency with clearance:</p>
 <div class="formula-block">\\( \\eta_v=1+c-c\\left(\\dfrac{P_2}{P_1}\\right)^{\\frac{1}{n}} \\)</div>
 <p class="hint-note">Substitute the known values.</p>
-<div class="calc-pair"><div class="formula-block fb-long">\\( \\eta_v=1+0.03-0.03\\left(\\dfrac{744.9\\ \\cancel{\\text{kPa}}}{150.9\\ \\cancel{\\text{kPa}}}\\right)^{\\frac{1}{1.15}} \\)</div><div class="calc-side"><div class="calc-box"><div class="calc-lcd" data-expr="1+0.03-0.03×(\\\\frac{744.9}{150.9})^{\\\\frac{1}{1.15}}" data-ans="0.9097499206"></div><div class="calc-legend"><span class="calc-how">=</span></div><div class="calc-store">Ans &rarr; STO &rarr; C</div></div></div></div>
-<div class="formula-block">\\( \\eta_v=0.9097 \\)</div>
+<div class="calc-pair"><div class="formula-block fb-long">\\( \\eta_v=1+0.03-0.03\\left(\\dfrac{743.7\\ \\cancel{\\text{kPa}}}{150.7\\ \\cancel{\\text{kPa}}}\\right)^{\\frac{1}{1.15}} \\)</div><div class="calc-side"><div class="calc-box"><div class="calc-lcd" data-expr="1+0.03-0.03×(\\\\frac{743.7}{150.7})^{\\\\frac{1}{1.15}}" data-ans="0.9097798219"></div><div class="calc-legend"><span class="calc-how">=</span></div><div class="calc-store">Ans &rarr; STO &rarr; C</div></div></div></div>
+<div class="formula-block">\\( \\eta_v=0.9098 \\)</div>
 <p class="hint-note">The actual displacement rate is the suction flow divided by the volumetric efficiency:</p>
 <div class="formula-block">\\( \\eta_v=\\dfrac{V_1}{V_D} \\)</div>
 <p class="hint-note">Substitute the known values.</p>
-<div class="calc-pair"><div class="formula-block">\\( 0.9097=\\dfrac{0.006899\\ \\dfrac{\\text{m}^3}{\\text{s}}}{V_D\\ \\dfrac{\\text{m}^3}{\\text{s}}} \\)</div><div class="calc-side"><div class="calc-box"><div class="calc-lcd" data-expr="C=\\\\frac{B}{X}" data-ans="X=0.007583361104"></div><div class="calc-legend"><span class="calc-how">Shift + Solve</span><span class="calc-chip">B = 0.006898962162</span><span class="calc-chip">C = 0.9097499206</span></div></div></div></div>
+<div class="calc-pair"><div class="formula-block">\\( 0.9098=\\dfrac{0.006899\\ \\dfrac{\\text{m}^3}{\\text{s}}}{V_D\\ \\dfrac{\\text{m}^3}{\\text{s}}} \\)</div><div class="calc-side"><div class="calc-box"><div class="calc-lcd" data-expr="C=\\\\frac{B}{X}" data-ans="X=0.007583111865"></div><div class="calc-legend"><span class="calc-how">Shift + Solve</span><span class="calc-chip">B = 0.006898962162</span><span class="calc-chip">C = 0.9097798219</span></div></div></div></div>
 <div class="formula-block">\\( V_D=7.58\\times10^{-3}\\ \\dfrac{\\text{m}^3}{\\text{s}} \\)</div>
 <p class="hint-note">The real arithmetic gives 7.58 × 10⁻³ m³/s, which is not among the printed choices. The printed key A (6.26 × 10⁻³ m³/s) is about the suction flow multiplied by (not divided by) the volumetric efficiency. The key letter A is kept as printed and this is reported to LAX.</p>
 <div class="hint-answer">Answer: A. \\( 6.26\\times10^{-3}\\ \\dfrac{\\text{m}^3}{\\text{s}} \\) (printed key; computed \\( 7.58\\times10^{-3}\\ \\dfrac{\\text{m}^3}{\\text{s}} \\))</div>`
@@ -87780,7 +87780,7 @@ const refresherSetPpe7Data = [
 <div class="hint-answer">Answer: A. 0.93 kW</div>`
     ] },
   { q: ["A refrigerating system operates on a reversed Brayton refrigeration cycle to maintain a low-temperature space at 250 K. The temperature after constant-pressure cooling is 300 K, and the temperature rise of air in the refrigerator is 50 K. What is the net work of compression per kg of air? Take cp = 1 ", { frac: ["  kJ  ", "kg·K"] }, "."],
-    choices: [["150 ", { frac: ["kJ", "kg"] }], ["200 ", { frac: ["kJ", "kg"] }], ["50 ", { frac: ["kJ", "kg"] }], ["25 ", { frac: ["kJ", "kg"] }]], answer: 3,
+    choices: [["250 ", { frac: ["kJ", "kg"] }], ["200 ", { frac: ["kJ", "kg"] }], ["50 ", { frac: ["kJ", "kg"] }], ["25 ", { frac: ["kJ", "kg"] }]], answer: 3,
     topics: ["Reversed Brayton Cycle — Net Work"],
     hints: [
       `<div class="kw-map">
@@ -88126,7 +88126,7 @@ const refresherTermsPpe7Data = [
     choices: ["Rotary vane compressor", "Scroll compressor", "Centrifugal compressor", "Reciprocating compressor"], answer: 2,
     topics: ["Compressor Terms"] },
   { num: "41", kw: "refrigerant eco-friendly zero odp", q: "Which refrigerant is eco-friendly and has zero ODP?",
-    choices: ["R12", "R22", "R134a", "Ammonia"], answer: 3,
+    choices: ["R12", "R22", "R134a", "Ammonia"], answer: 2,
     topics: ["Refrigerant Terms"] },
   { num: "42", kw: "natural refrigerant food preservation", q: "Which natural refrigerant is commonly used in food preservation?",
     choices: ["R12", "Freon 11", "Ammonia", "R22"], answer: 2,
@@ -88282,7 +88282,7 @@ const refresherTermsPpe7Data = [
     choices: ["Ammonia", "Carbon dioxide", "Sulphur dioxide", "Fluorine"], answer: 3,
     topics: ["Refrigerant Terms"] },
   { num: "93", kw: "milk chilling plants commonly secondary refrigerant", q: "In milk chilling plants, which of the following is commonly used as the secondary refrigerant?",
-    choices: ["Ammonia solution", "Sodium silicate", "Propylene glycol", "Brine"], answer: 2,
+    choices: ["Ammonia solution", "Sodium silicate", "Propylene glycol", "Brine"], answer: 0,
     topics: ["Refrigerant Terms"] },
   { num: "94", kw: "leakage freon-based refrigeration system detected", q: "Leakage in a Freon-based refrigeration system is commonly detected using a:",
     choices: ["Oxy-acetylene torch", "Halide torch", "Sulphur torch", "Blue litmus paper"], answer: 1,
