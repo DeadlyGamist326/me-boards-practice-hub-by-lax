@@ -143,6 +143,9 @@
     if (np) parts.push(np + " PDF page(s)");
     say((parts.length ? parts.join(" and ") + " added" : "Nothing added") + (bad ? ", " + bad + " skipped (not a readable image or PDF)" : "") + ".");
     render();
+    // follow the newest page: scroll to the last one added
+    var last = list.lastElementChild;
+    if (last && (n || np)) requestAnimationFrame(function () { last.scrollIntoView({ behavior: "smooth", block: "end" }); });
   }
 
   function render() {
@@ -214,6 +217,14 @@
     if (b < 0 || b >= pages.length || a === b) return;
     pages.splice(b, 0, pages.splice(a, 1)[0]); render();
   }
+
+  // arrow keys do nothing on this page (no scrolling); dropdowns and the name box keep theirs
+  document.addEventListener("keydown", function (e) {
+    if (e.key.indexOf("Arrow") !== 0) return;
+    var t = e.target && e.target.tagName;
+    if (t === "SELECT" || t === "INPUT" || t === "TEXTAREA") return;
+    e.preventDefault();
+  });
 
   // paste
   document.addEventListener("paste", function (e) {
