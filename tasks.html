@@ -8,120 +8,96 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232e74b5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 12 5 5L20 6'/%3E%3C/svg%3E">
 <style>
   :root { --ink:#1a1a1a; --sub:#5a5a5a; --line:#e2e2e2; --accent:#2e74b5; --accent-dark:#235a8f;
-          --todo:#8a8a8a; --prog:#c77700; --done:#2e7d32; }
+          --red:#c62828; --red-dark:#9e1f1f; --green:#2e7d32;  }
   * { box-sizing:border-box; }
   body { font-family:Arial,Helvetica,sans-serif; color:var(--ink); max-width:760px; margin:0 auto; padding:40px 24px 80px; background:#fff; line-height:1.5; }
   h1 { font-size:24px; margin:0 0 6px; }
   .subtitle { color:var(--sub); font-size:14px; margin:0 0 24px; }
   .welcome-note { background:#f7f8fa; border:1px solid var(--line); border-radius:8px; padding:14px 16px; font-size:13.5px; line-height:1.6; margin-bottom:20px; }
   .welcome-note b { color:var(--accent-dark); }
+  .section-eyebrow { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--sub); margin:0 0 6px; }
+  #notes { width:100%; font:inherit; font-size:14px; line-height:1.55; padding:12px 14px; border:1px solid var(--line); border-radius:8px; resize:vertical; min-height:170px; background:#fff; color:var(--ink); }
+  #notes:focus { outline:none; border-color:var(--accent); }
+  .overall { margin:18px 0 0; font-size:13px; color:var(--sub); }
+  .bar { height:8px; border-radius:4px; background:var(--line); overflow:hidden; margin-top:4px; }
+  .bar > i { display:block; height:100%; background:var(--green); width:0; transition:width .25s; }
+  h2 { font-size:15px; color:var(--sub); margin:32px 0 14px; border-bottom:1px solid var(--line); padding-bottom:8px; font-weight:normal; display:flex; gap:8px; align-items:center; }
+  h2 .gtitle { flex:1; }
+  h2 input { flex:1; font:inherit; font-size:15px; color:var(--ink); border:1px solid var(--accent); border-radius:4px; padding:2px 6px; }
+  .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .menu-item { display:block; text-align:center; padding:14px 10px; border-radius:6px; color:#fff; font-size:15px; font-weight:bold; border:none; cursor:pointer; font-family:inherit; width:100%; }
+  .menu-item.notdone { background:var(--red); }
+  .menu-item.notdone:hover { background:var(--red-dark); }
+  .menu-item.done { background:var(--green); }
+  .menu-item.done:hover { background:#1f5c23; }
+  .menu-item.edit { background:var(--accent); }
+  .menu-item.edit:hover { background:var(--accent-dark); }
   .toolbar { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 6px; }
   .btn { font:inherit; font-size:13px; padding:8px 12px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); cursor:pointer; }
   .btn:hover { border-color:var(--accent); color:var(--accent-dark); }
-  .btn.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
-  .btn.primary:hover { background:var(--accent-dark); color:#fff; }
   .btn.small { font-size:12px; padding:4px 8px; }
   .btn.danger:hover { border-color:#c62828; color:#c62828; }
-  .filters { display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 0; }
-  .chip { font:inherit; font-size:12.5px; padding:5px 10px; border:1px solid var(--line); border-radius:999px; background:#fff; cursor:pointer; color:var(--sub); }
-  .chip.on { background:var(--accent); border-color:var(--accent); color:#fff; }
-  .overall { margin:16px 0 0; font-size:13px; color:var(--sub); }
-  .bar { height:8px; border-radius:4px; background:var(--line); overflow:hidden; margin-top:4px; }
-  .bar > i { display:block; height:100%; background:var(--done); width:0; transition:width .25s; }
-  .group { border:1px solid var(--line); border-radius:8px; margin:18px 0; overflow:hidden; }
-  .ghead { display:flex; align-items:center; gap:10px; padding:12px 14px; background:#f7f8fa; cursor:pointer; user-select:none; }
-  .ghead .gt { flex:1; font-size:16px; font-weight:700; background:transparent; border:0; font-family:inherit; color:var(--ink); padding:2px 4px; border-radius:4px; min-width:0; }
-  .ghead .gt:focus { outline:1px solid var(--accent); background:#fff; }
-  .ghead .gc { font-size:12.5px; color:var(--sub); white-space:nowrap; }
-  .arrow { display:inline-block; transition:transform .15s; color:var(--sub); }
-  .group.collapsed .arrow { transform:rotate(-90deg); }
-  .group.collapsed .gbody { display:none; }
-  .gbody { padding:10px 14px 14px; }
-  .gnotes, .tnotes { width:100%; font:inherit; font-size:13px; padding:8px 10px; border:1px solid var(--line); border-radius:6px; resize:vertical; min-height:38px; background:#fff; color:var(--ink); }
-  .gnotes:focus, .tnotes:focus { outline:none; border-color:var(--accent); }
-  .task { border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin:10px 0 0; }
-  .task.s-done { background:#f3faf3; }
-  .trow { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .status { font:inherit; font-size:12px; font-weight:700; padding:6px 10px; border-radius:6px; border:1px solid; min-width:104px; cursor:pointer; color:#fff; }
-  .status.todo { background:var(--todo); border-color:var(--todo); }
-  .status.progress { background:var(--prog); border-color:var(--prog); }
-  .status.verified { background:var(--done); border-color:var(--done); }
-  .ttitle { flex:1; min-width:140px; font:inherit; font-size:14px; font-weight:600; border:0; background:transparent; padding:3px 4px; border-radius:4px; color:var(--ink); }
-  .ttitle:focus { outline:1px solid var(--accent); background:#fff; }
-  .s-done .ttitle { color:var(--sub); }
-  .tnotes { margin-top:8px; }
-  .tfoot { display:flex; justify-content:space-between; align-items:center; margin-top:6px; font-size:11.5px; color:var(--sub); }
-  .empty { color:var(--sub); font-size:13px; padding:8px 2px; }
+  .legend { font-size:12.5px; color:var(--sub); margin:10px 0 0; }
+  .legend i { display:inline-block; width:10px; height:10px; border-radius:2px; vertical-align:-1px; margin:0 4px 0 8px; }
   .hint { font-size:12px; color:var(--sub); margin-top:26px; }
-  @media (max-width:520px) { body { padding:24px 14px 60px; } .status { min-width:90px; } }
+  .editrow { display:flex; gap:6px; }
+  .editrow input { flex:1; min-width:0; font:inherit; font-size:14px; padding:12px 8px; border:1px solid var(--accent); border-radius:6px; }
+  .editrow .btn { padding:0 10px; }
+  @media (max-width:520px) { body { padding:24px 14px 60px; } }
 </style>
 </head>
 <body>
 <h1>Task Checklist</h1>
-<p class="subtitle">Working list with a status and notes for every task.</p>
+<p class="subtitle">Tap a button to toggle it. Red = not done / not verified, green = done / verified.</p>
 
 <div class="welcome-note" id="goal"></div>
 
-<div class="toolbar">
-  <button class="btn primary" id="addGroup">+ Add group</button>
-  <button class="btn" id="expand">Expand all</button>
-  <button class="btn" id="collapse">Collapse all</button>
+<div class="section-eyebrow">Notes</div>
+<textarea id="notes" placeholder="Notes for everything..."></textarea>
+
+<div class="overall"><span id="overallText"></span><div class="bar"><i id="overallBar"></i></div></div>
+<div class="legend"><i style="background:#c62828"></i>Not done<i style="background:#2e7d32"></i>Done</div>
+
+<div id="groups"></div>
+
+<div class="toolbar" style="margin-top:28px">
+  <button class="btn" id="editMode">Edit list</button>
+  <button class="btn" id="addGroup" hidden>+ Add group</button>
   <button class="btn" id="export">Export backup</button>
   <button class="btn" id="import">Import backup</button>
   <button class="btn danger" id="reset">Reset to starting list</button>
   <input type="file" id="file" accept="application/json,.json" hidden>
 </div>
-<div class="filters" id="filters"></div>
-<div class="overall"><span id="overallText"></span><div class="bar"><i id="overallBar"></i></div></div>
-
-<div id="groups"></div>
-
-<p class="hint">Everything is saved automatically in this browser. Use Export backup now and then, so the notes are not lost if the browser data is cleared. Click a status button to change it: To do, In progress, Verified.</p>
+<p class="hint">Everything is saved automatically in this browser. Use Export backup now and then, so the notes are not lost if the browser data is cleared.</p>
 
 <script>
 (function () {
-  var KEY = "meTaskChecklistV1";
-  var STATUSES = ["todo", "progress", "verified"];
-  var LABELS = { todo: "To do", progress: "In progress", verified: "Verified" };
-  var uid = 0;
+  var KEY = "meTaskChecklistV2";
+  var uid = 0, editing = false;
   function id() { uid++; return "i" + Date.now().toString(36) + uid; }
-  function T(title, status, notes) { return { id: id(), title: title, status: status || "todo", notes: notes || "" }; }
-  function G(title, notes, tasks) { return { id: id(), title: title, notes: notes || "", collapsed: false, tasks: tasks }; }
+  function T(title, done) { return { id: id(), title: title, done: !!done }; }
+  function G(title, tasks) { return { id: id(), title: title, tasks: tasks }; }
 
   var GOAL = "<b>Main goal now:</b> finish PPE Refresher Sets 3 to 7 together with their Terms, and update the PPE Handouts (needed first). " +
              "After the Handouts, the Sample Problems, Trivia and Problem Sets must follow the updated Handouts.";
 
+  var NOTES = "PPE Refresher Set 3: verified (problems). Terms answer keys of all sets still need to be checked.\n\n" +
+    "Set 4 open flags: P5, P10, P18, P19, P24; terms 35, 42, 44, 59, 81.\n" +
+    "Set 5 open flags: P12, P17, P29; terms 43, 49, 65, 67, 70.\n" +
+    "Set 6: no open flags.\n" +
+    "Set 7: answers for P17, P19 and terms 41, 63, 70, 92, 93 were given by LAX (check they are applied).\n\n" +
+    "Sets 4 to 7: LAX still needs to verify the way of solving.";
+
   function seed() {
     var groups = [];
-    groups.push(G("PPE Refresher Set 3", "", [
-      T("Problems (way of solving)", "verified", "Verified."),
-      T("Terms answer key", "todo", "Answer key of the Terms still needs to be checked.")
-    ]));
-    groups.push(G("PPE Refresher Set 4", "", [
-      T("Problems (way of solving)", "todo", "Open flags: P5, P10, P18, P19, P24."),
-      T("Terms answer key", "todo", "Open flags: terms 35, 42, 44, 59, 81.")
-    ]));
-    groups.push(G("PPE Refresher Set 5", "", [
-      T("Problems (way of solving)", "todo", "Open flags: P12, P17, P29."),
-      T("Terms answer key", "todo", "Open flags: terms 43, 49, 65, 67, 70.")
-    ]));
-    groups.push(G("PPE Refresher Set 6", "", [
-      T("Problems (way of solving)", "todo", ""),
-      T("Terms answer key", "todo", "")
-    ]));
-    groups.push(G("PPE Refresher Set 7", "", [
-      T("Problems (way of solving)", "todo", "Answers for P17 and P19 were given by LAX. Check they are applied."),
-      T("Terms answer key", "todo", "Answers for terms 41, 63, 70, 92, 93 were given by LAX. Check they are applied.")
-    ]));
+    for (var n = 3; n <= 7; n++) {
+      groups.push(G("PPE Refresher Set " + n, [T("Problems", n === 3), T("Terms answer key", false)]));
+    }
     var h = [];
-    for (var d = 1; d <= 11; d++) h.push(T("PPE Handout Day " + d, "todo", ""));
-    groups.push(G("Update the PPE Handouts (whole PPE)", "Handouts must be updated first. The follow-up group below depends on this one.", h));
-    groups.push(G("Follow-up after the Handouts", "Sample Problems, Trivia and Problem Set must follow the updated Handouts.", [
-      T("Sample Problems follow the updated Handouts", "todo", ""),
-      T("Trivia follows the updated Handouts", "todo", ""),
-      T("Problem Set follows the updated Handouts", "todo", "")
-    ]));
-    return { v: 1, filter: "all", groups: groups };
+    for (var d = 1; d <= 11; d++) h.push(T("Day " + d, false));
+    groups.push(G("Update the PPE Handouts", h));
+    groups.push(G("Follow the updated Handouts", [T("Sample Problems"), T("Trivia"), T("Problem Set")]));
+    return { v: 2, notes: NOTES, groups: groups };
   }
 
   var state;
@@ -130,101 +106,62 @@
     return seed();
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
-
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
-
-  function counts() {
-    var n = 0, v = 0;
-    state.groups.forEach(function (g) { g.tasks.forEach(function (t) { n++; if (t.status === "verified") v++; }); });
-    return { n: n, v: v };
-  }
 
   function render() {
     document.getElementById("goal").innerHTML = GOAL;
-    var c = counts();
-    document.getElementById("overallText").textContent = c.v + " of " + c.n + " tasks verified";
-    document.getElementById("overallBar").style.width = (c.n ? (100 * c.v / c.n) : 0) + "%";
-
-    var fl = document.getElementById("filters"); fl.textContent = "";
-    [["all", "All"], ["todo", "To do"], ["progress", "In progress"], ["verified", "Verified"]].forEach(function (f) {
-      var b = el("button", "chip" + (state.filter === f[0] ? " on" : ""), f[1]);
-      b.onclick = function () { state.filter = f[0]; save(); render(); };
-      fl.appendChild(b);
-    });
+    var n = 0, v = 0;
+    state.groups.forEach(function (g) { g.tasks.forEach(function (t) { n++; if (t.done) v++; }); });
+    document.getElementById("overallText").textContent = v + " of " + n + " done";
+    document.getElementById("overallBar").style.width = (n ? 100 * v / n : 0) + "%";
+    document.getElementById("addGroup").hidden = !editing;
+    document.getElementById("editMode").textContent = editing ? "Done editing" : "Edit list";
 
     var root = document.getElementById("groups"); root.textContent = "";
     state.groups.forEach(function (g) {
-      var shown = g.tasks.filter(function (t) { return state.filter === "all" || t.status === state.filter; });
-      if (state.filter !== "all" && !shown.length) return;
-      var box = el("div", "group" + (g.collapsed ? " collapsed" : ""));
-      var head = el("div", "ghead");
-      head.appendChild(el("span", "arrow", "▾"));
-      var gt = el("input", "gt"); gt.value = g.title; gt.setAttribute("aria-label", "Group name");
-      gt.onclick = function (e) { e.stopPropagation(); };
-      gt.oninput = function () { g.title = gt.value; save(); };
-      head.appendChild(gt);
-      var gv = g.tasks.filter(function (t) { return t.status === "verified"; }).length;
-      head.appendChild(el("span", "gc", gv + "/" + g.tasks.length + " verified"));
-      head.onclick = function () { g.collapsed = !g.collapsed; save(); render(); };
-      box.appendChild(head);
-
-      var body = el("div", "gbody");
-      var gn = el("textarea", "gnotes"); gn.placeholder = "Group notes..."; gn.value = g.notes || "";
-      gn.oninput = function () { g.notes = gn.value; save(); };
-      body.appendChild(gn);
-
-      if (!shown.length) body.appendChild(el("div", "empty", "No tasks yet."));
-      shown.forEach(function (t) {
-        var card = el("div", "task s-" + (t.status === "verified" ? "done" : t.status));
-        var row = el("div", "trow");
-        var sb = el("button", "status " + t.status, LABELS[t.status]);
-        sb.title = "Click to change status";
-        sb.onclick = function () {
-          t.status = STATUSES[(STATUSES.indexOf(t.status) + 1) % STATUSES.length];
-          t.updated = Date.now(); save(); render();
-        };
-        row.appendChild(sb);
-        var ti = el("input", "ttitle"); ti.value = t.title; ti.setAttribute("aria-label", "Task name");
-        ti.oninput = function () { t.title = ti.value; save(); };
-        row.appendChild(ti);
-        card.appendChild(row);
-        var tn = el("textarea", "tnotes"); tn.placeholder = "Notes..."; tn.value = t.notes || "";
-        tn.rows = Math.min(8, Math.max(2, (t.notes || "").split("\n").length));
-        tn.oninput = function () { t.notes = tn.value; t.updated = Date.now(); save(); };
-        card.appendChild(tn);
-        var foot = el("div", "tfoot");
-        foot.appendChild(el("span", "", t.updated ? "Changed " + new Date(t.updated).toLocaleString() : ""));
-        var del = el("button", "btn small danger", "Delete task");
-        del.onclick = function () {
-          if (!confirm("Delete this task?")) return;
-          g.tasks = g.tasks.filter(function (x) { return x !== t; }); save(); render();
-        };
-        foot.appendChild(del);
-        card.appendChild(foot);
-        body.appendChild(card);
+      var h2 = el("h2");
+      if (editing) {
+        var gi = el("input"); gi.value = g.title; gi.oninput = function () { g.title = gi.value; save(); };
+        h2.appendChild(gi);
+        var dg = el("button", "btn small danger", "Delete group");
+        dg.onclick = function () { if (confirm("Delete this group and its buttons?")) { state.groups = state.groups.filter(function (x) { return x !== g; }); save(); render(); } };
+        h2.appendChild(dg);
+      } else {
+        h2.appendChild(el("span", "gtitle", g.title));
+        h2.appendChild(el("span", "", g.tasks.filter(function (t) { return t.done; }).length + "/" + g.tasks.length));
+      }
+      root.appendChild(h2);
+      var grid = el("div", "grid");
+      g.tasks.forEach(function (t) {
+        if (editing) {
+          var row = el("div", "editrow");
+          var ti = el("input"); ti.value = t.title; ti.oninput = function () { t.title = ti.value; save(); };
+          var x = el("button", "btn danger", "\u2715");
+          x.onclick = function () { g.tasks = g.tasks.filter(function (y) { return y !== t; }); save(); render(); };
+          row.appendChild(ti); row.appendChild(x); grid.appendChild(row);
+        } else {
+          var b = el("button", "menu-item " + (t.done ? "done" : "notdone"), t.title);
+          b.setAttribute("aria-pressed", t.done ? "true" : "false");
+          b.onclick = function () { t.done = !t.done; save(); render(); };
+          grid.appendChild(b);
+        }
       });
-
-      var bar = el("div", "toolbar"); bar.style.marginTop = "12px";
-      var at = el("button", "btn small", "+ Add task");
-      at.onclick = function () { g.tasks.push(T("New task")); g.collapsed = false; save(); render(); };
-      var dg = el("button", "btn small danger", "Delete group");
-      dg.onclick = function () {
-        if (!confirm("Delete this whole group and its tasks?")) return;
-        state.groups = state.groups.filter(function (x) { return x !== g; }); save(); render();
-      };
-      bar.appendChild(at); bar.appendChild(dg);
-      body.appendChild(bar);
-      box.appendChild(body);
-      root.appendChild(box);
+      if (editing) {
+        var add = el("button", "menu-item edit", "+ Add button");
+        add.onclick = function () { g.tasks.push(T("New task")); save(); render(); };
+        grid.appendChild(add);
+      }
+      root.appendChild(grid);
     });
   }
 
-  document.getElementById("addGroup").onclick = function () { state.groups.push(G("New group", "", [T("New task")])); save(); render(); };
-  document.getElementById("expand").onclick = function () { state.groups.forEach(function (g) { g.collapsed = false; }); save(); render(); };
-  document.getElementById("collapse").onclick = function () { state.groups.forEach(function (g) { g.collapsed = true; }); save(); render(); };
+  var notes = document.getElementById("notes");
+  notes.oninput = function () { state.notes = notes.value; save(); };
+  document.getElementById("editMode").onclick = function () { editing = !editing; render(); };
+  document.getElementById("addGroup").onclick = function () { state.groups.push(G("New group", [T("New task")])); save(); render(); };
   document.getElementById("reset").onclick = function () {
-    if (!confirm("Reset to the starting list? All your current statuses and notes will be replaced. Export a backup first if unsure.")) return;
-    state = seed(); save(); render();
+    if (!confirm("Reset to the starting list? Your current buttons and notes will be replaced. Export a backup first if unsure.")) return;
+    state = seed(); notes.value = state.notes; save(); render();
   };
   document.getElementById("export").onclick = function () {
     var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
@@ -244,13 +181,14 @@
         var s = JSON.parse(r.result);
         if (!s || !Array.isArray(s.groups)) throw new Error("bad");
         if (!confirm("Replace the current list with this backup?")) return;
-        state = s; if (!state.filter) state.filter = "all"; save(); render();
+        state = s; if (typeof state.notes !== "string") state.notes = ""; notes.value = state.notes; save(); render();
       } catch (e) { alert("This file is not a valid checklist backup."); }
     };
     r.readAsText(f);
   };
 
   state = load();
+  notes.value = state.notes || "";
   render();
 })();
 </script>
