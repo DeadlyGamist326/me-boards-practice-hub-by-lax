@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-20": {
-    stamp: "v1.4.19.1 – v1.4.19.31",
+    stamp: "v1.4.19.1 – v1.4.19.32",
     title: "Archive Apps button, PPE Refresher Sets 4 to 7",
     body: [
+      "v1.4.19.32 (LAX 2026-11-20): PPE Refresher Set 4 re-checked against the professor's solution PDF. Already matching: P2, P3, P7 (his answers equal ours). P10: -12.5% kept, the exact -10.56% note removed. P19: his R_f = R_i[1 + alpha(T_f - T_i)], alpha = 0.005 per degC, disclosure removed. P5: Q = DU + W with the sign convention, DU = 1200 kJ, choice E (1200 kJ) added as the key because the professor writes it beside the printed key D (4200 kJ). P18: r = 150 mm (D = 300 mm), 33.11 kW, question text now says 300-mm. P24: Q = A Dt/(x/k + 1/h_1) for one 6 m x 6 m wall (246.25 W) times 4 walls = 985.02 W. Unresolved: P5 choice E is an added choice, not on the printed sheet.",
       "v1.4.19.31 (LAX 2026-11-20): PPE Refresher Set 6 checked against the professor's `Refresher Set 6 Solution.pdf` (handwritten, read visually). Problem 16 now follows his W = mRT_1/(k-1)[...] (no k factor), m = 0.0657 kg/s = 3.94 kg/min, key B; problem 21 text corrected to a 3-stage compressor (the earlier text said 4-stage): r = 2 gives 366.55 kPa (his E, not a printed choice) and r = 1 gives 186.6 kPa = key C; problems 28 and 29 already match (h_1 = 58, h_2 = 90, 15.01 and 7.2). Problem 13 he gets 5.83 m2 (key B 5.84), ours 5.84 kept. Also fixed the generated steps of problems 5, 6, 21, 22 and 23, whose LaTeX lost its backslashes in v1.4.19.25 (water power and efficiency steps, fan steps and the intercooler step were showing broken).",
       "v1.4.19.30 (LAX 2026-11-20): Shuffle button in the topbar of PPE Refresher Terms Set 3-7 (`shuffleQuiz`, per-container press counter `shuffleCounts`). It only reorders the `.question` blocks in the DOM (inserted before the banner), so numbers, choices, saved progress and answers stay tied to their data index. Press 1-2 random (`idtShuffle`), press 3 sorts back by index. Not persisted across reloads; the choice order is not shuffled.",
       "v1.4.19.29 (LAX 2026-11-20): PPE Refresher Terms Set 7 term 90 answer changed from D to A on LAX's ruling (ammonia has a higher latent heat than Freon).",
