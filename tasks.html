@@ -8,60 +8,61 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232e74b5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 12 5 5L20 6'/%3E%3C/svg%3E">
 <style>
   :root { --ink:#1a1a1a; --sub:#5a5a5a; --line:#e2e2e2; --accent:#2e74b5; --accent-dark:#235a8f;
+          --disabled-bg:#f2f2f2; --disabled-text:#aaaaaa;
           --red:#c62828; --red-dark:#9e1f1f; --green:#2e7d32; --green-dark:#1f5c23; }
   * { box-sizing:border-box; }
   body { font-family:Arial,Helvetica,sans-serif; color:var(--ink); max-width:760px; margin:0 auto; padding:40px 24px 80px; background:#fff; line-height:1.5; }
   h1 { font-size:24px; margin-bottom:6px; }
-  .subtitle { color:var(--sub); font-size:14px; margin-bottom:32px; }
+  .subtitle { color:var(--sub); font-size:14px; margin-bottom:24px; }
   .welcome-note { background:#f7f8fa; border:1px solid var(--line); border-radius:8px; padding:14px 16px; font-size:13.5px; line-height:1.6; color:var(--ink); margin-bottom:20px; }
   h2 { font-size:15px; color:var(--sub); margin:32px 0 14px; border-bottom:1px solid var(--line); padding-bottom:8px; font-weight:normal; }
+
+  /* ---- copied from the app home page (Quick Access) ---- */
   .featured-section { margin-bottom:8px; }
   .featured-section h2 { margin-top:4px; }
   .section-eyebrow { font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:var(--accent); margin-top:26px; }
   .featured-section .section-eyebrow.subject-phase-label { margin-top:14px; margin-bottom:8px; }
-
-  /* Quick Access buttons, copied from the app home page */
+  .col-headers { display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px; color:var(--sub); margin-bottom:8px; padding:0 2px; }
+  .col-headers.col-headers-6 { grid-template-columns:repeat(6,1fr); text-align:center; line-height:1.3; }
   .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .grid.grid-6 { grid-template-columns:repeat(6,1fr); }
   .menu-item { display:block; text-align:center; padding:14px 10px; border-radius:6px; background:var(--accent); color:#fff; font-size:15px; font-weight:bold; border:none; cursor:pointer; font-family:inherit; }
   .menu-item:hover { background:var(--accent-dark); }
-  .grid.grid-4 { grid-template-columns:1fr 1fr 1fr 1fr; }
-  .grid-4 .menu-item { font-size:12.5px; padding:10px 6px; }
-  .grid.grid-6 { grid-template-columns:repeat(6,1fr); }
   .grid-6 .menu-item { font-size:11px; padding:10px 3px; }
+  .menu-item.disabled { background:var(--disabled-bg); color:var(--disabled-text); cursor:default; pointer-events:none; }
+  .menu-item.menu-item-pending { filter:blur(1.6px); opacity:0.6; }
   .refresher-set-row { display:flex; align-items:center; gap:4px; margin-bottom:6px; }
-  .refresher-set-btn { flex:1 1 0; min-width:0; font-size:12px; font-weight:600; line-height:1.2; padding:8px 2px; border:1px solid var(--line); border-radius:6px; background:var(--accent); border-color:var(--accent); color:#fff; box-sizing:border-box; min-height:calc(2.4em + 18px); display:flex; align-items:center; justify-content:center; text-align:center; font-family:inherit; cursor:pointer; white-space:pre; }
-  .refresher-set-btn:hover { background:var(--accent-dark); }
+  .refresher-set-btn { flex:1 1 0; min-width:0; font-size:12px; font-weight:600; line-height:1.2; padding:8px 2px; border:1px solid var(--line); border-radius:6px; background:var(--accent); border-color:var(--accent); color:#fff; box-sizing:border-box; min-height:calc(2.4em + 18px); display:flex; align-items:center; justify-content:center; text-align:center; font-family:inherit; cursor:pointer; white-space:nowrap; }
+  .refresher-set-btn:hover:not(:disabled) { background:var(--accent-dark); }
+  .refresher-set-btn:disabled { opacity:0.45; cursor:default; }
   @media (max-width:640px) { .refresher-set-btn { font-size:10.5px; padding:7px 0; min-height:calc(2.4em + 16px); } }
-  @media (max-width:640px) { .grid-4 .menu-item { font-size:12px; padding:12px 8px; } .grid-6 .menu-item { font-size:10px; } }
+  @media (max-width:640px) { .grid-6 .menu-item { font-size:10px; } }
 
-  /* red = not done, green = done (only the color changes) */
-  .menu-item.notdone, .refresher-set-btn.notdone { background:var(--red); border-color:var(--red); }
-  .menu-item.notdone:hover, .refresher-set-btn.notdone:hover { background:var(--red-dark); }
-  .menu-item.done, .refresher-set-btn.done { background:var(--green); border-color:var(--green); }
-  .menu-item.done:hover, .refresher-set-btn.done:hover { background:var(--green-dark); }
+  /* the only change: red = not done, green = done */
+  .menu-item.notdone, .refresher-set-btn.notdone:not(:disabled) { background:var(--red); border-color:var(--red); }
+  .menu-item.notdone:hover, .refresher-set-btn.notdone:hover:not(:disabled) { background:var(--red-dark); }
+  .menu-item.done, .refresher-set-btn.done:not(:disabled) { background:var(--green); border-color:var(--green); }
+  .menu-item.done:hover, .refresher-set-btn.done:hover:not(:disabled) { background:var(--green-dark); }
 
-  #notes { width:100%; font:inherit; font-size:14px; line-height:1.55; padding:12px 14px; border:1px solid var(--line); border-radius:8px; resize:vertical; min-height:170px; background:#fff; color:var(--ink); }
+  #notes { width:100%; font:inherit; font-size:14px; line-height:1.55; padding:12px 14px; border:1px solid var(--line); border-radius:8px; resize:vertical; min-height:170px; background:#fff; color:var(--ink); margin-top:6px; }
   #notes:focus { outline:none; border-color:var(--accent); }
-  .overall { margin:18px 0 0; font-size:13px; color:var(--sub); }
+  .overall { margin:14px 0 0; font-size:13px; color:var(--sub); }
   .bar { height:8px; border-radius:4px; background:var(--line); overflow:hidden; margin-top:4px; }
   .bar > i { display:block; height:100%; background:var(--green); width:0; transition:width .25s; }
   .legend { font-size:12.5px; color:var(--sub); margin:10px 0 0; }
   .legend i { display:inline-block; width:10px; height:10px; border-radius:2px; vertical-align:-1px; margin:0 4px 0 8px; }
-  .toolbar { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 6px; }
+  .legend i:first-child { margin-left:0; }
+  .toolbar { display:flex; flex-wrap:wrap; gap:8px; margin:28px 0 6px; }
   .btn { font:inherit; font-size:13px; padding:8px 12px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); cursor:pointer; }
   .btn:hover { border-color:var(--accent); color:var(--accent-dark); }
-  .btn.small { font-size:12px; padding:4px 8px; }
   .btn.danger:hover { border-color:#c62828; color:#c62828; }
-  .hint { font-size:12px; color:var(--sub); margin-top:26px; }
-  .ed { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
-  .ed input { font:inherit; font-size:13px; padding:6px 8px; border:1px solid var(--accent); border-radius:6px; width:120px; }
-  .ed .gi { width:240px; font-weight:bold; }
+  .hint { font-size:12px; color:var(--sub); margin-top:14px; }
   @media (max-width:520px) { body { padding:24px 14px 60px; } }
 </style>
 </head>
 <body>
 <h1>Task Checklist</h1>
-<p class="subtitle">Tap a button to toggle it. Red = not done / not verified, green = done / verified.</p>
+<p class="subtitle">Same layout as Quick Access. Tap a button to toggle it: red = not done / not verified, green = done / verified. Faded buttons have no content yet and cannot be toggled.</p>
 
 <div class="welcome-note" id="goal"></div>
 
@@ -73,14 +74,18 @@
 </div>
 
 <div class="featured-section">
-  <div class="section-eyebrow">Checklist</div>
-  <h2>PPE Refresher and Handouts</h2>
-  <div id="groups"></div>
+  <div class="section-eyebrow">Quick Access</div>
+  <h2>PPE Day 1 to 11</h2>
+  <div class="section-eyebrow subject-phase-label">AERC REFRESHER PHASE</div>
+  <div id="refresher-rows"></div>
+  <div class="section-eyebrow subject-phase-label">AERC REVIEW PHASE</div>
+  <div class="col-headers col-headers-6">
+    <span>Handouts</span><span>Sample Problems</span><span>Problem Set</span><span>Trivia</span><span>Refresher Day #</span><span>Exam Missed Questions</span>
+  </div>
+  <div class="grid grid-6" id="grid"></div>
 </div>
 
-<div class="toolbar" style="margin-top:28px">
-  <button class="btn" id="editMode">Edit list</button>
-  <button class="btn" id="addGroup" hidden>+ Add group</button>
+<div class="toolbar">
   <button class="btn" id="export">Export backup</button>
   <button class="btn" id="import">Import backup</button>
   <button class="btn danger" id="reset">Reset to starting list</button>
@@ -90,91 +95,69 @@
 
 <script>
 (function () {
-  var KEY = "meTaskChecklistV3";
-  var uid = 0, editing = false;
-  function id() { uid++; return "i" + Date.now().toString(36) + uid; }
-  function T(title, done) { return { id: id(), title: title, done: !!done }; }
-  function G(title, style, tasks) { return { id: id(), title: title, style: style || "grid4", tasks: tasks }; }
-
+  var KEY = "meTaskChecklistV4";
   var GOAL = "<b>Main goal now:</b> finish PPE Refresher Sets 3 to 7 together with their Terms, and update the PPE Handouts (needed first). " +
              "After the Handouts, the Sample Problems, Trivia and Problem Sets must follow the updated Handouts.";
-
   var NOTES = "PPE Refresher Set 3: verified (problems). Terms answer keys of all sets still need to be checked.\n\n" +
     "Set 4 open flags: P5, P10, P18, P19, P24; terms 35, 42, 44, 59, 81.\n" +
     "Set 5 open flags: P12, P17, P29; terms 43, 49, 65, 67, 70.\n" +
     "Set 6: no open flags.\n" +
     "Set 7: answers for P17, P19 and terms 41, 63, 70, 92, 93 were given by LAX (check they are applied).\n\n" +
-    "Sets 4 to 7: LAX still needs to verify the way of solving.";
+    "Sets 4 to 7: LAX still needs to verify the way of solving.\n" +
+    "Terms Set 3 is faded here like in the app (no Terms Set 3 page yet), but its answer key still needs checking.";
 
-  function seed() {
-    var pr = [], tr = [], h = [];
-    for (var n = 3; n <= 7; n++) { pr.push(T("Set " + n, n === 3)); tr.push(T("Terms\nSet " + n, false)); }
-    for (var d = 1; d <= 11; d++) h.push(T("Handouts PPE Day " + d, false));
-    return { v: 3, notes: NOTES, groups: [
-      G("PPE Refresher Sets: Problems (way of solving)", "row", pr),
-      G("PPE Refresher Sets: Terms answer keys", "row", tr),
-      G("Update the PPE Handouts (whole PPE)", "grid6", h),
-      G("Follow the updated Handouts", "grid4", [T("Sample Problems"), T("Trivia"), T("Problem Set")])
-    ] };
-  }
+  // which buttons are faded in the real Quick Access (no content yet)
+  var SET_ON = [3, 4, 5, 6, 7], TERMS_ON = [4, 5, 6, 7];
+  var MISSED_ON = [9, 10, 11];
 
   var state;
+  function seed() { return { v: 4, notes: NOTES, done: { "set3": true } }; }
   function load() {
-    try { var raw = localStorage.getItem(KEY); if (raw) { var s = JSON.parse(raw); if (s && s.groups) return s; } } catch (e) {}
+    try { var raw = localStorage.getItem(KEY); if (raw) { var s = JSON.parse(raw); if (s && s.done) return s; } } catch (e) {}
     return seed();
   }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
-  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+
+  var live = 0;
+  function toggle(btn, key, faded) {
+    if (faded) return;
+    live++;
+    var on = !!state.done[key];
+    btn.className += on ? " done" : " notdone";
+    btn.onclick = function () { if (state.done[key]) delete state.done[key]; else state.done[key] = true; save(); render(); };
+  }
 
   function render() {
+    live = 0;
     document.getElementById("goal").innerHTML = GOAL;
-    var n = 0, v = 0;
-    state.groups.forEach(function (g) { g.tasks.forEach(function (t) { n++; if (t.done) v++; }); });
-    document.getElementById("overallText").textContent = v + " of " + n + " done";
-    document.getElementById("overallBar").style.width = (n ? 100 * v / n : 0) + "%";
-    document.getElementById("addGroup").hidden = !editing;
-    document.getElementById("editMode").textContent = editing ? "Done editing" : "Edit list";
+    var rr = document.getElementById("refresher-rows"); rr.textContent = "";
+    var r1 = el("div", "refresher-set-row"), r2 = el("div", "refresher-set-row");
+    for (var n = 1; n <= 8; n++) {
+      var b1 = el("button", "refresher-set-btn", "Set " + n); b1.type = "button";
+      var f1 = SET_ON.indexOf(n) < 0; if (f1) b1.disabled = true; toggle(b1, "set" + n, f1); r1.appendChild(b1);
+      var b2 = el("button", "refresher-set-btn", "Terms<br>Set " + n); b2.type = "button";
+      var f2 = TERMS_ON.indexOf(n) < 0; if (f2) b2.disabled = true; toggle(b2, "terms" + n, f2); r2.appendChild(b2);
+    }
+    rr.appendChild(r1); rr.appendChild(r2);
 
-    var root = document.getElementById("groups"); root.textContent = "";
-    state.groups.forEach(function (g) {
-      var wrap = el("div");
-      var lab = el("div", "section-eyebrow subject-phase-label", g.title + (editing ? "" : "  (" + g.tasks.filter(function (t) { return t.done; }).length + "/" + g.tasks.length + ")"));
-      wrap.appendChild(lab);
-      if (editing) {
-        var ed = el("div", "ed");
-        var gi = el("input", "gi"); gi.value = g.title; gi.oninput = function () { g.title = gi.value; save(); };
-        ed.appendChild(gi);
-        var dg = el("button", "btn small danger", "Delete group");
-        dg.onclick = function () { if (confirm("Delete this group and its buttons?")) { state.groups = state.groups.filter(function (x) { return x !== g; }); save(); render(); } };
-        ed.appendChild(dg);
-        g.tasks.forEach(function (t) {
-          var ti = el("input"); ti.value = t.title.replace(/\n/g, " / "); ti.oninput = function () { t.title = ti.value.replace(/ \/ /g, "\n"); save(); };
-          var x = el("button", "btn small danger", "\u2715"); x.onclick = function () { g.tasks = g.tasks.filter(function (y) { return y !== t; }); save(); render(); };
-          ed.appendChild(ti); ed.appendChild(x);
-        });
-        var add = el("button", "btn small", "+ Add button"); add.onclick = function () { g.tasks.push(T("New task")); save(); render(); };
-        ed.appendChild(add);
-        wrap.appendChild(ed);
-        root.appendChild(wrap);
-        return;
-      }
-      var box = g.style === "row" ? el("div", "refresher-set-row") : el("div", "grid " + (g.style === "grid6" ? "grid-6" : "grid-4"));
-      g.tasks.forEach(function (t) {
-        var b = el("button", (g.style === "row" ? "refresher-set-btn " : "menu-item ") + (t.done ? "done" : "notdone"), t.title);
-        b.type = "button";
-        b.setAttribute("aria-pressed", t.done ? "true" : "false");
-        b.onclick = function () { t.done = !t.done; save(); render(); };
-        box.appendChild(b);
+    var grid = document.getElementById("grid"); grid.textContent = "";
+    for (var d = 1; d <= 11; d++) {
+      [["h", "Handouts PPE Day " + d, false], ["s", "Sample Problems PPE Day " + d, false], ["p", "Problem Set PPE Day " + d, false],
+       ["t", "Trivia PPE Day " + d, false], ["r", "Refresher PPE Day " + d, true],
+       ["m", "Missed Questions Compilation PPE Day " + d, MISSED_ON.indexOf(d) < 0]].forEach(function (c) {
+        var b = el("button", "menu-item", c[1]); b.type = "button";
+        if (c[2]) b.className += " disabled menu-item-pending"; else toggle(b, c[0] + d, false);
+        grid.appendChild(b);
       });
-      wrap.appendChild(box);
-      root.appendChild(wrap);
-    });
+    }
+    var v = Object.keys(state.done).filter(function (k) { return state.done[k]; }).length;
+    document.getElementById("overallText").textContent = v + " of " + live + " done";
+    document.getElementById("overallBar").style.width = (live ? 100 * v / live : 0) + "%";
   }
 
   var notes = document.getElementById("notes");
   notes.oninput = function () { state.notes = notes.value; save(); };
-  document.getElementById("editMode").onclick = function () { editing = !editing; render(); };
-  document.getElementById("addGroup").onclick = function () { state.groups.push(G("New group", "grid4", [T("New task")])); save(); render(); };
   document.getElementById("reset").onclick = function () {
     if (!confirm("Reset to the starting list? Your current buttons and notes will be replaced. Export a backup first if unsure.")) return;
     state = seed(); notes.value = state.notes; save(); render();
@@ -195,7 +178,7 @@
     r.onload = function () {
       try {
         var s = JSON.parse(r.result);
-        if (!s || !Array.isArray(s.groups)) throw new Error("bad");
+        if (!s || typeof s.done !== "object") throw new Error("bad");
         if (!confirm("Replace the current list with this backup?")) return;
         state = s; if (typeof state.notes !== "string") state.notes = ""; notes.value = state.notes; save(); render();
       } catch (e) { alert("This file is not a valid checklist backup."); }
