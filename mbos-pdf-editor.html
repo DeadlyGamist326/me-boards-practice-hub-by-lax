@@ -99,7 +99,7 @@ const norm=s=>s.toLowerCase().replace(/\d+/g,"#").replace(/\s+/g,"");
 function merge(b){b.sort((x,y)=>x[0]-y[0]);const m=[];for(const x of b){const p=m[m.length-1];if(p&&x[0]<=p[1])p[1]=Math.max(p[1],x[1]);else m.push([x[0],x[1]])}return m}
 
 function meta(pages){
-  let name=null,acct=null,mon=null,yr=null,amount=null,ref=null,remarks=null;
+  let name=null,acct=null,mon=null,yr=null,dy=null,amount=null,ref=null,remarks=null;
   const pick=(P,j,re,ex)=>{const m=P[j].text.match(re);const r=m&&ex(m[1]||"");if(r)return r;return P[j+1]?ex(P[j+1].text):null};
   const exAmt=t=>{const m=t.match(/\d[\d,]*(?:\.\d+)?/);return m?m[0].replace(/,/g,""):null};
   const exRef=t=>{const m=t.match(/([A-Za-z]{3})\s*-\s*(\d{6})\s*-\s*(\d{6})\s*-\s*(\d{8})/);return m?m[1]+"-"+m[2]+"-"+m[3]+"-"+m[4]:null};
@@ -108,15 +108,15 @@ function meta(pages){
     const l=P[j];
     const m=l.text.match(/beneficiary\s*account\s*(\d{13})\s*\(PHP\)\s*[·•⋅∙.]\s*(.+)$/i);
     if(m&&!name){name=m[2].replace(/[\\/:*?"<>|]/g,"").replace(/\s+/g," ").trim();acct=m[1]+" (PHP) · "+m[2].replace(/\s+/g," ").trim()}
-    const r=l.text.match(/payroll\s*[-–—]\s*([a-z]{3,})\.?\s*(\d{4})?/i);
-    if(r&&mon===null){const i=MON.indexOf(r[1].slice(0,3).toLowerCase());if(i>=0){mon=i;yr=r[2]?+r[2]:null}}
+    const r=l.text.match(/payroll\s*[-–—]\s*([a-z]{3,})\.?\s*(?:(\d{1,2})(?!\d)\s*(?:[-–—]\s*(\d{1,2})(?!\d))?\s*,?\s*)?(\d{4})?/i);
+    if(r&&mon===null){const i=MON.indexOf(r[1].slice(0,3).toLowerCase());if(i>=0){mon=i;yr=r[4]?+r[4]:null;dy=r[3]?+r[3]:(r[2]?+r[2]:null)}}
     if(amount===null&&/amount/i.test(l.text)&&!/balance/i.test(l.text))amount=pick(P,j,/amount\s*:?\s*(.*)$/i,exAmt);
     if(ref===null&&/reference/i.test(l.text))ref=pick(P,j,/reference\s*(?:number|no\.?|#)?\s*:?\s*(.*)$/i,exRef);
     if(remarks===null&&/remarks/i.test(l.text))remarks=pick(P,j,/remarks\s*:?\s*(.*)$/i,exTxt);
   }
   if(!ref)for(const P of pages)for(const l of P){const r=exRef(l.text);if(r&&!ref)ref=r}
   let date=null;
-  if(mon!==null){const y=yr||YEAR;date=String(mon+1).padStart(2,"0")+String(new Date(y,mon+1,0).getDate()).padStart(2,"0")+y}
+  if(mon!==null){const y=yr||YEAR;const last=new Date(y,mon+1,0).getDate(),d=dy&&dy>=1&&dy<=last?dy:last;date=String(mon+1).padStart(2,"0")+String(d).padStart(2,"0")+y}
   return{name,date,acct,amount,ref,remarks};
 }
 
