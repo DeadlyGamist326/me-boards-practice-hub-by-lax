@@ -260,7 +260,7 @@ $("f").onchange=async e=>{
       const bt=document.createElement("button");bt.textContent="Download";
       bt.onclick=async()=>{bt.disabled=true;const er=await save(nm,r.blob,I.joy);bt.disabled=false;bt.textContent=er?"Try again":"Downloaded"};
       r1.appendChild(bt);
-      if(!DL){const er=await save(nm,r.blob,I.joy);if(!er)bt.textContent="Downloaded"}
+      if(!DL){const er=await save(nm,r.blob,I.joy);if(!er)bt.textContent="Downloaded";else{bt.textContent="Try again";o.textContent=er+" ("+nm+")";o.className="o bad";miss++}}
     }catch(x){errs++;console.error(x);o.textContent="Error reading this file.";o.className="o bad"}
   }
   const s=$("sum");
