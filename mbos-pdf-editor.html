@@ -99,7 +99,7 @@ const norm=s=>s.toLowerCase().replace(/\d+/g,"#").replace(/\s+/g,"");
 function merge(b){b.sort((x,y)=>x[0]-y[0]);const m=[];for(const x of b){const p=m[m.length-1];if(p&&x[0]<=p[1])p[1]=Math.max(p[1],x[1]);else m.push([x[0],x[1]])}return m}
 
 function meta(pages){
-  let joy=false,name=null,acct=null,mon=null,yr=null,dy=null,amount=null,ref=null,remarks=null;
+  let joy=false,accKind=null,accMon=null,accYr=null,name=null,acct=null,mon=null,yr=null,dy=null,amount=null,ref=null,remarks=null;
   const pick=(P,j,re,ex)=>{const m=P[j].text.match(re);const r=m&&ex(m[1]||"");if(r)return r;return P[j+1]?ex(P[j+1].text):null};
   const exAmt=t=>{const m=t.match(/\d[\d,]*(?:\.\d+)?/);return m?m[0].replace(/,/g,""):null};
   const exRef=t=>{const m=t.match(/([A-Za-z]{3})\s*-\s*(\d{6})\s*-\s*(\d{6})\s*-\s*(\d{8})/);return m?m[1]+"-"+m[2]+"-"+m[3]+"-"+m[4]:null};
@@ -114,11 +114,18 @@ function meta(pages){
     if(amount===null&&/amount/i.test(l.text)&&!/balance/i.test(l.text))amount=pick(P,j,/amount\s*:?\s*(.*)$/i,exAmt);
     if(ref===null&&/reference/i.test(l.text))ref=pick(P,j,/reference\s*(?:number|no\.?|#)?\s*:?\s*(.*)$/i,exRef);
     if(remarks===null&&/remarks/i.test(l.text))remarks=pick(P,j,/remarks\s*:?\s*(.*)$/i,exTxt);
+    if(accKind===null&&/remarks/i.test(l.text)){
+      const w=P.slice(j,j+3).map(x=>x.text).join(" ").replace(/^.*?remarks/i,"");
+      const k=w.match(/\b(RF|SSS)\b/i),mm=w.match(/\b(jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|june?|july?|aug(?:ust)?|sep(?:t(?:ember)?)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)\b\.?[\s,]*(\d{4})/i);
+      if(k&&mm){accKind=k[1].toUpperCase();accMon=MON.indexOf(mm[1].slice(0,3).toLowerCase());accYr=mm[2]}
+    }
   }
   if(!ref)for(const P of pages)for(const l of P){const r=exRef(l.text);if(r&&!ref)ref=r}
   let date=null;
   if(mon!==null){const y=yr||YEAR;const last=new Date(y,mon+1,0).getDate(),d=dy&&dy>=1&&dy<=last?dy:last;date=String(mon+1).padStart(2,"0")+String(d).padStart(2,"0")+y}
-  return{name,date,acct,amount,ref,remarks,joy};
+  const MFULL=["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const acctName=joy&&accKind&&accMon>=0&&accMon!==null?(accKind==="SSS"?"SSS "+MFULL[accMon]+" "+accYr:MFULL[accMon]+" "+accYr+" RF"):null;
+  return{name,date,acct,amount,ref,remarks,joy,acctName};
 }
 
 function wipeGray(d,w,h){
@@ -237,18 +244,18 @@ $("f").onchange=async e=>{
     R.appendChild(it);
     try{
       const r=await clean(files[i]);
-      const base=r.info.name&&r.info.date?r.info.name+" "+r.info.date:files[i].name.replace(/\.pdf$/i,"")+" edited";
+      const base=r.info.joy?(r.info.acctName||files[i].name.replace(/\.pdf$/i,"")+" edited"):r.info.name&&r.info.date?r.info.name+" "+r.info.date:files[i].name.replace(/\.pdf$/i,"")+" edited";
       let nm=base+".pdf",k=2;while(used.has(nm))nm=base+" ("+k+++").pdf";used.add(nm);
       b.textContent=nm;b.title=nm;o.textContent="From: "+files[i].name;
       const I=r.info,ch=document.createElement("div");ch.className="chips";
       let bad=false;
       for(const t of TERMS){const n=r.found[t];if(!n)bad=true;chip(ch,!!n,t.split(" ")[0]+(n>1?" ("+n+")":""))}
-      chip(ch,!!I.name,"Name");chip(ch,!!I.date,"Date");chip(ch,!!I.amount,"Amount");chip(ch,!!I.ref,"Ref");chip(ch,!!I.remarks,"Remarks");
+      chip(ch,!!I.name,"Name");const dOk=I.joy?!!I.acctName:!!I.date;chip(ch,dOk,I.joy?"RF/SSS + month + year":"Date");chip(ch,!!I.amount,"Amount");chip(ch,!!I.ref,"Ref");chip(ch,!!I.remarks,"Remarks");
       it.appendChild(ch);
-      if(!I.name||!I.date||!I.amount||!I.ref||!I.remarks)bad=true;
+      if(!I.name||!dOk||!I.amount||!I.ref||!I.remarks)bad=true;
       addRow([I.amount,I.ref,I.acct,I.remarks]);
       if(bad)miss++;
-      if(!I.date){b.textContent=files[i].name;o.textContent="No date found, so this file was not downloaded. From: "+files[i].name;o.className="o bad";used.delete(nm);continue}
+      if(!dOk){b.textContent=files[i].name;o.textContent=(I.joy?"No RF or SSS with month and year found in Remarks":"No date found")+", so this file was not downloaded. From: "+files[i].name;o.className="o bad";used.delete(nm);continue}
       done.push({nm,blob:r.blob});
       const bt=document.createElement("button");bt.textContent="Download";
       bt.onclick=async()=>{bt.disabled=true;const er=await save(nm,r.blob,I.joy);bt.disabled=false;bt.textContent=er?"Try again":"Downloaded"};
