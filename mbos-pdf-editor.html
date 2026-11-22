@@ -52,7 +52,7 @@ td.long{max-width:150px;overflow:hidden;text-overflow:ellipsis}
 <main>
 <div class="top">
   <div><h1>MBOS PDF Editor</h1><p class="sub">Everything runs in your browser. Nothing is uploaded anywhere.</p></div>
-  <div class="acts"><button id="fol" hidden>Choose save folder</button><span id="folname" class="o"></span></div>
+  <div class="acts"><button id="fol" hidden>Choose save folder</button><span id="folname" class="o"></span><button id="fol2" hidden>Choose folder for Joy Pudadera</button><span id="folname2" class="o"></span></div>
   <label id="upl" class="up">Upload PDF files<input id="f" type="file" accept="application/pdf" multiple></label>
 </div>
 <div id="sum" role="status"></div>
@@ -99,13 +99,14 @@ const norm=s=>s.toLowerCase().replace(/\d+/g,"#").replace(/\s+/g,"");
 function merge(b){b.sort((x,y)=>x[0]-y[0]);const m=[];for(const x of b){const p=m[m.length-1];if(p&&x[0]<=p[1])p[1]=Math.max(p[1],x[1]);else m.push([x[0],x[1]])}return m}
 
 function meta(pages){
-  let name=null,acct=null,mon=null,yr=null,dy=null,amount=null,ref=null,remarks=null;
+  let joy=false,name=null,acct=null,mon=null,yr=null,dy=null,amount=null,ref=null,remarks=null;
   const pick=(P,j,re,ex)=>{const m=P[j].text.match(re);const r=m&&ex(m[1]||"");if(r)return r;return P[j+1]?ex(P[j+1].text):null};
   const exAmt=t=>{const m=t.match(/\d[\d,]*(?:\.\d+)?/);return m?m[0].replace(/,/g,""):null};
   const exRef=t=>{const m=t.match(/([A-Za-z]{3})\s*-\s*(\d{6})\s*-\s*(\d{6})\s*-\s*(\d{8})/);return m?m[1]+"-"+m[2]+"-"+m[3]+"-"+m[4]:null};
   const exTxt=t=>t.trim()||null;
   for(const P of pages)for(let j=0;j<P.length;j++){
     const l=P[j];
+    if(/beneficiary.*joy\s*pudadera/i.test(l.text))joy=true;
     const m=l.text.match(/beneficiary\s*account\s*(\d{13})\s*\(PHP\)\s*[·•⋅∙.]\s*(.+)$/i);
     if(m&&!name){name=m[2].replace(/[\\/:*?"<>|]/g,"").replace(/\s+/g," ").trim();acct=m[1]+" (PHP) · "+m[2].replace(/\s+/g," ").trim()}
     const r=P.slice(j,j+3).map(x=>x.text).join(" ").match(/p\s?a\s?y\s?r\s?o\s?l\s?l\s*(?:[-\u2010-\u2015\u2212]\s*)?([a-z]{3,})\.?\s*(?:(\d{1,2})(?!\d)\s*(?:[-\u2010-\u2015\u2212]\s*(\d{1,2})(?!\d))?\s*,?\s*)?(\d{4})?/i);
@@ -117,7 +118,7 @@ function meta(pages){
   if(!ref)for(const P of pages)for(const l of P){const r=exRef(l.text);if(r&&!ref)ref=r}
   let date=null;
   if(mon!==null){const y=yr||YEAR;const last=new Date(y,mon+1,0).getDate(),d=dy&&dy>=1&&dy<=last?dy:last;date=String(mon+1).padStart(2,"0")+String(d).padStart(2,"0")+y}
-  return{name,date,acct,amount,ref,remarks};
+  return{name,date,acct,amount,ref,remarks,joy};
 }
 
 function wipeGray(d,w,h){
@@ -168,15 +169,23 @@ async function clean(file){
   return{blob:doc.output("blob"),info,found,hf};
 }
 
-let DIR=null;
+let DIR=null,DIR2=null;
 if(window.showDirectoryPicker){
-  $("fol").hidden=false;
+  $("fol").hidden=false;$("fol2").hidden=false;
+  $("fol2").onclick=async()=>{
+    try{DIR2=await window.showDirectoryPicker({mode:"readwrite",id:"mbos-save-joy"});$("folname2").textContent="Joy Pudadera saves to: "+DIR2.name;$("fol2").textContent="Change Joy Pudadera folder"}
+    catch(e){if(e&&e.name!=="AbortError")$("sum").textContent="Could not open that folder."}
+  };
   $("fol").onclick=async()=>{
     try{DIR=await window.showDirectoryPicker({mode:"readwrite",id:"mbos-save"});$("folname").textContent="Saving to: "+DIR.name;$("fol").textContent="Change folder"}
     catch(e){if(e&&e.name!=="AbortError")$("sum").textContent="Could not open that folder."}
   };
 }
-async function save(name,blob){
+async function save(name,blob,joy){
+  if(joy&&DIR2){
+    try{const fh=await DIR2.getFileHandle(name,{create:true}),w=await fh.createWritable();await w.write(blob);await w.close();return ""}
+    catch(e){DIR2=null;$("folname2").textContent="";$("fol2").textContent="Choose folder for Joy Pudadera";return "Could not write to the Joy Pudadera folder, choose it again."}
+  }
   if(DIR){
     try{const fh=await DIR.getFileHandle(name,{create:true}),w=await fh.createWritable();await w.write(blob);await w.close();return ""}
     catch(e){DIR=null;$("folname").textContent="";$("fol").textContent="Choose save folder";return "Could not write to the folder, choose it again."}
@@ -242,9 +251,9 @@ $("f").onchange=async e=>{
       if(!I.date){b.textContent=files[i].name;o.textContent="No date found, so this file was not downloaded. From: "+files[i].name;o.className="o bad";used.delete(nm);continue}
       done.push({nm,blob:r.blob});
       const bt=document.createElement("button");bt.textContent="Download";
-      bt.onclick=async()=>{bt.disabled=true;const er=await save(nm,r.blob);bt.disabled=false;bt.textContent=er?"Try again":"Downloaded"};
+      bt.onclick=async()=>{bt.disabled=true;const er=await save(nm,r.blob,I.joy);bt.disabled=false;bt.textContent=er?"Try again":"Downloaded"};
       r1.appendChild(bt);
-      if(!DL){const er=await save(nm,r.blob);if(!er)bt.textContent="Downloaded"}
+      if(!DL){const er=await save(nm,r.blob,I.joy);if(!er)bt.textContent="Downloaded"}
     }catch(x){errs++;console.error(x);o.textContent="Error reading this file.";o.className="o bad"}
   }
   const s=$("sum");
