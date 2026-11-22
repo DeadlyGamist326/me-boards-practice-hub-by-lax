@@ -239,6 +239,7 @@ $("f").onchange=async e=>{
       if(!I.name||!I.date||!I.amount||!I.ref||!I.remarks)bad=true;
       addRow([I.amount,I.ref,I.acct,I.remarks]);
       if(bad)miss++;
+      if(!I.date){b.textContent=files[i].name;o.textContent="No date found, so this file was not downloaded. From: "+files[i].name;o.className="o bad";used.delete(nm);continue}
       done.push({nm,blob:r.blob});
       const bt=document.createElement("button");bt.textContent="Download";
       bt.onclick=async()=>{bt.disabled=true;const er=await save(nm,r.blob);bt.disabled=false;bt.textContent=er?"Try again":"Downloaded"};
