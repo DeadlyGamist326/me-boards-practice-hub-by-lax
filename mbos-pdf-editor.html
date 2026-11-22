@@ -52,7 +52,7 @@ td.long{max-width:150px;overflow:hidden;text-overflow:ellipsis}
 <main>
 <div class="top">
   <div><h1>MBOS PDF Editor</h1><p class="sub">Everything runs in your browser. Nothing is uploaded anywhere.</p></div>
-  <div class="acts"><button id="fol" hidden>Choose save folder</button><span id="folname" class="o"></span><button id="fol2" hidden>Choose save location for accountant</button><span id="folname2" class="o"></span></div>
+  <div class="acts"><button id="fol" hidden>Choose save location for payroll</button><span id="folname" class="o"></span><button id="fol2" hidden>Choose save location for accountant</button><span id="folname2" class="o"></span></div>
   <label id="upl" class="up">Upload PDF files<input id="f" type="file" accept="application/pdf" multiple></label>
 </div>
 <div id="sum" role="status"></div>
@@ -184,7 +184,7 @@ if(window.showDirectoryPicker){
     catch(e){if(e&&e.name!=="AbortError")$("sum").textContent="Could not open that folder."}
   };
   $("fol").onclick=async()=>{
-    try{DIR=await window.showDirectoryPicker({mode:"readwrite",id:"mbos-save"});$("folname").textContent="Saving to: "+DIR.name;$("fol").textContent="Change folder"}
+    try{DIR=await window.showDirectoryPicker({mode:"readwrite",id:"mbos-save"});$("folname").textContent="Payroll saves to: "+DIR.name;$("fol").textContent="Change payroll save location"}
     catch(e){if(e&&e.name!=="AbortError")$("sum").textContent="Could not open that folder."}
   };
 }
@@ -195,7 +195,7 @@ async function save(name,blob,joy){
   }
   if(DIR){
     try{const fh=await DIR.getFileHandle(name,{create:true}),w=await fh.createWritable();await w.write(blob);await w.close();return ""}
-    catch(e){DIR=null;$("folname").textContent="";$("fol").textContent="Choose save folder";return "Could not write to the folder, choose it again."}
+    catch(e){DIR=null;$("folname").textContent="";$("fol").textContent="Choose save location for payroll";return "Could not write to the folder, choose it again."}
   }
   if(DL){
     try{await DL.save({filename:name,data:blob});return ""}
