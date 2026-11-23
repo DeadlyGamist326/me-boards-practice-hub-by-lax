@@ -290,6 +290,14 @@
 
 <script>
 const entries = {
+  "2026-11-23": {
+    stamp: "v1.4.19.43",
+    title: "Copy question and formula text to the clipboard",
+    body: [
+      "v1.4.19.43 (LAX 2026-11-23): a delegated listener script right before `</body>`. Double-click on the leading item number of a `.q-text` / `.sp-title` inside a `.question` or `.sample-problem` copies the question text plus the `.choices` / `.sp-choices` boxes (put back in letter order, since the grid is column-major), one choice per line. Triple-click (click detail 3) on a `.formula-block` copies the formula. A bottom-left pill (same look as the update notice) says \"Question and choices copied to clipboard\" or \"Formula copied to clipboard\".",
+      "`domText()` walks the DOM (`.frac` to a/b, `.sqrt`, `.exp`/`.sub`, SUP/SUB). Typeset math is read back from the MathJax math list (`MathJax.startup.document.math`, matched by `typesetRoot`) and converted by `texToPlain()`; fallback is the assistive MathML text. Parentheses only where needed (a sum in a numerator, anything but a single atom in a denominator, a fraction next to a factor). Cancel marks and the formula label are dropped, a minus becomes `-`. Not wired: Terms Mastery Builder and Identify the Problem Type cards (their number lives in a meta line)."
+    ]
+  },
   "2026-11-22": {
     stamp: "tools.html",
     title: "MBOS PDF Editor added to Online Tools",
