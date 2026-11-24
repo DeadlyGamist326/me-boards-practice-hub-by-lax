@@ -12,6 +12,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 concurrency:
   group: pages
@@ -49,8 +50,22 @@ jobs:
           cat _site/version.json
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - id: upload
+        uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+      # The artifact is sometimes not yet visible to the Actions API right after upload
+      # ("No artifacts named github-pages were found"); wait until it is listed, then deploy.
+      - name: Wait for artifact to be listed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 12); do
+            n="$(gh api "repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts" --jq '[.artifacts[] | select(.name=="github-pages")] | length' || echo 0)"
+            echo "attempt $i: $n artifact(s)"
+            [ "$n" -ge 1 ] && break
+            sleep 5
+          done
+          sleep 3
       - id: deployment
         uses: actions/deploy-pages@v4
