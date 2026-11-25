@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-25": {
-    stamp: "v1.4.19.56 \u2013 v1.4.19.71",
+    stamp: "v1.4.19.56 \u2013 v1.4.19.72",
     title: "Condenser cooling water solutions use m_w = V/v_1 with v_1 = 1/rho",
     body: [
+      "v1.4.19.72 (LAX 2026-11-25): PPE Refresher Set 7, problem 29 (reversed Carnot heat pump COP), Hint 4: distribution line is now COP_H = T_H(1/T_H)/(T_H(1/T_H) - T_L(1/T_H)), followed by its own cancel-marks line (T_H cancels, T_L(1/T_H) = T_L/T_H); answer 4 (B) unchanged.",
       "v1.4.19.71 (LAX 2026-11-25): PPE Refresher Set 7, problem 30 (air compressor, actual work), all four hints: Given adds R = 0.287 kJ/(kg·K) (assumed) and r_p = P_2/P_1 = 4; ideal work W_C = (kRT_1/(k - 1))[(P_2/P_1)^((k - 1)/k) - 1] = 146.45 kJ/kg (stored A), shown as W_C = W_ideal, then e_C = W_ideal/W_actual with Shift + Solve (0.8 = A/X) gives 183.07 kJ/kg. Key C (182) is the nearest choice, disclosed in Hint 4; the old C_p route gave 145.80 / 182.25. Same pattern, not changed: Problem Set PPE Day 9 #33, Refresher PPE Set 6 #16, Refresher PPE Set 7 #11 (motor-driven compressor efficiency).",
       "v1.4.19.70 (LAX 2026-11-25): PPE Refresher Set 7, problem 29 (reversed Carnot refrigerator T_L/T_H = 0.75, heat pump COP), Hint 4: after COP_H = T_H/(T_H - T_L) the algebra is shown in three boxes (multiply numerator and denominator by (1/T_H)/(1/T_H); distribute with cancel marks on T_H; result COP_H = 1/(1 - T_L/T_H)), then the existing substitution and calculator display (1/(1-0.75) = 4, key B matches). Other problems with a given T_L/T_H ratio were only listed, not changed (see thread report).",
       "v1.4.19.69 (LAX 2026-11-25): PPE Refresher Set 7, problem 28 (six-cylinder R-22 compressor, actual volumetric efficiency), Hint 4 and Hint 2 reordered: RE = m(h_1 - h_4), RE = (V_1/v_1)(h_1 - h_4), substituted line 96.4 kW = (V_1/(40.36 L/kg x 1 m^3/1000 L))(407.1 - 243.1) kJ/kg solved with Shift + Solve (display 96.4=X/(40.36x1/1000)x(407.1-243.1), X = 0.02372380488, stored A) giving V_1 = 0.02372 m^3/s; the separate m step is gone. Then V_D = (pi/4) D^2 L N c = 0.03617 m^3/s (stored B) and e_v = V_1/V_D = 65.58%, key C matches, no mismatch. Unit conversion of v_1 is kept inside the formula (RULINGS 15), not as its own 0.04036 step. Power, clearance, h_2 and v_2 are unused.",
