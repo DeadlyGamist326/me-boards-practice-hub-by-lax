@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-25": {
-    stamp: "v1.4.19.56 \u2013 v1.4.19.64",
+    stamp: "v1.4.19.56 \u2013 v1.4.19.65",
     title: "Condenser cooling water solutions use m_w = V/v_1 with v_1 = 1/rho",
     body: [
+      "v1.4.19.65 (LAX 2026-11-25): PPE Refresher Set 7, problem 20 (compressor bore, 0.18 m\u00b3/s, 400 rpm), Hint 4: the \u0027Bore equals stroke\u0027 note now says L = D and that D\u00b2 and D multiply (D\u00b2 \u00d7 D = D\u00b3). Answer unchanged: D = 325.16 mm, key C (325 mm) matches, no mismatch.",
       "v1.4.19.64 (LAX 2026-11-25): PPE Refresher Set 7, problem 19 (reversed Brayton, 250 K space): given, kw-map and Hints 2-3 use T_1 - T_4 = 50 K instead of \u0394T_ref; Hint 4 starts T_1 - T_4 = 50 K, 250 K - T_4 = 50 K (Shift + Solve display, rail), T_4 = 200 K, then continues unchanged. Key D (25 kJ/kg) reproduces. \u0394T_ref was used nowhere else. The Handout has no reversed Brayton formulas, so the existing T_1..T_4 symbols were kept.",
       "v1.4.19.63 (LAX 2026-11-25): PPE Refresher Set 7, problem 18 (refrigerating efficiency 0.75, 3 kW): symbol e_r removed; given, kw-map, Hints 2-3 and Hint 4 use COP/COP_C = 0.75; Hint 4 flows COP/COP_C = 0.75, COP/(T_L/(T_H - T_L)) = 0.75, substituted with K cancel marks and a Shift+Solve display, COP = 3.225, then COP = RE/W_c, W_c = 0.93 kW (choice A, matches key; no mismatch). e_r is not used anywhere else in the file.",
       "v1.4.19.62 (LAX 2026-11-25): PPE Refresher Set 7, problem 17 (R-12 reciprocating compressor, clearance 0.03, 2 TR) Hint 4 now starts RE = m(h_1 - h_4), RE = (V_1/v_1)(h_1 - h_4), substituted with a calculator display (Shift+Solve, V_1 = 0.006899 m3/s stored in A), then e_v = 0.9098, V_D = 7.58e-3, and the special-case step Actual Volume Displacement = e_v V_1 = 6.28e-3 m3/s (old board formula; closest to choice A 6.26e-3, matches the printed key letter A, so the old mismatch disclosure was replaced). Hint 2 lists the extra formula. Special case only for clearance + actual displacement; Set 7 has no other clearance problem changed (the handout compressor section is untouched).",
