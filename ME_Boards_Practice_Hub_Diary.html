@@ -291,9 +291,10 @@
 <script>
 const entries = {
   "2026-11-25": {
-    stamp: "v1.4.19.56 \u2013 v1.4.19.66",
+    stamp: "v1.4.19.56 \u2013 v1.4.19.67",
     title: "Condenser cooling water solutions use m_w = V/v_1 with v_1 = 1/rho",
     body: [
+      "v1.4.19.67 (LAX 2026-11-25): PPE Refresher Set 7, problem 26 (walk-in cooler 8 x 15 x 10 ft, air change load): Given AC = 19 changes/(24 hr) and Heat Gain = 2.49 Btu/ft^3 (keyword map, Hint 2/3 too); Hint 4 converts wall thickness 6 in to 0.5 ft (its own boxes, display 6x1/12) and then V = (L_o - 2t)(W_o - 2t)(H_o - 2t) in ft only = 882 ft^3; Q_air = V N q_air replaced by Q = (AC)(V)(Heat Gain) = 41,727 Btu/24 hr, key B. Note: the stated ~900 cu ft is rounded; 900 would give 42,579 (no choice), so V = 882 is used and disclosed in Hint 4. Same air-change formula elsewhere: only the Handout cold-storage card (ACH, V_room) was found, left unchanged.",
       "v1.4.19.66 (LAX 2026-11-25): PPE Refresher Set 7, problem 25 (1000 lb lean beef, 55 F to 35 F in 24 hours, product load): the Given, keyword map, Hint 2/3 and Hint 4 now carry m = 1000 lb/24 hr and the substituted line is RE = (1000 lb/24 hr)(0.75 Btu/(lb\u00b7\u00b0F))(55 \u2013 35) \u00b0F, lb and \u00b0F cancel leaving Btu/24 hr. The calculator display is unchanged (1000\u00d70.75\u00d7(55-35) = 15000) because the 24 hr stays in the unit. Answer 15,000 Btu/24 hr, key B matches, no mismatch. Similar \u0027in 24 hours\u0027 problems (not changed): Refresher PPE Set 7 #26 (walk-in cooler, Btu/24 hr), PPE Problem Set refrigeration tons problem (7 Mtons water, 24 hours).",
       "v1.4.19.65 (LAX 2026-11-25): PPE Refresher Set 7, problem 20 (compressor bore, 0.18 m\u00b3/s, 400 rpm), Hint 4: the \u0027Bore equals stroke\u0027 note now says L = D and that D\u00b2 and D multiply (D\u00b2 \u00d7 D = D\u00b3). Answer unchanged: D = 325.16 mm, key C (325 mm) matches, no mismatch.",
       "v1.4.19.64 (LAX 2026-11-25): PPE Refresher Set 7, problem 19 (reversed Brayton, 250 K space): given, kw-map and Hints 2-3 use T_1 - T_4 = 50 K instead of \u0394T_ref; Hint 4 starts T_1 - T_4 = 50 K, 250 K - T_4 = 50 K (Shift + Solve display, rail), T_4 = 200 K, then continues unchanged. Key D (25 kJ/kg) reproduces. \u0394T_ref was used nowhere else. The Handout has no reversed Brayton formulas, so the existing T_1..T_4 symbols were kept.",
